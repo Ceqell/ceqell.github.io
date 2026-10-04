@@ -16,13 +16,22 @@ import {
   Hash,
   SplitSquareVertical,
   ChevronDown,
-  Info
+  Info,
+  Move,
+  Sliders,
+  PanelLeftClose,
+  PanelLeftOpen,
+  PanelRightClose,
+  PanelRightOpen
 } from 'lucide-react';
 import { CANVAS_PRESETS, STARTER_TEMPLATES } from '../constants/retroDev';
 
 interface HeaderProps {
   canvasPresetName: string;
+  canvasWidth: number;
+  canvasHeight: number;
   onSelectCanvasPreset: (presetName: string) => void;
+  onOpenCustomCanvasModal: () => void;
   onSelectStarterTemplate: (templateId: string) => void;
   canUndo: boolean;
   canRedo: boolean;
@@ -34,6 +43,8 @@ interface HeaderProps {
   onToggleGuides: () => void;
   showNumbers: boolean;
   onToggleNumbers: () => void;
+  isMovingGuide: boolean;
+  onToggleMoveGuide: () => void;
   symmetryActive: boolean;
   onToggleSymmetry: () => void;
   zoom: number;
@@ -42,11 +53,18 @@ interface HeaderProps {
   onOpenGuideModal: () => void;
   onSaveProject: () => void;
   onLoadProject: (file: File) => void;
+  leftCollapsed?: boolean;
+  onToggleLeftSidebar?: () => void;
+  rightCollapsed?: boolean;
+  onToggleRightSidebar?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   canvasPresetName,
+  canvasWidth,
+  canvasHeight,
   onSelectCanvasPreset,
+  onOpenCustomCanvasModal,
   onSelectStarterTemplate,
   canUndo,
   canRedo,
@@ -58,6 +76,8 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleGuides,
   showNumbers,
   onToggleNumbers,
+  isMovingGuide,
+  onToggleMoveGuide,
   symmetryActive,
   onToggleSymmetry,
   zoom,
@@ -66,7 +86,12 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenGuideModal,
   onSaveProject,
   onLoadProject,
+  leftCollapsed = false,
+  onToggleLeftSidebar,
+  rightCollapsed = false,
+  onToggleRightSidebar,
 }) => {
+  const headerRef = useRef<HTMLElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,36 +101,67 @@ export const Header: React.FC<HeaderProps> = ({
     }
   };
 
+  // Convert vertical mouse scroll into horizontal header scroll on non-touch devices
+  const handleHeaderWheel = (e: React.WheelEvent) => {
+    if (headerRef.current && Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      headerRef.current.scrollLeft += e.deltaY;
+    }
+  };
+
   return (
-    <header className="h-14 bg-neutral-900 border-b border-neutral-800 px-4 flex items-center justify-between text-neutral-200 select-none z-30 shrink-0">
+    <header 
+      ref={headerRef}
+      onWheel={handleHeaderWheel}
+      className="h-14 bg-neutral-900 border-b border-neutral-800 px-3 flex items-center justify-between gap-3 text-neutral-200 select-none z-30 shrink-0 overflow-x-auto overflow-y-hidden header-scrollbar scroll-smooth w-full"
+    >
       {/* Brand & Canvas Dimensions Preset */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2.5 shrink-0 whitespace-nowrap">
+        {onToggleLeftSidebar && (
+          <button
+            onClick={onToggleLeftSidebar}
+            title={leftCollapsed ? "Expand Tools Sidebar" : "Collapse Tools Sidebar"}
+            className={`p-1.5 rounded-lg border transition-colors shrink-0 ${
+              leftCollapsed
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                : 'text-neutral-400 hover:text-white hover:bg-neutral-800 border-neutral-800/80'
+            }`}
+          >
+            {leftCollapsed ? <PanelLeftOpen className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
+          </button>
+        )}
+
+        <div className="flex items-center gap-2 shrink-0">
           {/* Retro Yellow Smiley Avatar icon */}
-          <div className="w-8 h-8 rounded-lg bg-amber-400 text-neutral-950 flex items-center justify-center font-bold shadow-md shadow-amber-400/20 font-mono text-base border border-amber-300">
+          <div className="w-8 h-8 rounded-lg bg-amber-400 text-neutral-950 flex items-center justify-center font-bold shadow-md shadow-amber-400/20 font-mono text-base border border-amber-300 shrink-0">
             :)
           </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <h1 className="font-bold text-sm tracking-tight text-white">Retro Dev</h1>
-              <span className="text-[10px] uppercase font-mono px-1.5 py-0.2 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded font-semibold">
+          <div className="shrink-0">
+            <div className="flex items-center gap-1.5 whitespace-nowrap">
+              <h1 className="font-bold text-sm tracking-tight text-white whitespace-nowrap">Retro Dev</h1>
+              <span className="text-[10px] uppercase font-mono px-1.5 py-0.2 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded font-semibold whitespace-nowrap">
                 Sprite Maker
               </span>
             </div>
-            <div className="text-[10px] text-neutral-400 font-mono flex items-center gap-1">
+            <div className="text-[10px] text-neutral-400 font-mono flex items-center gap-1 whitespace-nowrap">
               <span>Body: 9×8 · 11×10 · 5×10</span>
             </div>
           </div>
         </div>
 
-        <div className="h-5 w-px bg-neutral-800 mx-1 hidden sm:block" />
+        <div className="h-5 w-px bg-neutral-800 mx-1 hidden sm:block shrink-0" />
 
-        {/* Canvas Size Preset Selector */}
-        <div className="flex items-center gap-1 bg-neutral-950 px-2 py-1 rounded-lg border border-neutral-800">
+        {/* Canvas Size Preset Selector & Custom Button */}
+        <div className="flex items-center gap-1.5 bg-neutral-950 px-2 py-1 rounded-lg border border-neutral-800 shrink-0">
           <LayoutGrid className="w-3.5 h-3.5 text-amber-400 shrink-0" />
           <select
-            value={canvasPresetName}
-            onChange={(e) => onSelectCanvasPreset(e.target.value)}
+            value={canvasPresetName.startsWith('Custom') ? 'custom' : canvasPresetName}
+            onChange={(e) => {
+              if (e.target.value === 'custom') {
+                onOpenCustomCanvasModal();
+              } else {
+                onSelectCanvasPreset(e.target.value);
+              }
+            }}
             className="bg-transparent text-xs font-mono text-neutral-200 outline-none cursor-pointer"
           >
             {CANVAS_PRESETS.map(preset => (
@@ -113,11 +169,25 @@ export const Header: React.FC<HeaderProps> = ({
                 {preset.name}
               </option>
             ))}
+            <option value="custom" className="bg-neutral-900 text-amber-300 font-bold">
+              Custom Size ({canvasWidth} × {canvasHeight})...
+            </option>
           </select>
+
+          {/* Quick Custom Resize Button */}
+          <button
+            type="button"
+            onClick={onOpenCustomCanvasModal}
+            title="Open Custom Canvas Size Dialog"
+            className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono bg-neutral-800 hover:bg-neutral-700 text-amber-300 border border-neutral-700 transition-colors font-semibold shrink-0 cursor-pointer"
+          >
+            <Sliders className="w-3 h-3 text-amber-400" />
+            <span>Resize</span>
+          </button>
         </div>
 
         {/* Starter Template quick load dropdown */}
-        <div className="hidden lg:flex items-center gap-1 bg-neutral-950 px-2 py-1 rounded-lg border border-neutral-800">
+        <div className="hidden lg:flex items-center gap-1 bg-neutral-950 px-2 py-1 rounded-lg border border-neutral-800 shrink-0">
           <Sparkles className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
           <select
             onChange={(e) => {
@@ -140,36 +210,39 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Middle Controls: Undo/Redo & Toggles */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 shrink-0 whitespace-nowrap">
         {/* Undo / Redo */}
-        <div className="flex items-center bg-neutral-950 rounded-lg p-0.5 border border-neutral-800">
+        <div className="flex items-center bg-neutral-950 rounded-lg p-0.5 border border-neutral-800 shrink-0">
           <button
             onClick={onUndo}
             disabled={!canUndo}
             title="Undo (Ctrl+Z)"
-            className="p-1.5 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded transition-colors disabled:opacity-30 disabled:pointer-events-none"
+            className="flex items-center gap-1.5 px-2 py-1 hover:bg-neutral-800 text-neutral-300 hover:text-amber-400 rounded transition-colors disabled:opacity-25 disabled:pointer-events-none text-xs font-medium cursor-pointer"
           >
             <Undo2 className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline text-[11px]">Undo</span>
           </button>
+          <div className="w-px h-3.5 bg-neutral-800 my-auto" />
           <button
             onClick={onRedo}
             disabled={!canRedo}
-            title="Redo (Ctrl+Y)"
-            className="p-1.5 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded transition-colors disabled:opacity-30 disabled:pointer-events-none"
+            title="Redo (Ctrl+Y or Ctrl+Shift+Z)"
+            className="flex items-center gap-1.5 px-2 py-1 hover:bg-neutral-800 text-neutral-300 hover:text-amber-400 rounded transition-colors disabled:opacity-25 disabled:pointer-events-none text-xs font-medium cursor-pointer"
           >
             <Redo2 className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline text-[11px]">Redo</span>
           </button>
         </div>
 
-        <div className="h-5 w-px bg-neutral-800 mx-1" />
+        <div className="h-5 w-px bg-neutral-800 mx-1 shrink-0" />
 
         {/* Toggles Group */}
-        <div className="flex items-center gap-1 bg-neutral-950 rounded-lg p-0.5 border border-neutral-800">
+        <div className="flex items-center gap-1 bg-neutral-950 rounded-lg p-0.5 border border-neutral-800 shrink-0">
           {/* Pixel Grid */}
           <button
             onClick={onToggleGrid}
             title={showGrid ? 'Hide Pixel Grid' : 'Show Pixel Grid'}
-            className={`p-1.5 rounded transition-colors ${
+            className={`p-1.5 rounded transition-colors cursor-pointer ${
               showGrid ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
             }`}
           >
@@ -180,7 +253,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onToggleGuides}
             title="Toggle Retro Dev 9x8, 11x10, 5x10 Body Outlines"
-            className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
+            className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors cursor-pointer ${
               showGuides 
                 ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 font-medium' 
                 : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
@@ -194,7 +267,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onToggleNumbers}
             title="Toggle Dimension Numbers (Matching 1000.png wiki diagram)"
-            className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
+            className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors cursor-pointer ${
               showNumbers 
                 ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-medium' 
                 : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
@@ -204,11 +277,25 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="hidden sm:inline text-[11px]">Numbers</span>
           </button>
 
+          {/* Move / Reposition Guide Toggle */}
+          <button
+            onClick={onToggleMoveGuide}
+            title={isMovingGuide ? "Lock Guide Position (Press to finish)" : "Reposition & Drag Guide and Numbers anywhere on canvas"}
+            className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-all cursor-pointer ${
+              isMovingGuide
+                ? 'bg-amber-400 text-neutral-950 font-bold shadow-md shadow-amber-400/20 animate-pulse'
+                : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
+            }`}
+          >
+            <Move className="w-3.5 h-3.5" />
+            <span className="hidden md:inline text-[11px]">{isMovingGuide ? 'Dragging Guide' : 'Move Guide'}</span>
+          </button>
+
           {/* Mirror / Symmetry */}
           <button
             onClick={onToggleSymmetry}
             title="Toggle Vertical Mirror Symmetry"
-            className={`p-1.5 rounded transition-colors ${
+            className={`p-1.5 rounded transition-colors cursor-pointer ${
               symmetryActive ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
             }`}
           >
@@ -216,14 +303,14 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         </div>
 
-        <div className="h-5 w-px bg-neutral-800 mx-1 hidden sm:block" />
+        <div className="h-5 w-px bg-neutral-800 mx-1 hidden sm:block shrink-0" />
 
         {/* Zoom Controls */}
-        <div className="hidden sm:flex items-center gap-1 bg-neutral-950 rounded-lg p-0.5 border border-neutral-800">
+        <div className="hidden sm:flex items-center gap-1 bg-neutral-950 rounded-lg p-0.5 border border-neutral-800 shrink-0">
           <button
             onClick={() => onZoomChange(Math.max(4, zoom - 2))}
             title="Zoom out"
-            className="p-1.5 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded"
+            className="p-1.5 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded cursor-pointer"
           >
             <ZoomOut className="w-3.5 h-3.5" />
           </button>
@@ -233,14 +320,14 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={() => onZoomChange(Math.min(64, zoom + 2))}
             title="Zoom in"
-            className="p-1.5 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded"
+            className="p-1.5 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded cursor-pointer"
           >
             <ZoomIn className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => onZoomChange(16)}
             title="Reset Zoom to 100%"
-            className="p-1 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded text-[10px]"
+            className="p-1 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded text-[10px] cursor-pointer"
           >
             1x
           </button>
@@ -248,11 +335,11 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Right Actions: Guide, Project Save/Load, Export */}
-      <div className="flex items-center gap-2">
-        {/* Dimensions & Wiki Guide Modal button */}
+      <div className="flex items-center gap-2 shrink-0 whitespace-nowrap ml-auto">
+        {/* Dimensions Wiki Guide Modal */}
         <button
           onClick={onOpenGuideModal}
-          className="flex items-center gap-1 px-2.5 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white rounded-lg text-xs font-medium transition-colors"
+          className="flex items-center gap-1 px-2.5 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white rounded-lg text-xs font-medium transition-colors shrink-0 cursor-pointer"
           title="Open Retro Dev Dimension Wiki Guide"
         >
           <HelpCircle className="w-3.5 h-3.5 text-amber-400" />
@@ -263,7 +350,7 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={onSaveProject}
           title="Save Sprite Project (JSON)"
-          className="p-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white rounded-lg transition-colors hidden sm:block"
+          className="p-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white rounded-lg transition-colors hidden sm:block shrink-0 cursor-pointer"
         >
           <Save className="w-3.5 h-3.5" />
         </button>
@@ -271,7 +358,7 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={() => fileInputRef.current?.click()}
           title="Load Sprite Project (JSON)"
-          className="p-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white rounded-lg transition-colors hidden sm:block"
+          className="p-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white rounded-lg transition-colors hidden sm:block shrink-0 cursor-pointer"
         >
           <FolderOpen className="w-3.5 h-3.5" />
         </button>
@@ -286,11 +373,25 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Primary Export PNG Button */}
         <button
           onClick={onOpenExportModal}
-          className="flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-neutral-950 rounded-lg text-xs font-bold shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-neutral-950 rounded-lg text-xs font-bold shadow-lg shadow-amber-500/20 transition-all cursor-pointer shrink-0"
         >
           <Download className="w-4 h-4" />
           <span>Export PNG</span>
         </button>
+
+        {onToggleRightSidebar && (
+          <button
+            onClick={onToggleRightSidebar}
+            title={rightCollapsed ? "Expand Panels Sidebar" : "Collapse Panels Sidebar"}
+            className={`p-1.5 rounded-lg border transition-colors shrink-0 ${
+              rightCollapsed
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                : 'text-neutral-400 hover:text-white hover:bg-neutral-800 border-neutral-800/80'
+            }`}
+          >
+            {rightCollapsed ? <PanelRightOpen className="w-4 h-4" /> : <PanelRightClose className="w-4 h-4" />}
+          </button>
+        )}
       </div>
     </header>
   );

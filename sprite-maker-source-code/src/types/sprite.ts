@@ -105,4 +105,6 @@ export interface ProjectState {
   references: ReferenceImage[];
   selectedColor: string;
   canvasPresetName: string;
+  bodyOffsetX?: number;
+  bodyOffsetY?: number;
 }

@@ -5,6 +5,12 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
+  PanelLeftOpen, 
+  PanelRightOpen, 
+  ChevronRight, 
+  Layers as LayersIcon 
+} from 'lucide-react';
+import { 
   Layer, 
   ToolType, 
   ReferenceImage, 
@@ -30,14 +36,22 @@ import { ReferenceManager, FloatingReferenceWindow } from './components/Referenc
 import { MiniPreview } from './components/MiniPreview';
 import { ExportModal } from './components/ExportModal';
 import { GuideModal } from './components/GuideModal';
+import { CustomCanvasModal } from './components/CustomCanvasModal';
 
 export default function App() {
   // Canvas Size Preset
   const [activePreset, setActivePreset] = useState<CanvasDimensions>(CANVAS_PRESETS[0]);
+  const [guideOffset, setGuideOffset] = useState<{ x: number; y: number }>({
+    x: CANVAS_PRESETS[0].bodyOffsetX,
+    y: CANVAS_PRESETS[0].bodyOffsetY,
+  });
+  const [isMovingGuide, setIsMovingGuide] = useState<boolean>(false);
+  const [isCustomCanvasOpen, setIsCustomCanvasOpen] = useState<boolean>(false);
+
   const canvasWidth = activePreset.width;
   const canvasHeight = activePreset.height;
-  const bodyOffsetX = activePreset.bodyOffsetX;
-  const bodyOffsetY = activePreset.bodyOffsetY;
+  const bodyOffsetX = guideOffset.x;
+  const bodyOffsetY = guideOffset.y;
 
   // Layers state
   const [layers, setLayers] = useState<Layer[]>(() => 
@@ -95,13 +109,92 @@ export default function App() {
   // Right sidebar tab state for smaller screens
   const [rightTab, setRightTab] = useState<'layers' | 'palette' | 'references'>('layers');
 
+  // Sidebars Width and Collapse State
+  const [leftSidebarWidth, setLeftSidebarWidth] = useState<number>(64);
+  const [leftCollapsed, setLeftCollapsed] = useState<boolean>(false);
+  const [rightSidebarWidth, setRightSidebarWidth] = useState<number>(320);
+  const [rightCollapsed, setRightCollapsed] = useState<boolean>(false);
+
+  const isDraggingLeftRef = useRef<boolean>(false);
+  const isDraggingRightRef = useRef<boolean>(false);
+
+  const handleLeftResizeMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    isDraggingLeftRef.current = true;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      if (!isDraggingLeftRef.current) return;
+      const newWidth = Math.round(moveEvent.clientX);
+      if (newWidth < 46) {
+        setLeftCollapsed(true);
+      } else {
+        setLeftCollapsed(false);
+        setLeftSidebarWidth(Math.max(56, Math.min(240, newWidth)));
+      }
+    };
+
+    const handleMouseUp = () => {
+      isDraggingLeftRef.current = false;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleRightResizeMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    isDraggingRightRef.current = true;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      if (!isDraggingRightRef.current) return;
+      const newWidth = Math.round(window.innerWidth - moveEvent.clientX);
+      if (newWidth < 160) {
+        setRightCollapsed(true);
+      } else {
+        setRightCollapsed(false);
+        const maxWidth = Math.max(300, Math.min(680, window.innerWidth - 300));
+        setRightSidebarWidth(Math.max(220, Math.min(maxWidth, newWidth)));
+      }
+    };
+
+    const handleMouseUp = () => {
+      isDraggingRightRef.current = false;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
+
   // Save history state
   const pushHistory = useCallback((newLayers: Layer[], newActiveId = activeLayerId) => {
     setHistory(prev => {
-      const sliced = prev.slice(0, historyIndex + 1);
-      return [...sliced, { layers: JSON.parse(JSON.stringify(newLayers)), activeLayerId: newActiveId }].slice(-30);
+      const validHistory = historyIndex >= 0 ? prev.slice(0, historyIndex + 1) : [];
+      const newEntry = {
+        layers: JSON.parse(JSON.stringify(newLayers)),
+        activeLayerId: newActiveId,
+      };
+      const updated = [...validHistory, newEntry];
+      const maxHistory = 60;
+      if (updated.length > maxHistory) {
+        const trimmed = updated.slice(updated.length - maxHistory);
+        setHistoryIndex(trimmed.length - 1);
+        return trimmed;
+      }
+      setHistoryIndex(updated.length - 1);
+      return updated;
     });
-    setHistoryIndex(prev => Math.min(29, prev + 1));
   }, [activeLayerId, historyIndex]);
 
   // Initial history push
@@ -133,6 +226,15 @@ export default function App() {
       setHistoryIndex(historyIndex + 1);
     }
   }, [history, historyIndex]);
+
+  // Explicit history commit on stroke end
+  const handleCommitHistory = useCallback((targetLayerId?: string) => {
+    const layerId = targetLayerId || activeLayerId;
+    setLayers(currentLayers => {
+      pushHistory(currentLayers, layerId);
+      return currentLayers;
+    });
+  }, [activeLayerId, pushHistory]);
 
   // Color selection
   const handleColorSelect = (color: string) => {
@@ -170,10 +272,14 @@ export default function App() {
   };
 
   // Update pixels on a layer
-  const handleUpdateLayerPixels = (layerId: string, newPixels: string[]) => {
-    const updated = layers.map(l => l.id === layerId ? { ...l, pixels: newPixels } : l);
-    setLayers(updated);
-    pushHistory(updated, layerId);
+  const handleUpdateLayerPixels = (layerId: string, newPixels: string[], commitHistory: boolean = false) => {
+    setLayers(prev => {
+      const updated = prev.map(l => l.id === layerId ? { ...l, pixels: newPixels } : l);
+      if (commitHistory) {
+        pushHistory(updated, layerId);
+      }
+      return updated;
+    });
   };
 
   // Layer operations
@@ -282,24 +388,96 @@ export default function App() {
     const preset = CANVAS_PRESETS.find(p => p.name === presetName);
     if (!preset) return;
 
-    if (window.confirm(`Switch to canvas "${preset.name}"? This will adapt your layers to the new dimensions (${preset.width}×${preset.height}).`)) {
-      setActivePreset(preset);
-      // Remap layers to new size
-      const newLayers = layers.map(l => {
-        const newPixels = new Array(preset.width * preset.height).fill('');
-        for (let y = 0; y < Math.min(canvasHeight, preset.height); y++) {
-          for (let x = 0; x < Math.min(canvasWidth, preset.width); x++) {
-            newPixels[y * preset.width + x] = l.pixels[y * canvasWidth + x];
+    setActivePreset(preset);
+    setGuideOffset({ x: preset.bodyOffsetX, y: preset.bodyOffsetY });
+
+    // Remap layers to new size with centered alignment
+    const offsetX = Math.floor((preset.width - canvasWidth) / 2);
+    const offsetY = Math.floor((preset.height - canvasHeight) / 2);
+
+    const newLayers = layers.map(l => {
+      const newPixels = new Array(preset.width * preset.height).fill('');
+      for (let y = 0; y < canvasHeight; y++) {
+        for (let x = 0; x < canvasWidth; x++) {
+          const targetX = x + offsetX;
+          const targetY = y + offsetY;
+          if (targetX >= 0 && targetX < preset.width && targetY >= 0 && targetY < preset.height) {
+            newPixels[targetY * preset.width + targetX] = l.pixels[y * canvasWidth + x] || '';
           }
         }
-        return {
-          ...l,
-          pixels: newPixels,
-        };
-      });
-      setLayers(newLayers);
-      pushHistory(newLayers, activeLayerId);
+      }
+      return {
+        ...l,
+        pixels: newPixels,
+      };
+    });
+    setLayers(newLayers);
+    pushHistory(newLayers, activeLayerId);
+  };
+
+  // Custom Canvas Dimensions Handler
+  const handleApplyCustomCanvasSize = (
+    newWidth: number,
+    newHeight: number,
+    anchor: 'center' | 'top-left' | 'bottom-center' = 'center',
+    autoCenterGuide: boolean = true
+  ) => {
+    if (newWidth === canvasWidth && newHeight === canvasHeight) return;
+
+    let offsetX = 0;
+    let offsetY = 0;
+
+    if (anchor === 'center') {
+      offsetX = Math.floor((newWidth - canvasWidth) / 2);
+      offsetY = Math.floor((newHeight - canvasHeight) / 2);
+    } else if (anchor === 'bottom-center') {
+      offsetX = Math.floor((newWidth - canvasWidth) / 2);
+      offsetY = newHeight - canvasHeight;
+    } else {
+      offsetX = 0;
+      offsetY = 0;
     }
+
+    const newLayers = layers.map(layer => {
+      const newPixels = new Array(newWidth * newHeight).fill('');
+      for (let oldY = 0; oldY < canvasHeight; oldY++) {
+        for (let oldX = 0; oldX < canvasWidth; oldX++) {
+          const targetX = oldX + offsetX;
+          const targetY = oldY + offsetY;
+          if (targetX >= 0 && targetX < newWidth && targetY >= 0 && targetY < newHeight) {
+            newPixels[targetY * newWidth + targetX] = layer.pixels[oldY * canvasWidth + oldX] || '';
+          }
+        }
+      }
+      return {
+        ...layer,
+        pixels: newPixels,
+      };
+    });
+
+    const newGuideOffset = autoCenterGuide
+      ? { x: Math.floor((newWidth - 21) / 2), y: Math.floor((newHeight - 28) / 2) }
+      : { x: guideOffset.x + offsetX, y: guideOffset.y + offsetY };
+
+    const customPreset: CanvasDimensions = {
+      name: `Custom (${newWidth} × ${newHeight})`,
+      width: newWidth,
+      height: newHeight,
+      description: `Custom ${newWidth}x${newHeight} canvas dimensions`,
+      bodyOffsetX: newGuideOffset.x,
+      bodyOffsetY: newGuideOffset.y,
+    };
+
+    setActivePreset(customPreset);
+    setGuideOffset(newGuideOffset);
+    setLayers(newLayers);
+    pushHistory(newLayers, activeLayerId);
+  };
+
+  const handleCenterGuide = () => {
+    const centeredX = Math.floor((canvasWidth - 21) / 2);
+    const centeredY = Math.floor((canvasHeight - 28) / 2);
+    setGuideOffset({ x: centeredX, y: centeredY });
   };
 
   // Starter Templates
@@ -444,7 +622,7 @@ export default function App() {
       }
     }
 
-    handleUpdateLayerPixels(activeLayer.id, newPixels);
+    handleUpdateLayerPixels(activeLayer.id, newPixels, true);
   };
 
   const handleFlipVerticalSelection = () => {
@@ -473,7 +651,7 @@ export default function App() {
       }
     }
 
-    handleUpdateLayerPixels(activeLayer.id, newPixels);
+    handleUpdateLayerPixels(activeLayer.id, newPixels, true);
   };
 
   const handleClearSelection = () => {
@@ -503,6 +681,8 @@ export default function App() {
       activeLayerId,
       references,
       selectedColor: currentColor,
+      bodyOffsetX: guideOffset.x,
+      bodyOffsetY: guideOffset.y,
     };
 
     const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
@@ -522,15 +702,21 @@ export default function App() {
       try {
         const project: ProjectState = JSON.parse(e.target?.result as string);
         if (project.layers && project.canvasWidth && project.canvasHeight) {
+          const defaultOx = Math.floor((project.canvasWidth - 21) / 2);
+          const defaultOy = Math.floor((project.canvasHeight - 28) / 2);
+          const loadedOx = project.bodyOffsetX !== undefined ? project.bodyOffsetX : defaultOx;
+          const loadedOy = project.bodyOffsetY !== undefined ? project.bodyOffsetY : defaultOy;
+
           const matchedPreset = CANVAS_PRESETS.find(p => p.name === project.canvasPresetName) || {
             name: `Custom (${project.canvasWidth} × ${project.canvasHeight})`,
             width: project.canvasWidth,
             height: project.canvasHeight,
             description: 'Custom canvas loaded from project',
-            bodyOffsetX: 0,
-            bodyOffsetY: 0,
+            bodyOffsetX: loadedOx,
+            bodyOffsetY: loadedOy,
           };
           setActivePreset(matchedPreset);
+          setGuideOffset({ x: loadedOx, y: loadedOy });
           setLayers(project.layers);
           setActiveLayerId(project.activeLayerId || project.layers[0].id);
           if (project.selectedColor) setCurrentColor(project.selectedColor);
@@ -598,7 +784,10 @@ export default function App() {
       {/* Top Header */}
       <Header
         canvasPresetName={activePreset.name}
+        canvasWidth={canvasWidth}
+        canvasHeight={canvasHeight}
         onSelectCanvasPreset={handleSelectCanvasPreset}
+        onOpenCustomCanvasModal={() => setIsCustomCanvasOpen(true)}
         onSelectStarterTemplate={handleSelectStarterTemplate}
         canUndo={historyIndex > 0}
         canRedo={historyIndex < history.length - 1}
@@ -610,6 +799,8 @@ export default function App() {
         onToggleGuides={() => setShowGuides(g => !g)}
         showNumbers={showNumbers}
         onToggleNumbers={() => setShowNumbers(n => !n)}
+        isMovingGuide={isMovingGuide}
+        onToggleMoveGuide={() => setIsMovingGuide(v => !v)}
         symmetryActive={symmetryActive}
         onToggleSymmetry={() => setSymmetryActive(s => !s)}
         zoom={zoom}
@@ -618,23 +809,56 @@ export default function App() {
         onOpenGuideModal={() => setIsGuideOpen(true)}
         onSaveProject={handleSaveProject}
         onLoadProject={handleLoadProject}
+        leftCollapsed={leftCollapsed}
+        onToggleLeftSidebar={() => setLeftCollapsed(v => !v)}
+        rightCollapsed={rightCollapsed}
+        onToggleRightSidebar={() => setRightCollapsed(v => !v)}
       />
 
       {/* Main Workspace */}
       <div className="flex-1 flex overflow-hidden relative">
-        {/* Left Toolbar */}
-        <Toolbar
-          currentTool={currentTool}
-          onSelectTool={setCurrentTool}
-          brushSize={brushSize}
-          onBrushSizeChange={setBrushSize}
-          symmetryActive={symmetryActive}
-          onToggleSymmetry={() => setSymmetryActive(s => !s)}
-          hasSelection={selection.active}
-          onFlipHorizontalSelection={handleFlipHorizontalSelection}
-          onFlipVerticalSelection={handleFlipVerticalSelection}
-          onClearSelection={handleClearSelection}
-        />
+        {/* Left Toolbar & Resizer */}
+        {!leftCollapsed ? (
+          <div className="flex shrink-0 h-full relative group/left z-20">
+            <Toolbar
+              currentTool={currentTool}
+              onSelectTool={setCurrentTool}
+              brushSize={brushSize}
+              onBrushSizeChange={setBrushSize}
+              symmetryActive={symmetryActive}
+              onToggleSymmetry={() => setSymmetryActive(s => !s)}
+              hasSelection={selection.active}
+              onFlipHorizontalSelection={handleFlipHorizontalSelection}
+              onFlipVerticalSelection={handleFlipVerticalSelection}
+              onClearSelection={handleClearSelection}
+              canUndo={historyIndex > 0}
+              canRedo={historyIndex < history.length - 1}
+              onUndo={handleUndo}
+              onRedo={handleRedo}
+              width={leftSidebarWidth}
+              onCollapse={() => setLeftCollapsed(true)}
+            />
+            {/* Draggable Splitter on right edge of Left Toolbar */}
+            <div
+              onMouseDown={handleLeftResizeMouseDown}
+              onDoubleClick={() => setLeftSidebarWidth(64)}
+              title="Drag to resize Tools Sidebar (Double-click to reset)"
+              className="w-1.5 hover:w-2 cursor-col-resize hover:bg-amber-400/60 active:bg-amber-400 transition-all z-30 flex items-center justify-center -mr-1"
+            >
+              <div className="w-0.5 h-7 bg-neutral-700 hover:bg-amber-400 rounded-full" />
+            </div>
+          </div>
+        ) : (
+          /* Floating Reopen Button when Left Sidebar is collapsed */
+          <button
+            onClick={() => setLeftCollapsed(false)}
+            title="Expand Tools Sidebar"
+            className="absolute top-3 left-3 z-30 flex items-center gap-1.5 px-2.5 py-1.5 bg-neutral-900/95 border border-neutral-800 hover:border-amber-400/50 text-neutral-300 hover:text-amber-400 rounded-lg shadow-xl backdrop-blur-md transition-all text-xs font-medium cursor-pointer"
+          >
+            <PanelLeftOpen className="w-4 h-4 text-amber-400" />
+            <span>Tools</span>
+          </button>
+        )}
 
         {/* Central Drawing Canvas Area */}
         <CanvasArea
@@ -643,6 +867,7 @@ export default function App() {
           layers={layers}
           activeLayerId={activeLayerId}
           onUpdateLayerPixels={handleUpdateLayerPixels}
+          onCommitHistory={handleCommitHistory}
           currentTool={currentTool}
           currentColor={currentColor}
           onColorPick={handleColorSelect}
@@ -653,6 +878,10 @@ export default function App() {
           symmetryActive={symmetryActive}
           bodyOffsetX={bodyOffsetX}
           bodyOffsetY={bodyOffsetY}
+          onGuideOffsetChange={setGuideOffset}
+          isMovingGuide={isMovingGuide}
+          onToggleMoveGuide={() => setIsMovingGuide(v => !v)}
+          onCenterGuide={handleCenterGuide}
           references={references}
           selection={selection}
           onUpdateSelection={setSelection}
@@ -661,54 +890,96 @@ export default function App() {
         />
 
         {/* Right Dock: Mini Preview, Layers, Palette, References */}
-        <aside className="w-80 bg-neutral-900 border-l border-neutral-800 flex flex-col p-3 gap-3 overflow-y-auto shrink-0 z-20 shadow-2xl">
-          {/* Mini Preview Box */}
-          <MiniPreview
-            canvasWidth={canvasWidth}
-            canvasHeight={canvasHeight}
-            layers={layers}
-          />
+        {!rightCollapsed ? (
+          <div className="flex shrink-0 h-full relative group/right z-20">
+            {/* Draggable Splitter on left edge of Right Panels */}
+            <div
+              onMouseDown={handleRightResizeMouseDown}
+              onDoubleClick={() => setRightSidebarWidth(320)}
+              title="Drag to resize Panels Sidebar (Double-click to reset 320px)"
+              className="w-1.5 hover:w-2 cursor-col-resize hover:bg-amber-400/60 active:bg-amber-400 transition-all z-30 flex items-center justify-center -ml-1"
+            >
+              <div className="w-0.5 h-7 bg-neutral-700 hover:bg-amber-400 rounded-full" />
+            </div>
 
-          {/* Color Palette Selector */}
-          <ColorPalette
-            currentColor={currentColor}
-            onSelectColor={handleColorSelect}
-            colorHistory={colorHistory}
-            customColors={customColors}
-            onAddCustomColor={handleAddCustomColor}
-            onRemoveCustomColor={handleRemoveCustomColor}
-            onPickWithNativeEyedropper={handleNativeEyedropper}
-          />
+            <aside 
+              style={{ width: `${rightSidebarWidth}px` }}
+              className="bg-neutral-900 border-l border-neutral-800 flex flex-col p-3 gap-3 overflow-y-auto shrink-0 z-20 shadow-2xl transition-[width] duration-75"
+            >
+              {/* Header with Title and Collapse Button */}
+              <div className="flex items-center justify-between pb-1.5 border-b border-neutral-800 shrink-0">
+                <div className="flex items-center gap-1.5">
+                  <LayersIcon className="w-4 h-4 text-amber-400" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-300">Panels & Layers</span>
+                </div>
+                <button
+                  onClick={() => setRightCollapsed(true)}
+                  title="Collapse Panels Sidebar"
+                  className="p-1 rounded text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
 
-          {/* Layers Stack */}
-          <LayersPanel
-            layers={layers}
-            activeLayerId={activeLayerId}
-            onSelectLayer={setActiveLayerId}
-            onAddLayer={handleAddLayer}
-            onDeleteLayer={handleDeleteLayer}
-            onDuplicateLayer={handleDuplicateLayer}
-            onMergeDownLayer={handleMergeDown}
-            onMoveLayer={handleMoveLayer}
-            onToggleVisibility={handleToggleVisibility}
-            onToggleLock={handleToggleLock}
-            onChangeOpacity={handleChangeOpacity}
-            onRenameLayer={handleRenameLayer}
-            canvasWidth={canvasWidth}
-            canvasHeight={canvasHeight}
-          />
+              {/* Mini Preview Box */}
+              <MiniPreview
+                canvasWidth={canvasWidth}
+                canvasHeight={canvasHeight}
+                layers={layers}
+              />
 
-          {/* Reference Images Manager */}
-          <ReferenceManager
-            references={references}
-            onAddReferences={handleAddReferences}
-            onUpdateReference={handleUpdateReference}
-            onDeleteReference={handleDeleteReference}
-            activeRefId={activeRefId}
-            onSelectRef={setActiveRefId}
-            onColorPick={handleColorSelect}
-          />
-        </aside>
+              {/* Color Palette Selector */}
+              <ColorPalette
+                currentColor={currentColor}
+                onSelectColor={handleColorSelect}
+                colorHistory={colorHistory}
+                customColors={customColors}
+                onAddCustomColor={handleAddCustomColor}
+                onRemoveCustomColor={handleRemoveCustomColor}
+                onPickWithNativeEyedropper={handleNativeEyedropper}
+              />
+
+              {/* Layers Stack */}
+              <LayersPanel
+                layers={layers}
+                activeLayerId={activeLayerId}
+                onSelectLayer={setActiveLayerId}
+                onAddLayer={handleAddLayer}
+                onDeleteLayer={handleDeleteLayer}
+                onDuplicateLayer={handleDuplicateLayer}
+                onMergeDownLayer={handleMergeDown}
+                onMoveLayer={handleMoveLayer}
+                onToggleVisibility={handleToggleVisibility}
+                onToggleLock={handleToggleLock}
+                onChangeOpacity={handleChangeOpacity}
+                onRenameLayer={handleRenameLayer}
+                canvasWidth={canvasWidth}
+                canvasHeight={canvasHeight}
+              />
+
+              {/* Reference Images Manager */}
+              <ReferenceManager
+                references={references}
+                onAddReferences={handleAddReferences}
+                onUpdateReference={handleUpdateReference}
+                onDeleteReference={handleDeleteReference}
+                activeRefId={activeRefId}
+                onSelectRef={setActiveRefId}
+                onColorPick={handleColorSelect}
+              />
+            </aside>
+          </div>
+        ) : (
+          /* Floating Reopen Button when Right Sidebar is collapsed */
+          <button
+            onClick={() => setRightCollapsed(false)}
+            title="Expand Panels Sidebar"
+            className="absolute top-3 right-3 z-30 flex items-center gap-1.5 px-2.5 py-1.5 bg-neutral-900/95 border border-neutral-800 hover:border-amber-400/50 text-neutral-300 hover:text-amber-400 rounded-lg shadow-xl backdrop-blur-md transition-all text-xs font-medium cursor-pointer"
+          >
+            <PanelRightOpen className="w-4 h-4 text-amber-400" />
+            <span>Panels</span>
+          </button>
+        )}
       </div>
 
       {/* Floating Reference Windows (if opened by user) */}
@@ -740,6 +1011,15 @@ export default function App() {
         isOpen={isGuideOpen}
         onClose={() => setIsGuideOpen(false)}
         onLoadTemplate={handleSelectStarterTemplate}
+      />
+
+      {/* Custom Canvas Size & Dimensions Modal */}
+      <CustomCanvasModal
+        isOpen={isCustomCanvasOpen}
+        onClose={() => setIsCustomCanvasOpen(false)}
+        currentWidth={canvasWidth}
+        currentHeight={canvasHeight}
+        onApply={handleApplyCustomCanvasSize}
       />
     </div>
   );

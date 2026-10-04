@@ -19,7 +19,8 @@ interface CanvasAreaProps {
   canvasHeight: number;
   layers: Layer[];
   activeLayerId: string;
-  onUpdateLayerPixels: (layerId: string, newPixels: string[]) => void;
+  onUpdateLayerPixels: (layerId: string, newPixels: string[], commitHistory?: boolean) => void;
+  onCommitHistory?: (layerId?: string) => void;
   currentTool: ToolType;
   currentColor: string;
   onColorPick: (color: string) => void;
@@ -30,6 +31,10 @@ interface CanvasAreaProps {
   symmetryActive: boolean;
   bodyOffsetX: number;
   bodyOffsetY: number;
+  onGuideOffsetChange?: (offset: { x: number; y: number }) => void;
+  isMovingGuide?: boolean;
+  onToggleMoveGuide?: () => void;
+  onCenterGuide?: () => void;
   references: ReferenceImage[];
   selection: SelectionState;
   onUpdateSelection: (newSel: SelectionState) => void;
@@ -43,6 +48,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
   layers,
   activeLayerId,
   onUpdateLayerPixels,
+  onCommitHistory,
   currentTool,
   currentColor,
   onColorPick,
@@ -53,6 +59,10 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
   symmetryActive,
   bodyOffsetX,
   bodyOffsetY,
+  onGuideOffsetChange,
+  isMovingGuide = false,
+  onToggleMoveGuide,
+  onCenterGuide,
   references,
   selection,
   onUpdateSelection,
@@ -68,8 +78,13 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
 
   const [isDrawing, setIsDrawing] = useState(false);
+  const strokeModifiedRef = useRef<boolean>(false);
   const [dragStartPos, setDragStartPos] = useState<{ x: number; y: number } | null>(null);
   const [hoverPixel, setHoverPixel] = useState<{ x: number; y: number } | null>(null);
+
+  // Guide dragging state
+  const [isDraggingGuide, setIsDraggingGuide] = useState<boolean>(false);
+  const guideDragStart = useRef<{ mouseX: number; mouseY: number; initialX: number; initialY: number } | null>(null);
 
   // Active layer
   const activeLayer = layers.find(l => l.id === activeLayerId);
@@ -226,6 +241,45 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
         layout.legs.height * zoom
       );
 
+      // Highlight bounding box & handles when in Move Guide mode or dragging guide
+      if (isMovingGuide || isDraggingGuide) {
+        ctx.save();
+        ctx.strokeStyle = '#F5CD2F';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 4]);
+        ctx.strokeRect(
+          bodyOffsetX * zoom,
+          bodyOffsetY * zoom,
+          21 * zoom,
+          28 * zoom
+        );
+
+        // Corner handles
+        ctx.fillStyle = '#F5CD2F';
+        const hs = Math.max(5, Math.round(zoom * 0.4));
+        ctx.fillRect(bodyOffsetX * zoom - hs/2, bodyOffsetY * zoom - hs/2, hs, hs);
+        ctx.fillRect((bodyOffsetX + 21) * zoom - hs/2, bodyOffsetY * zoom - hs/2, hs, hs);
+        ctx.fillRect(bodyOffsetX * zoom - hs/2, (bodyOffsetY + 28) * zoom - hs/2, hs, hs);
+        ctx.fillRect((bodyOffsetX + 21) * zoom - hs/2, (bodyOffsetY + 28) * zoom - hs/2, hs, hs);
+
+        // Header label badge
+        ctx.setLineDash([]);
+        ctx.font = 'bold 10px monospace';
+        const badgeText = `✥ Retro Dev Guide (${bodyOffsetX}, ${bodyOffsetY}) • Drag to Move`;
+        const tw = ctx.measureText(badgeText).width + 12;
+        const by = Math.max(2, bodyOffsetY * zoom - 18);
+        ctx.fillStyle = 'rgba(15, 15, 15, 0.9)';
+        ctx.fillRect(bodyOffsetX * zoom, by, tw, 16);
+        ctx.strokeStyle = '#F5CD2F';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(bodyOffsetX * zoom, by, tw, 16);
+        ctx.fillStyle = '#F5CD2F';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(badgeText, bodyOffsetX * zoom + 6, by + 8);
+        ctx.restore();
+      }
+
       ctx.restore();
     }
 
@@ -344,10 +398,15 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
   ]);
 
   // Apply pixel changes to active layer with symmetry support
-  const applyPixelPoints = (points: { x: number; y: number }[], color: string | 'erase' | 'lighten' | 'darken') => {
+  const applyPixelPoints = (
+    points: { x: number; y: number }[], 
+    color: string | 'erase' | 'lighten' | 'darken', 
+    commitHistory: boolean = false
+  ) => {
     if (!activeLayer || activeLayer.locked) return;
 
     let newPixels = [...activeLayer.pixels];
+    let anyChanged = false;
 
     // Expand points by brushSize
     const expandedPoints: { x: number; y: number }[] = [];
@@ -371,18 +430,35 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       if (p.x >= 0 && p.x < canvasWidth && p.y >= 0 && p.y < canvasHeight) {
         const idx = p.y * canvasWidth + p.x;
         if (color === 'erase') {
-          newPixels[idx] = '';
+          if (newPixels[idx] !== '') {
+            newPixels[idx] = '';
+            anyChanged = true;
+          }
         } else if (color === 'lighten') {
-          newPixels[idx] = adjustBrightness(newPixels[idx], 25);
+          const adjusted = adjustBrightness(newPixels[idx], 25);
+          if (newPixels[idx] !== adjusted) {
+            newPixels[idx] = adjusted;
+            anyChanged = true;
+          }
         } else if (color === 'darken') {
-          newPixels[idx] = adjustBrightness(newPixels[idx], -25);
+          const adjusted = adjustBrightness(newPixels[idx], -25);
+          if (newPixels[idx] !== adjusted) {
+            newPixels[idx] = adjusted;
+            anyChanged = true;
+          }
         } else {
-          newPixels[idx] = color;
+          if (newPixels[idx] !== color) {
+            newPixels[idx] = color;
+            anyChanged = true;
+          }
         }
       }
     });
 
-    onUpdateLayerPixels(activeLayer.id, newPixels);
+    if (anyChanged) {
+      strokeModifiedRef.current = true;
+      onUpdateLayerPixels(activeLayer.id, newPixels, commitHistory);
+    }
   };
 
   const [isSpacePressed, setIsSpacePressed] = useState(false);
@@ -406,10 +482,25 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     };
   }, []);
 
+  // Global mouse up for pan and guide drag
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      if (isDraggingGuide) {
+        setIsDraggingGuide(false);
+        guideDragStart.current = null;
+      }
+      if (isPanning) {
+        setIsPanning(false);
+      }
+    };
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    return () => window.removeEventListener('mouseup', handleGlobalMouseUp);
+  }, [isDraggingGuide, isPanning]);
+
   // Mouse handlers
   const handleMouseDown = (e: React.MouseEvent) => {
-    // Middle click, Space+Click, or Alt+Click: Pan canvas
-    if (e.button === 1 || isSpacePressed || e.altKey) {
+    // Middle click or Space+Click: Pan canvas
+    if (e.button === 1 || isSpacePressed) {
       setIsPanning(true);
       setPanStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
       return;
@@ -419,8 +510,28 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     const pixel = clientToPixel(e.clientX, e.clientY);
     if (!pixel) return;
 
+    // Check if dragging guide (Move Guide mode active OR Alt held over guide)
+    const isOverGuide = (
+      pixel.x >= bodyOffsetX - 1 &&
+      pixel.x <= bodyOffsetX + 21 &&
+      pixel.y >= bodyOffsetY - 1 &&
+      pixel.y <= bodyOffsetY + 28
+    );
+
+    if (isMovingGuide || (e.altKey && isOverGuide)) {
+      setIsDraggingGuide(true);
+      guideDragStart.current = {
+        mouseX: pixel.x,
+        mouseY: pixel.y,
+        initialX: bodyOffsetX,
+        initialY: bodyOffsetY,
+      };
+      return;
+    }
+
     setIsDrawing(true);
     setDragStartPos(pixel);
+    strokeModifiedRef.current = false;
 
     if (currentTool === 'eyedropper') {
       // Sample color from active layer or topmost visible layer
@@ -447,7 +558,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
         pixel.y,
         currentColor
       );
-      onUpdateLayerPixels(activeLayer.id, updated);
+      onUpdateLayerPixels(activeLayer.id, updated, true);
       return;
     }
 
@@ -458,19 +569,19 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
         const updated = activeLayer.pixels.map(p => 
           (p || '').toLowerCase() === target.toLowerCase() ? currentColor : p
         );
-        onUpdateLayerPixels(activeLayer.id, updated);
+        onUpdateLayerPixels(activeLayer.id, updated, true);
       }
       return;
     }
 
     if (currentTool === 'pencil') {
-      applyPixelPoints([pixel], currentColor);
+      applyPixelPoints([pixel], currentColor, false);
     } else if (currentTool === 'eraser') {
-      applyPixelPoints([pixel], 'erase');
+      applyPixelPoints([pixel], 'erase', false);
     } else if (currentTool === 'lighten') {
-      applyPixelPoints([pixel], 'lighten');
+      applyPixelPoints([pixel], 'lighten', false);
     } else if (currentTool === 'darken') {
-      applyPixelPoints([pixel], 'darken');
+      applyPixelPoints([pixel], 'darken', false);
     } else if (currentTool === 'select') {
       onUpdateSelection({
         active: true,
@@ -498,12 +609,26 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     setHoverPixel(pixel);
     if (!pixel) return;
 
+    // Moving guide
+    if (isDraggingGuide && guideDragStart.current) {
+      const deltaX = pixel.x - guideDragStart.current.mouseX;
+      const deltaY = pixel.y - guideDragStart.current.mouseY;
+      const newX = guideDragStart.current.initialX + deltaX;
+      const newY = guideDragStart.current.initialY + deltaY;
+      onGuideOffsetChange?.({ x: newX, y: newY });
+      return;
+    }
+
     if (!isDrawing) return;
 
     if (currentTool === 'pencil') {
-      applyPixelPoints([pixel], currentColor);
+      applyPixelPoints([pixel], currentColor, false);
     } else if (currentTool === 'eraser') {
-      applyPixelPoints([pixel], 'erase');
+      applyPixelPoints([pixel], 'erase', false);
+    } else if (currentTool === 'lighten') {
+      applyPixelPoints([pixel], 'lighten', false);
+    } else if (currentTool === 'darken') {
+      applyPixelPoints([pixel], 'darken', false);
     } else if (currentTool === 'select' && dragStartPos) {
       onUpdateSelection({
         ...selection,
@@ -522,6 +647,12 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       return;
     }
 
+    if (isDraggingGuide) {
+      setIsDraggingGuide(false);
+      guideDragStart.current = null;
+      return;
+    }
+
     if (!isDrawing) return;
     setIsDrawing(false);
 
@@ -529,20 +660,25 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     if (dragStartPos && pixel) {
       if (currentTool === 'line') {
         const points = getLinePoints(dragStartPos.x, dragStartPos.y, pixel.x, pixel.y);
-        applyPixelPoints(points, currentColor);
+        applyPixelPoints(points, currentColor, false);
       } else if (currentTool === 'rectangle') {
         const points = getRectanglePoints(dragStartPos.x, dragStartPos.y, pixel.x, pixel.y, false);
-        applyPixelPoints(points, currentColor);
+        applyPixelPoints(points, currentColor, false);
       } else if (currentTool === 'rectangle_fill') {
         const points = getRectanglePoints(dragStartPos.x, dragStartPos.y, pixel.x, pixel.y, true);
-        applyPixelPoints(points, currentColor);
+        applyPixelPoints(points, currentColor, false);
       } else if (currentTool === 'circle') {
         const points = getCirclePoints(dragStartPos.x, dragStartPos.y, pixel.x, pixel.y, false);
-        applyPixelPoints(points, currentColor);
+        applyPixelPoints(points, currentColor, false);
       } else if (currentTool === 'circle_fill') {
         const points = getCirclePoints(dragStartPos.x, dragStartPos.y, pixel.x, pixel.y, true);
-        applyPixelPoints(points, currentColor);
+        applyPixelPoints(points, currentColor, false);
       }
+    }
+
+    if (strokeModifiedRef.current) {
+      onCommitHistory?.(activeLayer?.id);
+      strokeModifiedRef.current = false;
     }
 
     setDragStartPos(null);
@@ -564,9 +700,112 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       onMouseUp={handleMouseUp}
       onWheel={handleWheel}
       className={`relative flex-1 h-full w-full overflow-hidden flex items-center justify-center bg-neutral-950 canvas-checkerboard select-none ${
-        isPanning ? 'cursor-grab' : 'cursor-crosshair'
+        isPanning 
+          ? 'cursor-grab' 
+          : isDraggingGuide 
+            ? 'cursor-grabbing' 
+            : isMovingGuide 
+              ? 'cursor-move' 
+              : 'cursor-crosshair'
       }`}
     >
+      {/* Floating Guide Position Controller */}
+      {isMovingGuide && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-40 bg-neutral-900/95 border border-amber-500/50 rounded-2xl px-4 py-2.5 shadow-2xl flex items-center gap-3.5 backdrop-blur-md animate-in fade-in slide-in-from-top-3">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping" />
+            <div>
+              <span className="text-xs font-bold text-amber-300 block leading-tight">Move Guide Mode</span>
+              <span className="text-[10px] text-neutral-400 block">Click & drag guide anywhere</span>
+            </div>
+          </div>
+
+          <div className="h-6 w-px bg-neutral-800" />
+
+          {/* Coordinate Display */}
+          <div className="flex items-center gap-2 font-mono text-xs text-neutral-300 bg-neutral-950 px-2.5 py-1 rounded-lg border border-neutral-800">
+            <span>X: <strong className="text-white font-bold">{bodyOffsetX}</strong></span>
+            <span>Y: <strong className="text-white font-bold">{bodyOffsetY}</strong></span>
+          </div>
+
+          {/* Pixel Nudge Arrow Buttons */}
+          <div className="flex items-center gap-1 bg-neutral-950 p-0.5 rounded-lg border border-neutral-800">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onGuideOffsetChange?.({ x: bodyOffsetX - 1, y: bodyOffsetY });
+              }}
+              title="Nudge Left 1px"
+              className="w-6 h-6 flex items-center justify-center rounded hover:bg-neutral-800 text-neutral-300 hover:text-white text-xs font-mono"
+            >
+              ◀
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onGuideOffsetChange?.({ x: bodyOffsetX, y: bodyOffsetY - 1 });
+              }}
+              title="Nudge Up 1px"
+              className="w-6 h-6 flex items-center justify-center rounded hover:bg-neutral-800 text-neutral-300 hover:text-white text-xs font-mono"
+            >
+              ▲
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onGuideOffsetChange?.({ x: bodyOffsetX, y: bodyOffsetY + 1 });
+              }}
+              title="Nudge Down 1px"
+              className="w-6 h-6 flex items-center justify-center rounded hover:bg-neutral-800 text-neutral-300 hover:text-white text-xs font-mono"
+            >
+              ▼
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onGuideOffsetChange?.({ x: bodyOffsetX + 1, y: bodyOffsetY });
+              }}
+              title="Nudge Right 1px"
+              className="w-6 h-6 flex items-center justify-center rounded hover:bg-neutral-800 text-neutral-300 hover:text-white text-xs font-mono"
+            >
+              ▶
+            </button>
+          </div>
+
+          {/* Center Button */}
+          {onCenterGuide && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onCenterGuide();
+              }}
+              className="px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 hover:text-white text-xs font-medium transition-colors border border-neutral-700"
+            >
+              Center Guide
+            </button>
+          )}
+
+          {/* Done Button */}
+          {onToggleMoveGuide && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleMoveGuide();
+              }}
+              className="px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-neutral-950 text-xs font-bold transition-colors shadow-md shadow-amber-500/20"
+            >
+              Done / Lock
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Centered Drawing Stage with Pan & Zoom */}
       <div
         style={{

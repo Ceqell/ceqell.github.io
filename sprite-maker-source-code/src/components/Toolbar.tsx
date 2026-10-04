@@ -13,7 +13,10 @@ import {
   Scissors,
   SplitSquareVertical,
   FlipHorizontal,
-  FlipVertical
+  FlipVertical,
+  Undo2,
+  Redo2,
+  ChevronLeft
 } from 'lucide-react';
 import { ToolType } from '../types/sprite';
 
@@ -28,6 +31,12 @@ interface ToolbarProps {
   onFlipHorizontalSelection?: () => void;
   onFlipVerticalSelection?: () => void;
   onClearSelection?: () => void;
+  canUndo?: boolean;
+  canRedo?: boolean;
+  onUndo?: () => void;
+  onRedo?: () => void;
+  width?: number;
+  onCollapse?: () => void;
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
@@ -41,7 +50,16 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onFlipHorizontalSelection,
   onFlipVerticalSelection,
   onClearSelection,
+  canUndo = false,
+  canRedo = false,
+  onUndo,
+  onRedo,
+  width = 64,
+  onCollapse,
 }) => {
+  const isWide = width >= 125;
+  const isMedium = width >= 90 && width < 125;
+
   const tools = [
     { id: 'pencil' as ToolType, label: 'Pencil (P)', icon: Pencil },
     { id: 'eraser' as ToolType, label: 'Eraser (E)', icon: Eraser },
@@ -59,9 +77,63 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   ];
 
   return (
-    <div className="flex flex-col gap-3 bg-neutral-900 border-r border-neutral-800 p-2.5 w-16 items-center shrink-0 z-20 select-none">
+    <div 
+      style={{ width: `${width}px` }}
+      className="flex flex-col gap-2.5 bg-neutral-900 border-r border-neutral-800 p-2 items-center shrink-0 z-20 select-none overflow-y-auto transition-[width] duration-75"
+    >
+      {/* Collapse button header */}
+      <div className="flex items-center justify-between w-full px-0.5">
+        {width >= 90 && (
+          <span className="text-[10px] uppercase font-bold tracking-wider text-neutral-400">Tools</span>
+        )}
+        {onCollapse && (
+          <button
+            onClick={onCollapse}
+            title="Collapse Sidebar"
+            className="p-1 rounded text-neutral-500 hover:text-white hover:bg-neutral-800 transition-colors ml-auto"
+          >
+            <ChevronLeft className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
+
+      {/* Undo & Redo Shortcuts */}
+      <div className={`flex items-center gap-1 w-full justify-center bg-neutral-950 p-1 rounded-lg border border-neutral-800/80 ${isWide ? 'px-2' : ''}`}>
+        <button
+          onClick={onUndo}
+          disabled={!canUndo}
+          title="Undo (Ctrl+Z)"
+          className={`relative p-1.5 rounded text-neutral-400 hover:text-amber-400 hover:bg-neutral-800 disabled:opacity-20 disabled:pointer-events-none transition-colors group flex items-center justify-center ${isWide ? 'flex-1 gap-1 text-xs' : ''}`}
+        >
+          <Undo2 className="w-3.5 h-3.5" />
+          {isWide && <span>Undo</span>}
+          {!isWide && (
+            <div className="absolute left-full ml-2 px-2 py-1 bg-neutral-800 text-neutral-100 text-xs rounded border border-neutral-700 whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-xl">
+              Undo (Ctrl+Z)
+            </div>
+          )}
+        </button>
+
+        <button
+          onClick={onRedo}
+          disabled={!canRedo}
+          title="Redo (Ctrl+Y / Ctrl+Shift+Z)"
+          className={`relative p-1.5 rounded text-neutral-400 hover:text-amber-400 hover:bg-neutral-800 disabled:opacity-20 disabled:pointer-events-none transition-colors group flex items-center justify-center ${isWide ? 'flex-1 gap-1 text-xs' : ''}`}
+        >
+          <Redo2 className="w-3.5 h-3.5" />
+          {isWide && <span>Redo</span>}
+          {!isWide && (
+            <div className="absolute left-full ml-2 px-2 py-1 bg-neutral-800 text-neutral-100 text-xs rounded border border-neutral-700 whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-xl">
+              Redo (Ctrl+Y)
+            </div>
+          )}
+        </button>
+      </div>
+
+      <div className="w-full h-px bg-neutral-800" />
+
       {/* Primary Drawing Tools */}
-      <div className="flex flex-col gap-1 w-full items-center">
+      <div className={`w-full ${isWide ? 'flex flex-col gap-1' : isMedium ? 'grid grid-cols-2 gap-1' : 'flex flex-col gap-1 items-center'}`}>
         {tools.map(tool => {
           const Icon = tool.icon;
           const isActive = currentTool === tool.id;
@@ -70,22 +142,33 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               key={tool.id}
               onClick={() => onSelectTool(tool.id)}
               title={tool.label}
-              className={`relative p-2 rounded-lg transition-all flex items-center justify-center group ${
+              className={`relative rounded-lg transition-all flex items-center group ${
+                isWide ? 'px-2 py-1.5 gap-2 w-full justify-start' : 'p-2 justify-center'
+              } ${
                 isActive
                   ? 'bg-amber-500 text-neutral-950 font-bold shadow-lg shadow-amber-500/20'
                   : 'text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800'
               }`}
             >
               <Icon 
-                className="w-4 h-4" 
+                className="w-4 h-4 shrink-0" 
                 fill={tool.fill ? 'currentColor' : 'none'} 
               />
-              <span className="sr-only">{tool.label}</span>
               
-              {/* Tooltip */}
-              <div className="absolute left-full ml-2 px-2 py-1 bg-neutral-800 text-neutral-100 text-xs rounded border border-neutral-700 whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-xl">
-                {tool.label}
-              </div>
+              {isWide ? (
+                <span className="text-xs truncate font-medium flex-1 text-left">
+                  {tool.label.split(' (')[0]}
+                </span>
+              ) : (
+                <span className="sr-only">{tool.label}</span>
+              )}
+              
+              {/* Tooltip for narrow modes */}
+              {!isWide && (
+                <div className="absolute left-full ml-2 px-2 py-1 bg-neutral-800 text-neutral-100 text-xs rounded border border-neutral-700 whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-xl">
+                  {tool.label}
+                </div>
+              )}
             </button>
           );
         })}

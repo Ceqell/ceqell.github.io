@@ -54,3 +54,19 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(120, 120, 150, 0.7);
 }
+
+/* Sleek horizontal scrollbar for top header on small devices */
+.header-scrollbar::-webkit-scrollbar {
+  height: 3px;
+}
+.header-scrollbar::-webkit-scrollbar-track {
+  background: rgba(10, 10, 15, 0.5);
+}
+.header-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(245, 205, 47, 0.4);
+  border-radius: 9999px;
+}
+.header-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(245, 205, 47, 0.8);
+}
+
