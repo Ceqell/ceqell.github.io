@@ -70,3 +70,11 @@
   background: rgba(245, 205, 47, 0.8);
 }
 
+/* Snappy Mode - Instant UI with no transition delay or animation lag */
+.snappy-mode,
+.snappy-mode * {
+  transition: none !important;
+  animation: none !important;
+}
+
+

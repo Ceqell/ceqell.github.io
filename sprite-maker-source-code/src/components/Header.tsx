@@ -22,7 +22,8 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   PanelRightClose,
-  PanelRightOpen
+  PanelRightOpen,
+  Zap
 } from 'lucide-react';
 import { CANVAS_PRESETS, STARTER_TEMPLATES } from '../constants/retroDev';
 
@@ -57,6 +58,9 @@ interface HeaderProps {
   onToggleLeftSidebar?: () => void;
   rightCollapsed?: boolean;
   onToggleRightSidebar?: () => void;
+  animationsEnabled?: boolean;
+  onToggleAnimations?: () => void;
+  headerHeight?: number;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -90,6 +94,9 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleLeftSidebar,
   rightCollapsed = false,
   onToggleRightSidebar,
+  animationsEnabled = true,
+  onToggleAnimations,
+  headerHeight = 56,
 }) => {
   const headerRef = useRef<HTMLElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -112,7 +119,8 @@ export const Header: React.FC<HeaderProps> = ({
     <header 
       ref={headerRef}
       onWheel={handleHeaderWheel}
-      className="h-14 bg-neutral-900 border-b border-neutral-800 px-3 flex items-center justify-between gap-3 text-neutral-200 select-none z-30 shrink-0 overflow-x-auto overflow-y-hidden header-scrollbar scroll-smooth w-full"
+      style={{ height: `${headerHeight}px` }}
+      className="bg-neutral-900 border-b border-neutral-800 px-3 flex items-center justify-between gap-3 text-neutral-200 select-none z-30 shrink-0 overflow-x-auto overflow-y-hidden header-scrollbar scroll-smooth w-full"
     >
       {/* Brand & Canvas Dimensions Preset */}
       <div className="flex items-center gap-2.5 shrink-0 whitespace-nowrap">
@@ -301,6 +309,22 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <SplitSquareVertical className="w-3.5 h-3.5" />
           </button>
+
+          {/* Snappy / Instant Mode Toggle */}
+          {onToggleAnimations && (
+            <button
+              onClick={onToggleAnimations}
+              title={animationsEnabled ? "Animations: ON (Click for Instant Snappy Mode)" : "Snappy Mode: ON (Animations disabled for zero delay)"}
+              className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors cursor-pointer ${
+                !animationsEnabled
+                  ? 'bg-amber-500/25 text-amber-300 border border-amber-500/40 font-semibold shadow-sm shadow-amber-500/10'
+                  : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
+              }`}
+            >
+              <Zap className={`w-3.5 h-3.5 ${!animationsEnabled ? 'fill-amber-400 text-amber-400 animate-pulse' : ''}`} />
+              <span className="hidden md:inline text-[11px]">{!animationsEnabled ? 'Snappy' : 'Anim'}</span>
+            </button>
+          )}
         </div>
 
         <div className="h-5 w-px bg-neutral-800 mx-1 hidden sm:block shrink-0" />

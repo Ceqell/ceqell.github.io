@@ -79,7 +79,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   return (
     <div 
       style={{ width: `${width}px` }}
-      className="flex flex-col gap-2.5 bg-neutral-900 border-r border-neutral-800 p-2 items-center shrink-0 z-20 select-none overflow-y-auto transition-[width] duration-75"
+      className="flex flex-col gap-2.5 bg-neutral-900 border-r border-neutral-800 p-2 items-center shrink-0 z-20 select-none overflow-y-auto"
     >
       {/* Collapse button header */}
       <div className="flex items-center justify-between w-full px-0.5">

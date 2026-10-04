@@ -40,6 +40,7 @@ interface CanvasAreaProps {
   onUpdateSelection: (newSel: SelectionState) => void;
   zoom: number;
   onZoomChange: (newZoom: number) => void;
+  animationsEnabled?: boolean;
 }
 
 export const CanvasArea: React.FC<CanvasAreaProps> = ({
@@ -68,6 +69,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
   onUpdateSelection,
   zoom,
   onZoomChange,
+  animationsEnabled = true,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const mainCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -85,6 +87,21 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
   // Guide dragging state
   const [isDraggingGuide, setIsDraggingGuide] = useState<boolean>(false);
   const guideDragStart = useRef<{ mouseX: number; mouseY: number; initialX: number; initialY: number } | null>(null);
+
+  // Mobile Touch Gestures State (1-finger draw, 2-finger pinch & pan)
+  const touchState = useRef<{
+    mode: 'none' | 'draw' | 'pinch';
+    initialDist: number;
+    initialZoom: number;
+    initialPan: { x: number; y: number };
+    initialCenter: { x: number; y: number };
+  }>({
+    mode: 'none',
+    initialDist: 0,
+    initialZoom: 18,
+    initialPan: { x: 0, y: 0 },
+    initialCenter: { x: 0, y: 0 },
+  });
 
   // Active layer
   const activeLayer = layers.find(l => l.id === activeLayerId);
@@ -692,6 +709,219 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     onZoomChange(newZoom);
   };
 
+  // Mobile Touch Event Handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      touchState.current.mode = 'draw';
+      const touch = e.touches[0];
+      const pixel = clientToPixel(touch.clientX, touch.clientY);
+      if (!pixel) return;
+
+      if (isMovingGuide) {
+        setIsDraggingGuide(true);
+        guideDragStart.current = {
+          mouseX: pixel.x,
+          mouseY: pixel.y,
+          initialX: bodyOffsetX,
+          initialY: bodyOffsetY,
+        };
+        return;
+      }
+
+      setIsDrawing(true);
+      setDragStartPos(pixel);
+      strokeModifiedRef.current = false;
+
+      if (currentTool === 'eyedropper') {
+        for (let i = layers.length - 1; i >= 0; i--) {
+          const l = layers[i];
+          if (l.visible) {
+            const c = l.pixels[pixel.y * canvasWidth + pixel.x];
+            if (c && c !== '') {
+              onColorPick(c);
+              break;
+            }
+          }
+        }
+        return;
+      }
+
+      if (currentTool === 'bucket') {
+        if (!activeLayer || activeLayer.locked) return;
+        const updated = floodFill(activeLayer.pixels, canvasWidth, canvasHeight, pixel.x, pixel.y, currentColor);
+        onUpdateLayerPixels(activeLayer.id, updated, true);
+        return;
+      }
+
+      if (currentTool === 'replace') {
+        if (!activeLayer || activeLayer.locked) return;
+        const target = activeLayer.pixels[pixel.y * canvasWidth + pixel.x] || '';
+        if (target.toLowerCase() !== currentColor.toLowerCase()) {
+          const updated = activeLayer.pixels.map(p => 
+            (p || '').toLowerCase() === target.toLowerCase() ? currentColor : p
+          );
+          onUpdateLayerPixels(activeLayer.id, updated, true);
+        }
+        return;
+      }
+
+      if (currentTool === 'pencil') {
+        applyPixelPoints([pixel], currentColor, false);
+      } else if (currentTool === 'eraser') {
+        applyPixelPoints([pixel], 'erase', false);
+      } else if (currentTool === 'lighten') {
+        applyPixelPoints([pixel], 'lighten', false);
+      } else if (currentTool === 'darken') {
+        applyPixelPoints([pixel], 'darken', false);
+      } else if (currentTool === 'select') {
+        onUpdateSelection({
+          active: true,
+          startX: pixel.x,
+          startY: pixel.y,
+          endX: pixel.x,
+          endY: pixel.y,
+          floating: false,
+          floatingX: 0,
+          floatingY: 0,
+          floatingWidth: 0,
+          floatingHeight: 0,
+          floatingPixels: [],
+        });
+      }
+    } else if (e.touches.length >= 2) {
+      // 2-finger touch: Pinch zoom & Pan
+      setIsDrawing(false);
+      setIsDraggingGuide(false);
+      guideDragStart.current = null;
+      strokeModifiedRef.current = false;
+
+      const t0 = e.touches[0];
+      const t1 = e.touches[1];
+      const dist = Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY);
+      const center = {
+        x: (t0.clientX + t1.clientX) / 2,
+        y: (t0.clientY + t1.clientY) / 2,
+      };
+
+      touchState.current = {
+        mode: 'pinch',
+        initialDist: Math.max(10, dist),
+        initialZoom: zoom,
+        initialPan: { ...pan },
+        initialCenter: center,
+      };
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 1 && touchState.current.mode === 'draw') {
+      const touch = e.touches[0];
+      const pixel = clientToPixel(touch.clientX, touch.clientY);
+      setHoverPixel(pixel);
+      if (!pixel) return;
+
+      if (isDraggingGuide && guideDragStart.current) {
+        const deltaX = pixel.x - guideDragStart.current.mouseX;
+        const deltaY = pixel.y - guideDragStart.current.mouseY;
+        const newX = guideDragStart.current.initialX + deltaX;
+        const newY = guideDragStart.current.initialY + deltaY;
+        onGuideOffsetChange?.({ x: newX, y: newY });
+        return;
+      }
+
+      if (!isDrawing) return;
+
+      if (currentTool === 'pencil') {
+        applyPixelPoints([pixel], currentColor, false);
+      } else if (currentTool === 'eraser') {
+        applyPixelPoints([pixel], 'erase', false);
+      } else if (currentTool === 'lighten') {
+        applyPixelPoints([pixel], 'lighten', false);
+      } else if (currentTool === 'darken') {
+        applyPixelPoints([pixel], 'darken', false);
+      } else if (currentTool === 'select' && dragStartPos) {
+        onUpdateSelection({
+          ...selection,
+          active: true,
+          startX: dragStartPos.x,
+          startY: dragStartPos.y,
+          endX: pixel.x,
+          endY: pixel.y,
+        });
+      }
+    } else if (e.touches.length >= 2 && touchState.current.mode === 'pinch') {
+      const t0 = e.touches[0];
+      const t1 = e.touches[1];
+      const dist = Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY);
+      const currentCenter = {
+        x: (t0.clientX + t1.clientX) / 2,
+        y: (t0.clientY + t1.clientY) / 2,
+      };
+
+      // 1. Pan
+      const deltaPanX = currentCenter.x - touchState.current.initialCenter.x;
+      const deltaPanY = currentCenter.y - touchState.current.initialCenter.y;
+      setPan({
+        x: touchState.current.initialPan.x + deltaPanX,
+        y: touchState.current.initialPan.y + deltaPanY,
+      });
+
+      // 2. Pinch zoom
+      const scale = dist / touchState.current.initialDist;
+      const newZoom = Math.max(4, Math.min(64, Math.round(touchState.current.initialZoom * scale)));
+      if (newZoom !== zoom) {
+        onZoomChange(newZoom);
+      }
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchState.current.mode === 'pinch') {
+      if (e.touches.length < 2) {
+        touchState.current.mode = 'none';
+      }
+      return;
+    }
+
+    if (isDraggingGuide) {
+      setIsDraggingGuide(false);
+      guideDragStart.current = null;
+    }
+
+    if (isDrawing) {
+      setIsDrawing(false);
+      if (e.changedTouches.length > 0 && dragStartPos) {
+        const touch = e.changedTouches[0];
+        const pixel = clientToPixel(touch.clientX, touch.clientY);
+        if (pixel) {
+          if (currentTool === 'line') {
+            const points = getLinePoints(dragStartPos.x, dragStartPos.y, pixel.x, pixel.y);
+            applyPixelPoints(points, currentColor, false);
+          } else if (currentTool === 'rectangle') {
+            const points = getRectanglePoints(dragStartPos.x, dragStartPos.y, pixel.x, pixel.y, false);
+            applyPixelPoints(points, currentColor, false);
+          } else if (currentTool === 'rectangle_fill') {
+            const points = getRectanglePoints(dragStartPos.x, dragStartPos.y, pixel.x, pixel.y, true);
+            applyPixelPoints(points, currentColor, false);
+          } else if (currentTool === 'circle') {
+            const points = getCirclePoints(dragStartPos.x, dragStartPos.y, pixel.x, pixel.y, false);
+            applyPixelPoints(points, currentColor, false);
+          } else if (currentTool === 'circle_fill') {
+            const points = getCirclePoints(dragStartPos.x, dragStartPos.y, pixel.x, pixel.y, true);
+            applyPixelPoints(points, currentColor, false);
+          }
+        }
+      }
+
+      if (strokeModifiedRef.current) {
+        onCommitHistory?.(activeLayer?.id);
+        strokeModifiedRef.current = false;
+      }
+      setDragStartPos(null);
+    }
+    touchState.current.mode = 'none';
+  };
+
   return (
     <div
       ref={containerRef}
@@ -699,7 +929,11 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onWheel={handleWheel}
-      className={`relative flex-1 h-full w-full overflow-hidden flex items-center justify-center bg-neutral-950 canvas-checkerboard select-none ${
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
+      className={`relative flex-1 h-full w-full overflow-hidden flex items-center justify-center bg-neutral-950 canvas-checkerboard select-none touch-none ${
         isPanning 
           ? 'cursor-grab' 
           : isDraggingGuide 
@@ -812,8 +1046,9 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
           transform: `translate(${pan.x}px, ${pan.y}px)`,
           width: `${canvasWidth * zoom}px`,
           height: `${canvasHeight * zoom}px`,
+          transition: (animationsEnabled && !isPanning && touchState.current.mode !== 'pinch') ? 'transform 75ms ease-out' : 'none',
         }}
-        className="relative shadow-2xl transition-transform duration-75 ease-out shrink-0"
+        className="relative shadow-2xl shrink-0"
       >
         {/* Main Composite Canvas (low resolution scaled with CSS pixelated) */}
         <canvas

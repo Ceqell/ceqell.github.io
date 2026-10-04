@@ -109,72 +109,152 @@ export default function App() {
   // Right sidebar tab state for smaller screens
   const [rightTab, setRightTab] = useState<'layers' | 'palette' | 'references'>('layers');
 
-  // Sidebars Width and Collapse State
+  // Sidebars & Top Bar Size and Collapse State
+  const [headerHeight, setHeaderHeight] = useState<number>(56);
   const [leftSidebarWidth, setLeftSidebarWidth] = useState<number>(64);
   const [leftCollapsed, setLeftCollapsed] = useState<boolean>(false);
   const [rightSidebarWidth, setRightSidebarWidth] = useState<number>(320);
   const [rightCollapsed, setRightCollapsed] = useState<boolean>(false);
 
-  const isDraggingLeftRef = useRef<boolean>(false);
-  const isDraggingRightRef = useRef<boolean>(false);
+  // Animations & Snappy Mode Toggle
+  const [animationsEnabled, setAnimationsEnabled] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('retro_animations') !== 'false';
+    } catch {
+      return true;
+    }
+  });
 
-  const handleLeftResizeMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault();
-    isDraggingLeftRef.current = true;
+  const handleToggleAnimations = () => {
+    setAnimationsEnabled(prev => {
+      const next = !prev;
+      try {
+        localStorage.setItem('retro_animations', String(next));
+      } catch {}
+      return next;
+    });
+  };
+
+  // Fluid Left Resizer (Touch & Mouse, NO Sluggish Snapping)
+  const handleLeftResizeStart = (clientX: number) => {
     document.body.style.cursor = 'col-resize';
     document.body.style.userSelect = 'none';
 
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-      if (!isDraggingLeftRef.current) return;
-      const newWidth = Math.round(moveEvent.clientX);
-      if (newWidth < 46) {
-        setLeftCollapsed(true);
-      } else {
-        setLeftCollapsed(false);
-        setLeftSidebarWidth(Math.max(56, Math.min(240, newWidth)));
-      }
+    const onMove = (currX: number) => {
+      const maxW = Math.max(200, window.innerWidth - 60);
+      const newWidth = Math.max(36, Math.min(maxW, Math.round(currX)));
+      setLeftSidebarWidth(newWidth);
     };
 
-    const handleMouseUp = () => {
-      isDraggingLeftRef.current = false;
+    const handleMouseMove = (e: MouseEvent) => onMove(e.clientX);
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) onMove(e.touches[0].clientX);
+    };
+
+    const handleEnd = () => {
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
       window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('mouseup', handleEnd);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleEnd);
+      window.removeEventListener('touchcancel', handleEnd);
     };
 
     window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mouseup', handleEnd);
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleEnd);
+    window.addEventListener('touchcancel', handleEnd);
+  };
+
+  // Fluid Right Resizer (Touch & Mouse, NO Sluggish Snapping)
+  const handleRightResizeStart = (clientX: number) => {
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+
+    const onMove = (currX: number) => {
+      const newWidth = Math.round(window.innerWidth - currX);
+      const maxW = Math.max(200, window.innerWidth - 50);
+      setRightSidebarWidth(Math.max(50, Math.min(maxW, newWidth)));
+    };
+
+    const handleMouseMove = (e: MouseEvent) => onMove(e.clientX);
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) onMove(e.touches[0].clientX);
+    };
+
+    const handleEnd = () => {
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleEnd);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleEnd);
+      window.removeEventListener('touchcancel', handleEnd);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleEnd);
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleEnd);
+    window.addEventListener('touchcancel', handleEnd);
+  };
+
+  // Fluid Header Height Resizer (Touch & Mouse, NO Sluggish Snapping)
+  const handleHeaderResizeStart = (clientY: number) => {
+    document.body.style.cursor = 'row-resize';
+    document.body.style.userSelect = 'none';
+
+    const onMove = (currY: number) => {
+      const newHeight = Math.max(40, Math.min(120, Math.round(currY)));
+      setHeaderHeight(newHeight);
+    };
+
+    const handleMouseMove = (e: MouseEvent) => onMove(e.clientY);
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) onMove(e.touches[0].clientY);
+    };
+
+    const handleEnd = () => {
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleEnd);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleEnd);
+      window.removeEventListener('touchcancel', handleEnd);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleEnd);
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleEnd);
+    window.addEventListener('touchcancel', handleEnd);
+  };
+
+  const handleLeftResizeMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleLeftResizeStart(e.clientX);
+  };
+  const handleLeftResizeTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length > 0) handleLeftResizeStart(e.touches[0].clientX);
   };
 
   const handleRightResizeMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
-    isDraggingRightRef.current = true;
-    document.body.style.cursor = 'col-resize';
-    document.body.style.userSelect = 'none';
+    handleRightResizeStart(e.clientX);
+  };
+  const handleRightResizeTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length > 0) handleRightResizeStart(e.touches[0].clientX);
+  };
 
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-      if (!isDraggingRightRef.current) return;
-      const newWidth = Math.round(window.innerWidth - moveEvent.clientX);
-      if (newWidth < 160) {
-        setRightCollapsed(true);
-      } else {
-        setRightCollapsed(false);
-        const maxWidth = Math.max(300, Math.min(680, window.innerWidth - 300));
-        setRightSidebarWidth(Math.max(220, Math.min(maxWidth, newWidth)));
-      }
-    };
-
-    const handleMouseUp = () => {
-      isDraggingRightRef.current = false;
-      document.body.style.cursor = '';
-      document.body.style.userSelect = '';
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
+  const handleHeaderResizeMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleHeaderResizeStart(e.clientY);
+  };
+  const handleHeaderResizeTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length > 0) handleHeaderResizeStart(e.touches[0].clientY);
   };
 
   // Save history state
@@ -780,7 +860,7 @@ export default function App() {
   }, [handleUndo, handleRedo]);
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-neutral-950 font-sans text-neutral-100 select-none">
+    <div className={`flex flex-col h-screen w-screen overflow-hidden bg-neutral-950 font-sans text-neutral-100 select-none ${animationsEnabled ? '' : 'snappy-mode'}`}>
       {/* Top Header */}
       <Header
         canvasPresetName={activePreset.name}
@@ -813,7 +893,21 @@ export default function App() {
         onToggleLeftSidebar={() => setLeftCollapsed(v => !v)}
         rightCollapsed={rightCollapsed}
         onToggleRightSidebar={() => setRightCollapsed(v => !v)}
+        animationsEnabled={animationsEnabled}
+        onToggleAnimations={handleToggleAnimations}
+        headerHeight={headerHeight}
       />
+
+      {/* Draggable Splitter on bottom edge of Top Bar */}
+      <div
+        onMouseDown={handleHeaderResizeMouseDown}
+        onTouchStart={handleHeaderResizeTouchStart}
+        onDoubleClick={() => setHeaderHeight(56)}
+        title="Drag to resize Top Bar height (Double-click to reset 56px)"
+        className="h-1 hover:h-1.5 cursor-row-resize hover:bg-amber-400/60 active:bg-amber-400 transition-all z-40 shrink-0 w-full flex items-center justify-center bg-neutral-800/80"
+      >
+        <div className="h-0.5 w-12 bg-neutral-600 hover:bg-amber-400 rounded-full" />
+      </div>
 
       {/* Main Workspace */}
       <div className="flex-1 flex overflow-hidden relative">
@@ -841,6 +935,7 @@ export default function App() {
             {/* Draggable Splitter on right edge of Left Toolbar */}
             <div
               onMouseDown={handleLeftResizeMouseDown}
+              onTouchStart={handleLeftResizeTouchStart}
               onDoubleClick={() => setLeftSidebarWidth(64)}
               title="Drag to resize Tools Sidebar (Double-click to reset)"
               className="w-1.5 hover:w-2 cursor-col-resize hover:bg-amber-400/60 active:bg-amber-400 transition-all z-30 flex items-center justify-center -mr-1"
@@ -887,6 +982,7 @@ export default function App() {
           onUpdateSelection={setSelection}
           zoom={zoom}
           onZoomChange={setZoom}
+          animationsEnabled={animationsEnabled}
         />
 
         {/* Right Dock: Mini Preview, Layers, Palette, References */}
@@ -895,6 +991,7 @@ export default function App() {
             {/* Draggable Splitter on left edge of Right Panels */}
             <div
               onMouseDown={handleRightResizeMouseDown}
+              onTouchStart={handleRightResizeTouchStart}
               onDoubleClick={() => setRightSidebarWidth(320)}
               title="Drag to resize Panels Sidebar (Double-click to reset 320px)"
               className="w-1.5 hover:w-2 cursor-col-resize hover:bg-amber-400/60 active:bg-amber-400 transition-all z-30 flex items-center justify-center -ml-1"
@@ -904,7 +1001,7 @@ export default function App() {
 
             <aside 
               style={{ width: `${rightSidebarWidth}px` }}
-              className="bg-neutral-900 border-l border-neutral-800 flex flex-col p-3 gap-3 overflow-y-auto shrink-0 z-20 shadow-2xl transition-[width] duration-75"
+              className="bg-neutral-900 border-l border-neutral-800 flex flex-col p-3 gap-3 overflow-y-auto shrink-0 z-20 shadow-2xl"
             >
               {/* Header with Title and Collapse Button */}
               <div className="flex items-center justify-between pb-1.5 border-b border-neutral-800 shrink-0">
