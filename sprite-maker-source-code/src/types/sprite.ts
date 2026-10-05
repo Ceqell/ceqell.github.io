@@ -22,6 +22,15 @@ export interface Layer {
   locked: boolean;
   // Pixels stored as an array of length (width * height), values are hex strings with alpha (e.g. "#RRGGBB" or "#RRGGBBAA") or empty string "" for transparent
   pixels: string[];
+  width?: number;
+  height?: number;
+}
+
+export interface HistoryEntry {
+  layers: Layer[];
+  activeLayerId: string;
+  preset: CanvasDimensions;
+  guideOffset: { x: number; y: number };
 }
 
 export interface SelectionState {

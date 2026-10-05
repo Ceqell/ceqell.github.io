@@ -67,17 +67,42 @@ export function renderSpriteToCanvas(
     if (layer.opacity <= 0) return;
     ctx.globalAlpha = Math.max(0, Math.min(1, layer.opacity));
 
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
-        const color = layer.pixels[y * width + x];
-        if (color && color !== '') {
-          ctx.fillStyle = color;
-          // Render pixel rect
-          const px = Math.floor(x * scaleX);
-          const py = Math.floor(y * scaleY);
-          const pw = Math.ceil((x + 1) * scaleX) - px;
-          const ph = Math.ceil((y + 1) * scaleY) - py;
-          ctx.fillRect(px, py, pw, ph);
+    const layerW = layer.width || (layer.pixels.length === width * height ? width : undefined);
+    const layerH = layer.height || (layer.pixels.length === width * height ? height : undefined);
+
+    if (layerW && layerH && (layerW !== width || layerH !== height)) {
+      const ox = Math.floor((width - layerW) / 2);
+      const oy = Math.floor((height - layerH) / 2);
+      for (let ly = 0; ly < layerH; ly++) {
+        for (let lx = 0; lx < layerW; lx++) {
+          const color = layer.pixels[ly * layerW + lx];
+          if (color && color !== '') {
+            ctx.fillStyle = color;
+            const dx = lx + ox;
+            const dy = ly + oy;
+            if (dx >= 0 && dx < width && dy >= 0 && dy < height) {
+              const px = Math.floor(dx * scaleX);
+              const py = Math.floor(dy * scaleY);
+              const pw = Math.ceil((dx + 1) * scaleX) - px;
+              const ph = Math.ceil((dy + 1) * scaleY) - py;
+              ctx.fillRect(px, py, pw, ph);
+            }
+          }
+        }
+      }
+    } else {
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const color = layer.pixels[y * width + x];
+          if (color && color !== '') {
+            ctx.fillStyle = color;
+            // Render pixel rect
+            const px = Math.floor(x * scaleX);
+            const py = Math.floor(y * scaleY);
+            const pw = Math.ceil((x + 1) * scaleX) - px;
+            const ph = Math.ceil((y + 1) * scaleY) - py;
+            ctx.fillRect(px, py, pw, ph);
+          }
         }
       }
     }

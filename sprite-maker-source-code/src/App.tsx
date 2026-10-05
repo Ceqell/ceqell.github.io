@@ -16,7 +16,8 @@ import {
   ReferenceImage, 
   SelectionState, 
   CanvasDimensions, 
-  ProjectState 
+  ProjectState,
+  HistoryEntry 
 } from './types/sprite';
 import { 
   CANVAS_PRESETS, 
@@ -48,6 +49,11 @@ export default function App() {
   const [isMovingGuide, setIsMovingGuide] = useState<boolean>(false);
   const [isCustomCanvasOpen, setIsCustomCanvasOpen] = useState<boolean>(false);
 
+  const activePresetRef = useRef(activePreset);
+  activePresetRef.current = activePreset;
+  const guideOffsetRef = useRef(guideOffset);
+  guideOffsetRef.current = guideOffset;
+
   const canvasWidth = activePreset.width;
   const canvasHeight = activePreset.height;
   const bodyOffsetX = guideOffset.x;
@@ -59,8 +65,8 @@ export default function App() {
   );
   const [activeLayerId, setActiveLayerId] = useState<string>('layer-body');
 
-  // History stack for Undo / Redo
-  const [history, setHistory] = useState<{ layers: Layer[]; activeLayerId: string }[]>([]);
+  // History stack for Undo / Redo (stores layers, activeLayerId, canvasPreset, and guideOffset to prevent resize-undo glitches)
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
 
   // Tools & Brush
@@ -258,12 +264,29 @@ export default function App() {
   };
 
   // Save history state
-  const pushHistory = useCallback((newLayers: Layer[], newActiveId = activeLayerId) => {
+  const pushHistory = useCallback((
+    newLayers: Layer[], 
+    newActiveId = activeLayerId,
+    overridePreset?: CanvasDimensions,
+    overrideGuideOffset?: { x: number; y: number }
+  ) => {
+    const currentPreset = overridePreset || activePresetRef.current;
+    const currentOffset = overrideGuideOffset || guideOffsetRef.current;
+
+    // Attach width and height to each layer for safety
+    const stampedLayers: Layer[] = newLayers.map(l => ({
+      ...l,
+      width: currentPreset.width,
+      height: currentPreset.height,
+    }));
+
     setHistory(prev => {
       const validHistory = historyIndex >= 0 ? prev.slice(0, historyIndex + 1) : [];
-      const newEntry = {
-        layers: JSON.parse(JSON.stringify(newLayers)),
+      const newEntry: HistoryEntry = {
+        layers: JSON.parse(JSON.stringify(stampedLayers)),
         activeLayerId: newActiveId,
+        preset: { ...currentPreset },
+        guideOffset: { ...currentOffset },
       };
       const updated = [...validHistory, newEntry];
       const maxHistory = 60;
@@ -282,7 +305,19 @@ export default function App() {
   useEffect(() => {
     if (!initialHistoryRecorded.current && layers.length > 0) {
       initialHistoryRecorded.current = true;
-      setHistory([{ layers: JSON.parse(JSON.stringify(layers)), activeLayerId }]);
+      const initialPreset = activePresetRef.current;
+      const initialOffset = guideOffsetRef.current;
+      const stampedLayers: Layer[] = layers.map(l => ({
+        ...l,
+        width: initialPreset.width,
+        height: initialPreset.height,
+      }));
+      setHistory([{
+        layers: JSON.parse(JSON.stringify(stampedLayers)),
+        activeLayerId,
+        preset: { ...initialPreset },
+        guideOffset: { ...initialOffset },
+      }]);
       setHistoryIndex(0);
     }
   }, [layers, activeLayerId]);
@@ -291,6 +326,30 @@ export default function App() {
   const handleUndo = useCallback(() => {
     if (historyIndex > 0) {
       const targetState = history[historyIndex - 1];
+
+      // Restore canvas preset and dimensions if undo crosses a canvas resize
+      if (targetState.preset) {
+        setActivePreset(targetState.preset);
+      }
+      if (targetState.guideOffset) {
+        setGuideOffset(targetState.guideOffset);
+      }
+
+      // Reset any active selection to avoid stale coordinates
+      setSelection({
+        active: false,
+        startX: 0,
+        startY: 0,
+        endX: 0,
+        endY: 0,
+        floating: false,
+        floatingX: 0,
+        floatingY: 0,
+        floatingWidth: 0,
+        floatingHeight: 0,
+        floatingPixels: [],
+      });
+
       setLayers(JSON.parse(JSON.stringify(targetState.layers)));
       setActiveLayerId(targetState.activeLayerId);
       setHistoryIndex(historyIndex - 1);
@@ -301,6 +360,29 @@ export default function App() {
   const handleRedo = useCallback(() => {
     if (historyIndex < history.length - 1) {
       const targetState = history[historyIndex + 1];
+
+      // Restore canvas preset and dimensions if redo crosses a canvas resize
+      if (targetState.preset) {
+        setActivePreset(targetState.preset);
+      }
+      if (targetState.guideOffset) {
+        setGuideOffset(targetState.guideOffset);
+      }
+
+      setSelection({
+        active: false,
+        startX: 0,
+        startY: 0,
+        endX: 0,
+        endY: 0,
+        floating: false,
+        floatingX: 0,
+        floatingY: 0,
+        floatingWidth: 0,
+        floatingHeight: 0,
+        floatingPixels: [],
+      });
+
       setLayers(JSON.parse(JSON.stringify(targetState.layers)));
       setActiveLayerId(targetState.activeLayerId);
       setHistoryIndex(historyIndex + 1);
@@ -372,6 +454,8 @@ export default function App() {
       opacity: 1,
       locked: false,
       pixels: new Array(canvasWidth * canvasHeight).fill(''),
+      width: canvasWidth,
+      height: canvasHeight,
     };
     const updated = [...layers, newLayer];
     setLayers(updated);
@@ -397,6 +481,8 @@ export default function App() {
       id: newId,
       name: `${layer.name} (Copy)`,
       pixels: [...layer.pixels],
+      width: layer.width || canvasWidth,
+      height: layer.height || canvasHeight,
     };
     const idx = layers.findIndex(l => l.id === id);
     const updated = [...layers];
@@ -425,6 +511,8 @@ export default function App() {
       ...lowerLayer,
       name: `${lowerLayer.name} + ${upperLayer.name}`,
       pixels: mergedPixels,
+      width: canvasWidth,
+      height: canvasHeight,
     };
 
     const updated = layers.filter((_, i) => i !== idx).map((l, i) => i === idx - 1 ? mergedLayer : l);
@@ -469,13 +557,29 @@ export default function App() {
     if (!preset) return;
 
     setActivePreset(preset);
-    setGuideOffset({ x: preset.bodyOffsetX, y: preset.bodyOffsetY });
+    const newGuideOffset = { x: preset.bodyOffsetX, y: preset.bodyOffsetY };
+    setGuideOffset(newGuideOffset);
+
+    // Clear selection so floating pixels don't get mispositioned across resize
+    setSelection({
+      active: false,
+      startX: 0,
+      startY: 0,
+      endX: 0,
+      endY: 0,
+      floating: false,
+      floatingX: 0,
+      floatingY: 0,
+      floatingWidth: 0,
+      floatingHeight: 0,
+      floatingPixels: [],
+    });
 
     // Remap layers to new size with centered alignment
     const offsetX = Math.floor((preset.width - canvasWidth) / 2);
     const offsetY = Math.floor((preset.height - canvasHeight) / 2);
 
-    const newLayers = layers.map(l => {
+    const newLayers: Layer[] = layers.map(l => {
       const newPixels = new Array(preset.width * preset.height).fill('');
       for (let y = 0; y < canvasHeight; y++) {
         for (let x = 0; x < canvasWidth; x++) {
@@ -488,11 +592,13 @@ export default function App() {
       }
       return {
         ...l,
+        width: preset.width,
+        height: preset.height,
         pixels: newPixels,
       };
     });
     setLayers(newLayers);
-    pushHistory(newLayers, activeLayerId);
+    pushHistory(newLayers, activeLayerId, preset, newGuideOffset);
   };
 
   // Custom Canvas Dimensions Handler
@@ -518,7 +624,22 @@ export default function App() {
       offsetY = 0;
     }
 
-    const newLayers = layers.map(layer => {
+    // Clear selection so floating pixels don't get mispositioned across resize
+    setSelection({
+      active: false,
+      startX: 0,
+      startY: 0,
+      endX: 0,
+      endY: 0,
+      floating: false,
+      floatingX: 0,
+      floatingY: 0,
+      floatingWidth: 0,
+      floatingHeight: 0,
+      floatingPixels: [],
+    });
+
+    const newLayers: Layer[] = layers.map(layer => {
       const newPixels = new Array(newWidth * newHeight).fill('');
       for (let oldY = 0; oldY < canvasHeight; oldY++) {
         for (let oldX = 0; oldX < canvasWidth; oldX++) {
@@ -531,6 +652,8 @@ export default function App() {
       }
       return {
         ...layer,
+        width: newWidth,
+        height: newHeight,
         pixels: newPixels,
       };
     });
@@ -551,7 +674,7 @@ export default function App() {
     setActivePreset(customPreset);
     setGuideOffset(newGuideOffset);
     setLayers(newLayers);
-    pushHistory(newLayers, activeLayerId);
+    pushHistory(newLayers, activeLayerId, customPreset, newGuideOffset);
   };
 
   const handleCenterGuide = () => {
@@ -576,11 +699,13 @@ export default function App() {
           opacity: 1,
           locked: false,
           pixels: new Array(totalPixels).fill(''),
+          width: canvasWidth,
+          height: canvasHeight,
         },
       ];
       setLayers(blankLayers);
       setActiveLayerId('layer-body');
-      pushHistory(blankLayers, 'layer-body');
+      pushHistory(blankLayers, 'layer-body', activePreset, guideOffset);
       return;
     }
 
@@ -588,7 +713,7 @@ export default function App() {
       const noobLayers = createNoobSprite(canvasWidth, canvasHeight, bodyOffsetX, bodyOffsetY);
       setLayers(noobLayers);
       setActiveLayerId(noobLayers[0].id);
-      pushHistory(noobLayers, noobLayers[0].id);
+      pushHistory(noobLayers, noobLayers[0].id, activePreset, guideOffset);
       return;
     }
 
@@ -655,7 +780,7 @@ export default function App() {
 
     setLayers(baseLayers);
     setActiveLayerId(baseLayers[0].id);
-    pushHistory(baseLayers, baseLayers[0].id);
+    pushHistory(baseLayers, baseLayers[0].id, activePreset, guideOffset);
   };
 
   // Reference management
@@ -956,13 +1081,18 @@ export default function App() {
             bodyOffsetX: loadedOx,
             bodyOffsetY: loadedOy,
           };
+          const normalizedLayers: Layer[] = project.layers.map(l => ({
+            ...l,
+            width: project.canvasWidth,
+            height: project.canvasHeight,
+          }));
           setActivePreset(matchedPreset);
           setGuideOffset({ x: loadedOx, y: loadedOy });
-          setLayers(project.layers);
-          setActiveLayerId(project.activeLayerId || project.layers[0].id);
+          setLayers(normalizedLayers);
+          setActiveLayerId(project.activeLayerId || normalizedLayers[0].id);
           if (project.selectedColor) setCurrentColor(project.selectedColor);
           if (project.references) setReferences(project.references);
-          pushHistory(project.layers, project.activeLayerId || project.layers[0].id);
+          pushHistory(normalizedLayers, project.activeLayerId || normalizedLayers[0].id, matchedPreset, { x: loadedOx, y: loadedOy });
         }
       } catch {
         alert('Invalid project file format.');

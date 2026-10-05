@@ -278,6 +278,8 @@ export function createNoobSprite(width: number, height: number, ox: number, oy: 
       opacity: 1,
       locked: false,
       pixels: bodyPixels,
+      width,
+      height,
     },
     {
       id: 'layer-face',
@@ -286,6 +288,8 @@ export function createNoobSprite(width: number, height: number, ox: number, oy: 
       opacity: 1,
       locked: false,
       pixels: facePixels,
+      width,
+      height,
     },
     {
       id: 'layer-acc',
@@ -294,6 +298,8 @@ export function createNoobSprite(width: number, height: number, ox: number, oy: 
       opacity: 1,
       locked: false,
       pixels: accPixels,
+      width,
+      height,
     },
   ];
 }

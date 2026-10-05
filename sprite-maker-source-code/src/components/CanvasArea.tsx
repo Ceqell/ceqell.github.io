@@ -322,12 +322,34 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       ctx.save();
       ctx.globalAlpha = layer.opacity;
 
-      for (let y = 0; y < canvasHeight; y++) {
-        for (let x = 0; x < canvasWidth; x++) {
-          const color = layer.pixels[y * canvasWidth + x];
-          if (color && color !== '') {
-            ctx.fillStyle = color;
-            ctx.fillRect(x, y, 1, 1);
+      const layerW = layer.width || (layer.pixels.length === canvasWidth * canvasHeight ? canvasWidth : undefined);
+      const layerH = layer.height || (layer.pixels.length === canvasWidth * canvasHeight ? canvasHeight : undefined);
+
+      if (layerW && layerH && (layerW !== canvasWidth || layerH !== canvasHeight)) {
+        // Dimension mismatch protection: center layer pixels without diagonal wrapping
+        const ox = Math.floor((canvasWidth - layerW) / 2);
+        const oy = Math.floor((canvasHeight - layerH) / 2);
+        for (let ly = 0; ly < layerH; ly++) {
+          for (let lx = 0; lx < layerW; lx++) {
+            const color = layer.pixels[ly * layerW + lx];
+            if (color && color !== '') {
+              const dx = lx + ox;
+              const dy = ly + oy;
+              if (dx >= 0 && dx < canvasWidth && dy >= 0 && dy < canvasHeight) {
+                ctx.fillStyle = color;
+                ctx.fillRect(dx, dy, 1, 1);
+              }
+            }
+          }
+        }
+      } else {
+        for (let y = 0; y < canvasHeight; y++) {
+          for (let x = 0; x < canvasWidth; x++) {
+            const color = layer.pixels[y * canvasWidth + x];
+            if (color && color !== '') {
+              ctx.fillStyle = color;
+              ctx.fillRect(x, y, 1, 1);
+            }
           }
         }
       }

@@ -251,3 +251,76 @@ export function getPolygonEnclosedPixels(points: Point[]): Point[] {
   return result;
 }
 
+/**
+ * Safely adapts a layer's pixels if its dimensions or array length do not match the target canvas dimensions.
+ * Prevents stride-mismatch diagonal wrapping/skew bugs.
+ */
+export function normalizeLayerPixels(
+  layer: { pixels: string[]; width?: number; height?: number },
+  targetWidth: number,
+  targetHeight: number,
+  fallbackAnchor: 'center' | 'top-left' = 'center'
+): string[] {
+  const targetTotal = targetWidth * targetHeight;
+  if (
+    layer.pixels.length === targetTotal &&
+    (!layer.width || layer.width === targetWidth) &&
+    (!layer.height || layer.height === targetHeight)
+  ) {
+    return layer.pixels;
+  }
+
+  // Deduce source width and height
+  let srcW = layer.width;
+  let srcH = layer.height;
+
+  if (!srcW || !srcH || srcW * srcH !== layer.pixels.length) {
+    const len = layer.pixels.length;
+    if (len === 21 * 28) {
+      srcW = 21;
+      srcH = 28;
+    } else if (len === 25 * 32) {
+      srcW = 25;
+      srcH = 32;
+    } else if (len === 32 * 32) {
+      srcW = 32;
+      srcH = 32;
+    } else if (len === 36 * 36) {
+      srcW = 36;
+      srcH = 36;
+    } else {
+      const side = Math.round(Math.sqrt(len));
+      if (side * side === len) {
+        srcW = side;
+        srcH = side;
+      } else {
+        const clean = new Array(targetTotal).fill('');
+        for (let i = 0; i < Math.min(len, targetTotal); i++) {
+          clean[i] = layer.pixels[i] || '';
+        }
+        return clean;
+      }
+    }
+  }
+
+  const result = new Array(targetTotal).fill('');
+  const offsetX = fallbackAnchor === 'center' ? Math.floor((targetWidth - srcW) / 2) : 0;
+  const offsetY = fallbackAnchor === 'center' ? Math.floor((targetHeight - srcH) / 2) : 0;
+
+  for (let sy = 0; sy < srcH; sy++) {
+    for (let sx = 0; sx < srcW; sx++) {
+      const srcIdx = sy * srcW + sx;
+      const color = layer.pixels[srcIdx];
+      if (color) {
+        const dx = sx + offsetX;
+        const dy = sy + offsetY;
+        if (dx >= 0 && dx < targetWidth && dy >= 0 && dy < targetHeight) {
+          result[dy * targetWidth + dx] = color;
+        }
+      }
+    }
+  }
+
+  return result;
+}
+
