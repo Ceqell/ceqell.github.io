@@ -142,7 +142,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* App Brand Icon */}
           <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center shadow-md shadow-pink-500/20 border border-neutral-700/80 bg-neutral-950 shrink-0">
             <img 
-              src="../FigurayMaker.png" 
+              src="../assets/FigurayMaker.png" 
               alt="FigurayMaker Icon" 
               className="w-full h-full object-cover"
             />
