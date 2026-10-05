@@ -3,8 +3,11 @@
 
   # Retro Dev Character Sprite Maker (FigurayMaker)
 
-  <p>Make your own <strong>Retro Dev</strong> character sprites and pixel avatars!</p>
+  ### <p>Make your own <strong>Retro Dev</strong> character sprites and pixel avatars!</p>
+  
 </div>
+
+A specialized, professional pixel art editor and sprite construction studio built specifically for designing and exporting authentic Retro Dev character sprites and pixel avatars.
 
 Features exact anatomical dimensions (Head 9×8, Torso 11×10, Arms 5×10, Legs 11×10), moveable guide overlays, advanced layer management, reference image tracing, freehand lasso and box selection tools with pixel moving, and high-resolution PNG export.
 
@@ -121,7 +124,7 @@ Features exact anatomical dimensions (Head 9×8, Torso 11×10, Arms 5×10, Legs 
 
 ---
 
-## 💻 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js (v18.0.0 or higher recommended)
@@ -153,7 +156,7 @@ Features exact anatomical dimensions (Head 9×8, Torso 11×10, Arms 5×10, Legs 
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 ├── FigurayMaker.png             # Application brand and avatar logo image
