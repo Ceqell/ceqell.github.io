@@ -9,6 +9,7 @@ export type ToolType =
   | 'circle'
   | 'circle_fill'
   | 'select'
+  | 'lasso'
   | 'lighten'
   | 'darken'
   | 'replace';
@@ -25,10 +26,13 @@ export interface Layer {
 
 export interface SelectionState {
   active: boolean;
+  type?: 'rectangle' | 'lasso';
   startX: number;
   startY: number;
   endX: number;
   endY: number;
+  // Specific list of pixel coordinate keys selected (e.g. "x,y")
+  selectedPixelKeys?: string[];
   // If moving selection
   floating: boolean;
   floatingX: number;
@@ -36,6 +40,8 @@ export interface SelectionState {
   floatingWidth: number;
   floatingHeight: number;
   floatingPixels: string[];
+  // Mask of which relative cells inside floating box are part of selection
+  floatingMask?: boolean[];
 }
 
 export interface ReferenceImage {

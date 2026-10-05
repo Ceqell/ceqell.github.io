@@ -16,7 +16,10 @@ import {
   FlipVertical,
   Undo2,
   Redo2,
-  ChevronLeft
+  ChevronLeft,
+  LassoSelect,
+  Trash2,
+  Check
 } from 'lucide-react';
 import { ToolType } from '../types/sprite';
 
@@ -28,8 +31,11 @@ interface ToolbarProps {
   symmetryActive: boolean;
   onToggleSymmetry: () => void;
   hasSelection: boolean;
+  isFloating?: boolean;
+  onCommitFloatingSelection?: () => void;
   onFlipHorizontalSelection?: () => void;
   onFlipVerticalSelection?: () => void;
+  onDeleteSelection?: () => void;
   onClearSelection?: () => void;
   canUndo?: boolean;
   canRedo?: boolean;
@@ -47,8 +53,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   symmetryActive,
   onToggleSymmetry,
   hasSelection,
+  isFloating = false,
+  onCommitFloatingSelection,
   onFlipHorizontalSelection,
   onFlipVerticalSelection,
+  onDeleteSelection,
   onClearSelection,
   canUndo = false,
   canRedo = false,
@@ -70,7 +79,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
     { id: 'rectangle_fill' as ToolType, label: 'Filled Box', icon: Square, fill: true },
     { id: 'circle' as ToolType, label: 'Circle (C)', icon: Circle },
     { id: 'circle_fill' as ToolType, label: 'Filled Circle', icon: Circle, fill: true },
-    { id: 'select' as ToolType, label: 'Select Area (M)', icon: Scissors },
+    { id: 'select' as ToolType, label: 'Box Select (M)', icon: Scissors },
+    { id: 'lasso' as ToolType, label: 'Lasso Select (Q)', icon: LassoSelect },
     { id: 'lighten' as ToolType, label: 'Lighten (Dodge)', icon: SunMedium },
     { id: 'darken' as ToolType, label: 'Darken (Burn)', icon: Moon },
     { id: 'replace' as ToolType, label: 'Color Replace', icon: Sparkles },
@@ -220,27 +230,53 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       {hasSelection && (
         <div className="flex flex-col gap-1 w-full animate-in fade-in duration-200">
           <div className="w-full h-px bg-neutral-800 my-1" />
-          <span className="text-[9px] font-bold text-amber-400 text-center uppercase">Select</span>
+          <span className="text-[9px] font-bold text-amber-400 text-center uppercase">
+            {isFloating ? 'Moving Pixels' : 'Selection'}
+          </span>
+          
+          {isFloating && onCommitFloatingSelection && (
+            <button
+              onClick={onCommitFloatingSelection}
+              title="Stamp / Commit Moved Pixels (Enter)"
+              className={`p-1.5 text-neutral-950 bg-amber-400 hover:bg-amber-300 font-bold rounded flex items-center justify-center transition-colors shadow ${isWide ? 'gap-1.5 px-2 text-xs justify-start' : ''}`}
+            >
+              <Check className="w-3.5 h-3.5 shrink-0" />
+              {isWide && <span>Stamp (Enter)</span>}
+            </button>
+          )}
+
           <button
-            onClick={onFlipHorizontalSelection}
-            title="Flip Selection Horizontal"
-            className="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded flex items-center justify-center"
+            onClick={onDeleteSelection}
+            title="Delete Selected Pixels (Delete / Backspace)"
+            className={`p-1.5 text-red-400 hover:text-red-200 hover:bg-red-500/20 rounded flex items-center justify-center transition-colors border border-red-500/30 ${isWide ? 'gap-1.5 px-2 text-xs justify-start' : ''}`}
           >
-            <FlipHorizontal className="w-4 h-4" />
+            <Trash2 className="w-3.5 h-3.5 shrink-0" />
+            {isWide && <span>Delete Pixels</span>}
           </button>
-          <button
-            onClick={onFlipVerticalSelection}
-            title="Flip Selection Vertical"
-            className="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded flex items-center justify-center"
-          >
-            <FlipVertical className="w-4 h-4" />
-          </button>
+
+          <div className="grid grid-cols-2 gap-1 w-full">
+            <button
+              onClick={onFlipHorizontalSelection}
+              title="Flip Selection Horizontal"
+              className="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded flex items-center justify-center transition-colors"
+            >
+              <FlipHorizontal className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={onFlipVerticalSelection}
+              title="Flip Selection Vertical"
+              className="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded flex items-center justify-center transition-colors"
+            >
+              <FlipVertical className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
           <button
             onClick={onClearSelection}
-            title="Deselect"
-            className="text-[10px] py-1 bg-neutral-800 text-neutral-300 hover:text-white rounded"
+            title="Deselect (Escape)"
+            className="text-[10px] py-1 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white rounded transition-colors text-center"
           >
-            Esc
+            {isWide ? 'Deselect (Esc)' : 'Esc'}
           </button>
         </div>
       )}

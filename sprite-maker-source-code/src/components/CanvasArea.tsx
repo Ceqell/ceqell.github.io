@@ -11,8 +11,17 @@ import {
   getRectanglePoints, 
   getCirclePoints, 
   floodFill, 
-  adjustBrightness 
+  adjustBrightness,
+  getPolygonEnclosedPixels
 } from '../utils/pixelMath';
+import { 
+  Trash2, 
+  Move, 
+  Check, 
+  X, 
+  FlipHorizontal, 
+  FlipVertical 
+} from 'lucide-react';
 
 interface CanvasAreaProps {
   canvasWidth: number;
@@ -38,6 +47,11 @@ interface CanvasAreaProps {
   references: ReferenceImage[];
   selection: SelectionState;
   onUpdateSelection: (newSel: SelectionState) => void;
+  onDeleteSelection?: () => void;
+  onCommitFloatingSelection?: () => void;
+  onFlipHorizontalSelection?: () => void;
+  onFlipVerticalSelection?: () => void;
+  onClearSelection?: () => void;
   zoom: number;
   onZoomChange: (newZoom: number) => void;
   animationsEnabled?: boolean;
@@ -67,6 +81,11 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
   references,
   selection,
   onUpdateSelection,
+  onDeleteSelection,
+  onCommitFloatingSelection,
+  onFlipHorizontalSelection,
+  onFlipVerticalSelection,
+  onClearSelection,
   zoom,
   onZoomChange,
   animationsEnabled = true,
@@ -105,6 +124,157 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
   // Active layer
   const activeLayer = layers.find(l => l.id === activeLayerId);
+
+  // Moving selection state
+  const [isMovingSelection, setIsMovingSelection] = useState<boolean>(false);
+  const selectionMoveStart = useRef<{
+    startPixel: { x: number; y: number };
+    initialFloatingX: number;
+    initialFloatingY: number;
+  } | null>(null);
+
+  // Lasso drawing state
+  const [isLassoing, setIsLassoing] = useState<boolean>(false);
+  const [lassoPoints, setLassoPoints] = useState<{ x: number; y: number }[]>([]);
+  const lassoPointsRef = useRef<{ x: number; y: number }[]>([]);
+
+  // Fast Set lookup for lasso selected pixel keys
+  const lassoKeySet = React.useMemo(() => {
+    if (selection.type === 'lasso' && selection.selectedPixelKeys) {
+      return new Set(selection.selectedPixelKeys);
+    }
+    return null;
+  }, [selection.type, selection.selectedPixelKeys]);
+
+  // Check if pixel is inside the active selection
+  const isPixelInSelection = useCallback((pixel: { x: number; y: number } | null) => {
+    if (!pixel || !selection.active) return false;
+    if (selection.floating) {
+      const relX = pixel.x - selection.floatingX;
+      const relY = pixel.y - selection.floatingY;
+      if (relX >= 0 && relX < selection.floatingWidth && relY >= 0 && relY < selection.floatingHeight) {
+        if (selection.floatingMask) {
+          return !!selection.floatingMask[relY * selection.floatingWidth + relX];
+        }
+        return true;
+      }
+      return false;
+    }
+    if (selection.type === 'lasso' && lassoKeySet) {
+      return lassoKeySet.has(`${pixel.x},${pixel.y}`);
+    }
+    const minX = Math.min(selection.startX, selection.endX);
+    const maxX = Math.max(selection.startX, selection.endX);
+    const minY = Math.min(selection.startY, selection.endY);
+    const maxY = Math.max(selection.startY, selection.endY);
+    return pixel.x >= minX && pixel.x <= maxX && pixel.y >= minY && pixel.y <= maxY;
+  }, [selection, lassoKeySet]);
+
+  // Finish freehand lasso selection
+  const finishLassoSelection = useCallback((points: { x: number; y: number }[]) => {
+    if (points.length < 3) {
+      onClearSelection?.();
+      return;
+    }
+    const enclosed = getPolygonEnclosedPixels(points);
+    if (enclosed.length === 0) {
+      onClearSelection?.();
+      return;
+    }
+
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    const selectedPixelKeys: string[] = [];
+
+    enclosed.forEach(p => {
+      if (p.x >= 0 && p.x < canvasWidth && p.y >= 0 && p.y < canvasHeight) {
+        if (p.x < minX) minX = p.x;
+        if (p.x > maxX) maxX = p.x;
+        if (p.y < minY) minY = p.y;
+        if (p.y > maxY) maxY = p.y;
+        selectedPixelKeys.push(`${p.x},${p.y}`);
+      }
+    });
+
+    if (selectedPixelKeys.length > 0) {
+      onUpdateSelection({
+        active: true,
+        type: 'lasso',
+        startX: minX,
+        startY: minY,
+        endX: maxX,
+        endY: maxY,
+        selectedPixelKeys,
+        floating: false,
+        floatingX: minX,
+        floatingY: minY,
+        floatingWidth: maxX - minX + 1,
+        floatingHeight: maxY - minY + 1,
+        floatingPixels: [],
+      });
+    } else {
+      onClearSelection?.();
+    }
+  }, [canvasWidth, canvasHeight, onUpdateSelection, onClearSelection]);
+
+  // Lift selected pixels from active layer into floating state for moving
+  const liftSelectionToFloating = useCallback((initialDragPixel: { x: number; y: number }) => {
+    if (!activeLayer) return;
+    let minX: number, maxX: number, minY: number, maxY: number;
+    let selectedKeys: Set<string> | null = null;
+
+    if (selection.type === 'lasso' && selection.selectedPixelKeys && selection.selectedPixelKeys.length > 0) {
+      selectedKeys = new Set(selection.selectedPixelKeys);
+      minX = selection.startX;
+      maxX = selection.endX;
+      minY = selection.startY;
+      maxY = selection.endY;
+    } else {
+      minX = Math.min(selection.startX, selection.endX);
+      maxX = Math.max(selection.startX, selection.endX);
+      minY = Math.min(selection.startY, selection.endY);
+      maxY = Math.max(selection.startY, selection.endY);
+    }
+
+    const width = Math.max(1, maxX - minX + 1);
+    const height = Math.max(1, maxY - minY + 1);
+    const floatingPixels = new Array(width * height).fill('');
+    const floatingMask = new Array(width * height).fill(false);
+    const newLayerPixels = [...activeLayer.pixels];
+
+    for (let y = minY; y <= maxY; y++) {
+      for (let x = minX; x <= maxX; x++) {
+        const localIdx = (y - minY) * width + (x - minX);
+        if (selectedKeys && !selectedKeys.has(`${x},${y}`)) continue;
+        if (x >= 0 && x < canvasWidth && y >= 0 && y < canvasHeight) {
+          const layerIdx = y * canvasWidth + x;
+          const color = activeLayer.pixels[layerIdx] || '';
+          floatingPixels[localIdx] = color;
+          floatingMask[localIdx] = true;
+          newLayerPixels[layerIdx] = ''; // erase original spot from layer while floating
+        }
+      }
+    }
+
+    onUpdateLayerPixels(activeLayer.id, newLayerPixels, false);
+
+    onUpdateSelection({
+      ...selection,
+      floating: true,
+      floatingX: minX,
+      floatingY: minY,
+      floatingWidth: width,
+      floatingHeight: height,
+      floatingPixels,
+      floatingMask,
+    });
+
+    selectionMoveStart.current = {
+      startPixel: initialDragPixel,
+      initialFloatingX: minX,
+      initialFloatingY: minY,
+    };
+    setIsMovingSelection(true);
+  }, [activeLayer, selection, canvasWidth, canvasHeight, onUpdateLayerPixels, onUpdateSelection]);
 
   // Symmetry axis (centered on Torso)
   const layout = getBodyLayout(canvasWidth, canvasHeight, bodyOffsetX, bodyOffsetY);
@@ -362,23 +532,118 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       ctx.restore();
     }
 
-    // 5. Selection Marquee
+    // 5. Selection Marquee & Floating Pixels
     if (selection.active) {
       ctx.save();
-      const minX = Math.min(selection.startX, selection.endX);
-      const maxX = Math.max(selection.startX, selection.endX);
-      const minY = Math.min(selection.startY, selection.endY);
-      const maxY = Math.max(selection.startY, selection.endY);
 
-      ctx.strokeStyle = '#FFFFFF';
+      // If floating, render floating pixels on overlay canvas
+      if (selection.floating && selection.floatingPixels && selection.floatingPixels.length > 0) {
+        for (let dy = 0; dy < selection.floatingHeight; dy++) {
+          for (let dx = 0; dx < selection.floatingWidth; dx++) {
+            const localIdx = dy * selection.floatingWidth + dx;
+            if (selection.floatingMask && !selection.floatingMask[localIdx]) continue;
+            const color = selection.floatingPixels[localIdx];
+            if (color && color !== '') {
+              ctx.fillStyle = color;
+              ctx.fillRect(
+                (selection.floatingX + dx) * zoom,
+                (selection.floatingY + dy) * zoom,
+                zoom,
+                zoom
+              );
+            }
+          }
+        }
+
+        // Floating dashed outline around moved pixels
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 4]);
+        ctx.strokeRect(
+          selection.floatingX * zoom,
+          selection.floatingY * zoom,
+          selection.floatingWidth * zoom,
+          selection.floatingHeight * zoom
+        );
+      } else {
+        // Not floating: Draw selection bounds and mask
+        if (selection.type === 'lasso' && selection.selectedPixelKeys && selection.selectedPixelKeys.length > 0) {
+          // Translucent cyan highlight over all pixels in lasso selection
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.2)';
+          selection.selectedPixelKeys.forEach(key => {
+            const [xs, ys] = key.split(',');
+            const x = parseInt(xs, 10);
+            const y = parseInt(ys, 10);
+            ctx.fillRect(x * zoom, y * zoom, zoom, zoom);
+          });
+
+          // Dashed box around lasso selection
+          const minX = Math.min(selection.startX, selection.endX);
+          const maxX = Math.max(selection.startX, selection.endX);
+          const minY = Math.min(selection.startY, selection.endY);
+          const maxY = Math.max(selection.startY, selection.endY);
+
+          ctx.strokeStyle = '#38BDF8';
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([4, 4]);
+          ctx.strokeRect(
+            minX * zoom,
+            minY * zoom,
+            (maxX - minX + 1) * zoom,
+            (maxY - minY + 1) * zoom
+          );
+        } else {
+          // Standard box selection
+          const minX = Math.min(selection.startX, selection.endX);
+          const maxX = Math.max(selection.startX, selection.endX);
+          const minY = Math.min(selection.startY, selection.endY);
+          const maxY = Math.max(selection.startY, selection.endY);
+
+          ctx.strokeStyle = '#FFFFFF';
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([4, 4]);
+          ctx.strokeRect(
+            minX * zoom,
+            minY * zoom,
+            (maxX - minX + 1) * zoom,
+            (maxY - minY + 1) * zoom
+          );
+
+          ctx.fillStyle = 'rgba(245, 158, 11, 0.08)';
+          ctx.fillRect(
+            minX * zoom,
+            minY * zoom,
+            (maxX - minX + 1) * zoom,
+            (maxY - minY + 1) * zoom
+          );
+        }
+      }
+      ctx.restore();
+    }
+
+    // 5b. Active live Lasso path in progress
+    if (isLassoing && lassoPoints.length > 1) {
+      ctx.save();
+      ctx.strokeStyle = '#38BDF8';
       ctx.lineWidth = 1.5;
-      ctx.setLineDash([4, 4]);
-      ctx.strokeRect(
-        minX * zoom,
-        minY * zoom,
-        (maxX - minX + 1) * zoom,
-        (maxY - minY + 1) * zoom
-      );
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      lassoPoints.forEach((p, idx) => {
+        const cx = (p.x + 0.5) * zoom;
+        const cy = (p.y + 0.5) * zoom;
+        if (idx === 0) ctx.moveTo(cx, cy);
+        else ctx.lineTo(cx, cy);
+      });
+      ctx.stroke();
+
+      // Translucent closing line back to starting vertex
+      const first = lassoPoints[0];
+      const last = lassoPoints[lassoPoints.length - 1];
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+      ctx.beginPath();
+      ctx.moveTo((last.x + 0.5) * zoom, (last.y + 0.5) * zoom);
+      ctx.lineTo((first.x + 0.5) * zoom, (first.y + 0.5) * zoom);
+      ctx.stroke();
       ctx.restore();
     }
 
@@ -411,7 +676,9 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     selection, 
     hoverPixel, 
     brushSize,
-    layout
+    layout,
+    isLassoing,
+    lassoPoints
   ]);
 
   // Apply pixel changes to active layer with symmetry support
@@ -499,7 +766,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     };
   }, []);
 
-  // Global mouse up for pan and guide drag
+  // Global mouse up for pan, guide drag, and moving selection
   useEffect(() => {
     const handleGlobalMouseUp = () => {
       if (isDraggingGuide) {
@@ -509,10 +776,14 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       if (isPanning) {
         setIsPanning(false);
       }
+      if (isMovingSelection) {
+        setIsMovingSelection(false);
+        selectionMoveStart.current = null;
+      }
     };
     window.addEventListener('mouseup', handleGlobalMouseUp);
     return () => window.removeEventListener('mouseup', handleGlobalMouseUp);
-  }, [isDraggingGuide, isPanning]);
+  }, [isDraggingGuide, isPanning, isMovingSelection]);
 
   // Mouse handlers
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -546,6 +817,62 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       return;
     }
 
+    // 1. Check if clicking inside active selection to move it
+    if (selection.active && isPixelInSelection(pixel)) {
+      if (!selection.floating) {
+        liftSelectionToFloating(pixel);
+      } else {
+        selectionMoveStart.current = {
+          startPixel: pixel,
+          initialFloatingX: selection.floatingX,
+          initialFloatingY: selection.floatingY,
+        };
+        setIsMovingSelection(true);
+      }
+      return;
+    }
+
+    // 2. If clicking outside an active selection:
+    if (selection.active) {
+      if (selection.floating) {
+        onCommitFloatingSelection?.();
+      }
+      if (currentTool !== 'select' && currentTool !== 'lasso') {
+        onClearSelection?.();
+      }
+    }
+
+    // 3. Lasso Tool start
+    if (currentTool === 'lasso') {
+      setIsLassoing(true);
+      lassoPointsRef.current = [pixel];
+      setLassoPoints([pixel]);
+      onClearSelection?.();
+      return;
+    }
+
+    // 4. Box Select Tool start
+    if (currentTool === 'select') {
+      setIsDrawing(true);
+      setDragStartPos(pixel);
+      onUpdateSelection({
+        active: true,
+        type: 'rectangle',
+        startX: pixel.x,
+        startY: pixel.y,
+        endX: pixel.x,
+        endY: pixel.y,
+        floating: false,
+        floatingX: 0,
+        floatingY: 0,
+        floatingWidth: 0,
+        floatingHeight: 0,
+        floatingPixels: [],
+      });
+      return;
+    }
+
+    // 5. Standard Drawing Tools
     setIsDrawing(true);
     setDragStartPos(pixel);
     strokeModifiedRef.current = false;
@@ -599,20 +926,6 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       applyPixelPoints([pixel], 'lighten', false);
     } else if (currentTool === 'darken') {
       applyPixelPoints([pixel], 'darken', false);
-    } else if (currentTool === 'select') {
-      onUpdateSelection({
-        active: true,
-        startX: pixel.x,
-        startY: pixel.y,
-        endX: pixel.x,
-        endY: pixel.y,
-        floating: false,
-        floatingX: 0,
-        floatingY: 0,
-        floatingWidth: 0,
-        floatingHeight: 0,
-        floatingPixels: [],
-      });
     }
   };
 
@@ -625,6 +938,32 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     const pixel = clientToPixel(e.clientX, e.clientY);
     setHoverPixel(pixel);
     if (!pixel) return;
+
+    // Moving selection
+    if (isMovingSelection && selectionMoveStart.current) {
+      const deltaX = pixel.x - selectionMoveStart.current.startPixel.x;
+      const deltaY = pixel.y - selectionMoveStart.current.startPixel.y;
+      onUpdateSelection({
+        ...selection,
+        floatingX: selectionMoveStart.current.initialFloatingX + deltaX,
+        floatingY: selectionMoveStart.current.initialFloatingY + deltaY,
+      });
+      return;
+    }
+
+    // Freehand Lasso drawing in progress
+    if (isLassoing && lassoPointsRef.current.length > 0) {
+      const lastPoint = lassoPointsRef.current[lassoPointsRef.current.length - 1];
+      if (lastPoint.x !== pixel.x || lastPoint.y !== pixel.y) {
+        const line = getLinePoints(lastPoint.x, lastPoint.y, pixel.x, pixel.y);
+        const nextPoints = line.slice(1);
+        if (nextPoints.length > 0) {
+          lassoPointsRef.current.push(...nextPoints);
+          setLassoPoints([...lassoPointsRef.current]);
+        }
+      }
+      return;
+    }
 
     // Moving guide
     if (isDraggingGuide && guideDragStart.current) {
@@ -650,10 +989,11 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       onUpdateSelection({
         ...selection,
         active: true,
-        startX: dragStartPos.x,
-        startY: dragStartPos.y,
-        endX: pixel.x,
-        endY: pixel.y,
+        type: 'rectangle',
+        startX: Math.min(dragStartPos.x, pixel.x),
+        startY: Math.min(dragStartPos.y, pixel.y),
+        endX: Math.max(dragStartPos.x, pixel.x),
+        endY: Math.max(dragStartPos.y, pixel.y),
       });
     }
   };
@@ -661,6 +1001,21 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
   const handleMouseUp = (e: React.MouseEvent) => {
     if (isPanning) {
       setIsPanning(false);
+      return;
+    }
+
+    if (isMovingSelection) {
+      setIsMovingSelection(false);
+      selectionMoveStart.current = null;
+      return;
+    }
+
+    if (isLassoing) {
+      setIsLassoing(false);
+      const points = lassoPointsRef.current;
+      lassoPointsRef.current = [];
+      setLassoPoints([]);
+      finishLassoSelection(points);
       return;
     }
 
@@ -675,7 +1030,28 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
     const pixel = clientToPixel(e.clientX, e.clientY);
     if (dragStartPos && pixel) {
-      if (currentTool === 'line') {
+      if (currentTool === 'select') {
+        const minX = Math.min(dragStartPos.x, pixel.x);
+        const maxX = Math.max(dragStartPos.x, pixel.x);
+        const minY = Math.min(dragStartPos.y, pixel.y);
+        const maxY = Math.max(dragStartPos.y, pixel.y);
+        onUpdateSelection({
+          active: true,
+          type: 'rectangle',
+          startX: minX,
+          startY: minY,
+          endX: maxX,
+          endY: maxY,
+          floating: false,
+          floatingX: minX,
+          floatingY: minY,
+          floatingWidth: maxX - minX + 1,
+          floatingHeight: maxY - minY + 1,
+          floatingPixels: [],
+        });
+        setDragStartPos(null);
+        return;
+      } else if (currentTool === 'line') {
         const points = getLinePoints(dragStartPos.x, dragStartPos.y, pixel.x, pixel.y);
         applyPixelPoints(points, currentColor, false);
       } else if (currentTool === 'rectangle') {
@@ -728,6 +1104,62 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
         return;
       }
 
+      // 1. Check if touching inside active selection to move it
+      if (selection.active && isPixelInSelection(pixel)) {
+        if (!selection.floating) {
+          liftSelectionToFloating(pixel);
+        } else {
+          selectionMoveStart.current = {
+            startPixel: pixel,
+            initialFloatingX: selection.floatingX,
+            initialFloatingY: selection.floatingY,
+          };
+          setIsMovingSelection(true);
+        }
+        return;
+      }
+
+      // 2. If touching outside an active selection:
+      if (selection.active) {
+        if (selection.floating) {
+          onCommitFloatingSelection?.();
+        }
+        if (currentTool !== 'select' && currentTool !== 'lasso') {
+          onClearSelection?.();
+        }
+      }
+
+      // 3. Lasso Tool touch start
+      if (currentTool === 'lasso') {
+        setIsLassoing(true);
+        lassoPointsRef.current = [pixel];
+        setLassoPoints([pixel]);
+        onClearSelection?.();
+        return;
+      }
+
+      // 4. Box Select Tool touch start
+      if (currentTool === 'select') {
+        setIsDrawing(true);
+        setDragStartPos(pixel);
+        onUpdateSelection({
+          active: true,
+          type: 'rectangle',
+          startX: pixel.x,
+          startY: pixel.y,
+          endX: pixel.x,
+          endY: pixel.y,
+          floating: false,
+          floatingX: 0,
+          floatingY: 0,
+          floatingWidth: 0,
+          floatingHeight: 0,
+          floatingPixels: [],
+        });
+        return;
+      }
+
+      // 5. Standard Drawing Tools
       setIsDrawing(true);
       setDragStartPos(pixel);
       strokeModifiedRef.current = false;
@@ -773,20 +1205,6 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
         applyPixelPoints([pixel], 'lighten', false);
       } else if (currentTool === 'darken') {
         applyPixelPoints([pixel], 'darken', false);
-      } else if (currentTool === 'select') {
-        onUpdateSelection({
-          active: true,
-          startX: pixel.x,
-          startY: pixel.y,
-          endX: pixel.x,
-          endY: pixel.y,
-          floating: false,
-          floatingX: 0,
-          floatingY: 0,
-          floatingWidth: 0,
-          floatingHeight: 0,
-          floatingPixels: [],
-        });
       }
     } else if (e.touches.length >= 2) {
       // 2-finger touch: Pinch zoom & Pan
@@ -820,6 +1238,32 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       setHoverPixel(pixel);
       if (!pixel) return;
 
+      // Moving selection with touch
+      if (isMovingSelection && selectionMoveStart.current) {
+        const deltaX = pixel.x - selectionMoveStart.current.startPixel.x;
+        const deltaY = pixel.y - selectionMoveStart.current.startPixel.y;
+        onUpdateSelection({
+          ...selection,
+          floatingX: selectionMoveStart.current.initialFloatingX + deltaX,
+          floatingY: selectionMoveStart.current.initialFloatingY + deltaY,
+        });
+        return;
+      }
+
+      // Lasso drawing with touch
+      if (isLassoing && lassoPointsRef.current.length > 0) {
+        const lastPoint = lassoPointsRef.current[lassoPointsRef.current.length - 1];
+        if (lastPoint.x !== pixel.x || lastPoint.y !== pixel.y) {
+          const line = getLinePoints(lastPoint.x, lastPoint.y, pixel.x, pixel.y);
+          const nextPoints = line.slice(1);
+          if (nextPoints.length > 0) {
+            lassoPointsRef.current.push(...nextPoints);
+            setLassoPoints([...lassoPointsRef.current]);
+          }
+        }
+        return;
+      }
+
       if (isDraggingGuide && guideDragStart.current) {
         const deltaX = pixel.x - guideDragStart.current.mouseX;
         const deltaY = pixel.y - guideDragStart.current.mouseY;
@@ -843,10 +1287,11 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
         onUpdateSelection({
           ...selection,
           active: true,
-          startX: dragStartPos.x,
-          startY: dragStartPos.y,
-          endX: pixel.x,
-          endY: pixel.y,
+          type: 'rectangle',
+          startX: Math.min(dragStartPos.x, pixel.x),
+          startY: Math.min(dragStartPos.y, pixel.y),
+          endX: Math.max(dragStartPos.x, pixel.x),
+          endY: Math.max(dragStartPos.y, pixel.y),
         });
       }
     } else if (e.touches.length >= 2 && touchState.current.mode === 'pinch') {
@@ -883,6 +1328,23 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       return;
     }
 
+    if (isMovingSelection) {
+      setIsMovingSelection(false);
+      selectionMoveStart.current = null;
+      touchState.current.mode = 'none';
+      return;
+    }
+
+    if (isLassoing) {
+      setIsLassoing(false);
+      const points = lassoPointsRef.current;
+      lassoPointsRef.current = [];
+      setLassoPoints([]);
+      finishLassoSelection(points);
+      touchState.current.mode = 'none';
+      return;
+    }
+
     if (isDraggingGuide) {
       setIsDraggingGuide(false);
       guideDragStart.current = null;
@@ -894,7 +1356,29 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
         const touch = e.changedTouches[0];
         const pixel = clientToPixel(touch.clientX, touch.clientY);
         if (pixel) {
-          if (currentTool === 'line') {
+          if (currentTool === 'select') {
+            const minX = Math.min(dragStartPos.x, pixel.x);
+            const maxX = Math.max(dragStartPos.x, pixel.x);
+            const minY = Math.min(dragStartPos.y, pixel.y);
+            const maxY = Math.max(dragStartPos.y, pixel.y);
+            onUpdateSelection({
+              active: true,
+              type: 'rectangle',
+              startX: minX,
+              startY: minY,
+              endX: maxX,
+              endY: maxY,
+              floating: false,
+              floatingX: minX,
+              floatingY: minY,
+              floatingWidth: maxX - minX + 1,
+              floatingHeight: maxY - minY + 1,
+              floatingPixels: [],
+            });
+            setDragStartPos(null);
+            touchState.current.mode = 'none';
+            return;
+          } else if (currentTool === 'line') {
             const points = getLinePoints(dragStartPos.x, dragStartPos.y, pixel.x, pixel.y);
             applyPixelPoints(points, currentColor, false);
           } else if (currentTool === 'rectangle') {
@@ -940,7 +1424,11 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
             ? 'cursor-grabbing' 
             : isMovingGuide 
               ? 'cursor-move' 
-              : 'cursor-crosshair'
+              : isMovingSelection || isPixelInSelection(hoverPixel)
+                ? 'cursor-move'
+                : (currentTool === 'select' || currentTool === 'lasso')
+                  ? 'cursor-crosshair'
+                  : 'cursor-crosshair'
       }`}
     >
       {/* Floating Guide Position Controller */}
@@ -1071,6 +1559,97 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
           }}
           className="absolute inset-0 pointer-events-none"
         />
+
+        {/* Floating Selection Quick Action Bar on Stage */}
+        {selection.active && !isLassoing && (
+          (() => {
+            const minX = selection.floating ? selection.floatingX : Math.min(selection.startX, selection.endX);
+            const minY = selection.floating ? selection.floatingY : Math.min(selection.startY, selection.endY);
+            const width = selection.floating ? selection.floatingWidth : Math.abs(selection.endX - selection.startX) + 1;
+            const height = selection.floating ? selection.floatingHeight : Math.abs(selection.endY - selection.startY) + 1;
+
+            const selPixelLeft = minX * zoom;
+            const selPixelTop = minY * zoom;
+            const showBelow = selPixelTop < 38;
+            const topPos = showBelow ? (minY + height) * zoom + 6 : selPixelTop - 36;
+
+            return (
+              <div
+                style={{
+                  left: `${Math.max(0, Math.min(canvasWidth * zoom - 220, selPixelLeft))}px`,
+                  top: `${topPos}px`,
+                }}
+                onMouseDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+                className="absolute z-30 bg-neutral-900/95 border border-amber-500/50 rounded-xl px-2 py-1 shadow-2xl flex items-center gap-1.5 backdrop-blur-md animate-in fade-in select-none pointer-events-auto"
+              >
+                <div className="flex items-center gap-1 text-[10px] font-bold text-amber-300 px-1">
+                  <Move className="w-3 h-3 text-amber-400" />
+                  <span>{selection.floating ? 'Moving Pixels' : selection.type === 'lasso' ? 'Lasso' : 'Box'}</span>
+                </div>
+
+                <div className="h-4 w-px bg-neutral-800" />
+
+                {selection.floating && onCommitFloatingSelection && (
+                  <button
+                    type="button"
+                    onClick={onCommitFloatingSelection}
+                    title="Stamp / Commit Moved Pixels (Enter)"
+                    className="flex items-center gap-1 px-2 py-0.5 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs rounded transition-colors shadow"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Stamp</span>
+                  </button>
+                )}
+
+                {onDeleteSelection && (
+                  <button
+                    type="button"
+                    onClick={onDeleteSelection}
+                    title="Delete Selected Pixels (Delete / Backspace)"
+                    className="flex items-center gap-1 px-2 py-0.5 bg-red-600/90 hover:bg-red-500 text-white font-medium text-xs rounded transition-colors shadow"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    <span>Del</span>
+                  </button>
+                )}
+
+                <div className="flex items-center gap-0.5">
+                  {onFlipHorizontalSelection && (
+                    <button
+                      type="button"
+                      onClick={onFlipHorizontalSelection}
+                      title="Flip Horizontal"
+                      className="p-1 hover:bg-neutral-800 rounded text-neutral-300 hover:text-white transition-colors"
+                    >
+                      <FlipHorizontal className="w-3 h-3" />
+                    </button>
+                  )}
+                  {onFlipVerticalSelection && (
+                    <button
+                      type="button"
+                      onClick={onFlipVerticalSelection}
+                      title="Flip Vertical"
+                      className="p-1 hover:bg-neutral-800 rounded text-neutral-300 hover:text-white transition-colors"
+                    >
+                      <FlipVertical className="w-3 h-3" />
+                    </button>
+                  )}
+                  {onClearSelection && (
+                    <button
+                      type="button"
+                      onClick={onClearSelection}
+                      title="Deselect (Escape)"
+                      className="p-1 hover:bg-neutral-800 rounded text-neutral-400 hover:text-white transition-colors ml-0.5"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })()
+        )}
       </div>
 
       {/* Coordinate & Zoom pill indicator in bottom left */}

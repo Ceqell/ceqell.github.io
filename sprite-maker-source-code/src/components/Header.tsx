@@ -139,9 +139,13 @@ export const Header: React.FC<HeaderProps> = ({
         )}
 
         <div className="flex items-center gap-2 shrink-0">
-          {/* Retro Yellow Smiley Avatar icon */}
-          <div className="w-8 h-8 rounded-lg bg-amber-400 text-neutral-950 flex items-center justify-center font-bold shadow-md shadow-amber-400/20 font-mono text-base border border-amber-300 shrink-0">
-            :)
+          {/* App Brand Icon */}
+          <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center shadow-md shadow-pink-500/20 border border-neutral-700/80 bg-neutral-950 shrink-0">
+            <img 
+              src="/FigurayMaker.png" 
+              alt="FigurayMaker Icon" 
+              className="w-full h-full object-cover"
+            />
           </div>
           <div className="shrink-0">
             <div className="flex items-center gap-1.5 whitespace-nowrap">

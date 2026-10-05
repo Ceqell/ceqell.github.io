@@ -185,3 +185,69 @@ export function flipPixelsVertical(pixels: string[], w: number, h: number): stri
   }
   return result;
 }
+
+// Compute all integer grid pixels enclosed by a freehand lasso polygon
+export function getPolygonEnclosedPixels(points: Point[]): Point[] {
+  if (points.length === 0) return [];
+  if (points.length === 1) return [points[0]];
+  if (points.length === 2) return getLinePoints(points[0].x, points[0].y, points[1].x, points[1].y);
+
+  const perimeterSet = new Set<string>();
+  const perimeterList: Point[] = [];
+
+  const addPoint = (x: number, y: number) => {
+    const key = `${x},${y}`;
+    if (!perimeterSet.has(key)) {
+      perimeterSet.add(key);
+      perimeterList.push({ x, y });
+    }
+  };
+
+  // 1. Trace all perimeter points with Bresenham lines between vertices
+  for (let i = 0; i < points.length; i++) {
+    const p1 = points[i];
+    const p2 = points[(i + 1) % points.length];
+    const line = getLinePoints(p1.x, p1.y, p2.x, p2.y);
+    for (const pt of line) {
+      addPoint(pt.x, pt.y);
+    }
+  }
+
+  // 2. Compute bounding box
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  for (const p of perimeterList) {
+    if (p.x < minX) minX = p.x;
+    if (p.x > maxX) maxX = p.x;
+    if (p.y < minY) minY = p.y;
+    if (p.y > maxY) maxY = p.y;
+  }
+
+  const result: Point[] = [...perimeterList];
+  const resultSet = new Set<string>(perimeterSet);
+
+  // 3. Ray casting algorithm to detect interior pixels
+  const isInside = (px: number, py: number) => {
+    let inside = false;
+    for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+      const xi = points[i].x, yi = points[i].y;
+      const xj = points[j].x, yj = points[j].y;
+      const intersect = ((yi > py) !== (yj > py)) &&
+        (px < ((xj - xi) * (py - yi)) / (yj - yi + 0.0000001) + xi);
+      if (intersect) inside = !inside;
+    }
+    return inside;
+  };
+
+  for (let y = minY; y <= maxY; y++) {
+    for (let x = minX; x <= maxX; x++) {
+      const key = `${x},${y}`;
+      if (!resultSet.has(key) && isInside(x + 0.5, y + 0.5)) {
+        resultSet.add(key);
+        result.push({ x, y });
+      }
+    }
+  }
+
+  return result;
+}
+

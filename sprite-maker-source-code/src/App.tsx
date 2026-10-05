@@ -676,9 +676,164 @@ export default function App() {
   };
 
   // Selection manipulations
-  const handleFlipHorizontalSelection = () => {
+  const handleCommitFloatingSelection = useCallback(() => {
+    if (!selection.active || !selection.floating) return;
     const activeLayer = layers.find(l => l.id === activeLayerId);
-    if (!selection.active || !activeLayer) return;
+    if (!activeLayer) return;
+
+    const newPixels = [...activeLayer.pixels];
+    const { floatingX, floatingY, floatingWidth, floatingHeight, floatingPixels, floatingMask } = selection;
+
+    for (let dy = 0; dy < floatingHeight; dy++) {
+      for (let dx = 0; dx < floatingWidth; dx++) {
+        const localIdx = dy * floatingWidth + dx;
+        if (floatingMask && !floatingMask[localIdx]) continue;
+        const color = floatingPixels[localIdx];
+        if (color && color !== '') {
+          const targetX = floatingX + dx;
+          const targetY = floatingY + dy;
+          if (targetX >= 0 && targetX < canvasWidth && targetY >= 0 && targetY < canvasHeight) {
+            newPixels[targetY * canvasWidth + targetX] = color;
+          }
+        }
+      }
+    }
+
+    handleUpdateLayerPixels(activeLayer.id, newPixels, true);
+    const newSelectedKeys: string[] = [];
+    if (floatingMask) {
+      for (let dy = 0; dy < floatingHeight; dy++) {
+        for (let dx = 0; dx < floatingWidth; dx++) {
+          if (floatingMask[dy * floatingWidth + dx]) {
+            newSelectedKeys.push(`${floatingX + dx},${floatingY + dy}`);
+          }
+        }
+      }
+    }
+
+    setSelection(prev => ({
+      ...prev,
+      floating: false,
+      startX: floatingX,
+      startY: floatingY,
+      endX: floatingX + floatingWidth - 1,
+      endY: floatingY + floatingHeight - 1,
+      selectedPixelKeys: newSelectedKeys.length > 0 ? newSelectedKeys : prev.selectedPixelKeys,
+      floatingPixels: [],
+      floatingMask: undefined,
+    }));
+  }, [selection, layers, activeLayerId, canvasWidth, canvasHeight, handleUpdateLayerPixels]);
+
+  const handleDeleteSelection = useCallback(() => {
+    if (!selection.active) return;
+    const activeLayer = layers.find(l => l.id === activeLayerId);
+    if (!activeLayer) return;
+
+    if (selection.floating) {
+      // Discard floating pixels without stamping them back down
+      setSelection({
+        active: false,
+        startX: 0,
+        startY: 0,
+        endX: 0,
+        endY: 0,
+        floating: false,
+        floatingX: 0,
+        floatingY: 0,
+        floatingWidth: 0,
+        floatingHeight: 0,
+        floatingPixels: [],
+      });
+      pushHistory(layers, activeLayer.id);
+      return;
+    }
+
+    const newPixels = [...activeLayer.pixels];
+    if (selection.type === 'lasso' && selection.selectedPixelKeys) {
+      const keys = new Set(selection.selectedPixelKeys);
+      for (const key of keys) {
+        const [xs, ys] = key.split(',');
+        const x = parseInt(xs, 10);
+        const y = parseInt(ys, 10);
+        if (x >= 0 && x < canvasWidth && y >= 0 && y < canvasHeight) {
+          newPixels[y * canvasWidth + x] = '';
+        }
+      }
+    } else {
+      const minX = Math.min(selection.startX, selection.endX);
+      const maxX = Math.max(selection.startX, selection.endX);
+      const minY = Math.min(selection.startY, selection.endY);
+      const maxY = Math.max(selection.startY, selection.endY);
+      for (let y = minY; y <= maxY; y++) {
+        for (let x = minX; x <= maxX; x++) {
+          if (x >= 0 && x < canvasWidth && y >= 0 && y < canvasHeight) {
+            newPixels[y * canvasWidth + x] = '';
+          }
+        }
+      }
+    }
+
+    handleUpdateLayerPixels(activeLayer.id, newPixels, true);
+    setSelection({
+      active: false,
+      startX: 0,
+      startY: 0,
+      endX: 0,
+      endY: 0,
+      floating: false,
+      floatingX: 0,
+      floatingY: 0,
+      floatingWidth: 0,
+      floatingHeight: 0,
+      floatingPixels: [],
+    });
+  }, [selection, layers, activeLayerId, canvasWidth, canvasHeight, handleUpdateLayerPixels, pushHistory]);
+
+  const handleClearSelection = useCallback(() => {
+    if (selection.floating) {
+      handleCommitFloatingSelection();
+    }
+    setSelection({
+      active: false,
+      startX: 0,
+      startY: 0,
+      endX: 0,
+      endY: 0,
+      floating: false,
+      floatingX: 0,
+      floatingY: 0,
+      floatingWidth: 0,
+      floatingHeight: 0,
+      floatingPixels: [],
+      selectedPixelKeys: undefined,
+    });
+  }, [selection.floating, handleCommitFloatingSelection]);
+
+  const handleFlipHorizontalSelection = () => {
+    if (!selection.active) return;
+    const activeLayer = layers.find(l => l.id === activeLayerId);
+    if (!activeLayer) return;
+
+    if (selection.floating) {
+      const flipped = flipPixelsHorizontal(selection.floatingPixels, selection.floatingWidth, selection.floatingHeight);
+      let flippedMask = selection.floatingMask;
+      if (flippedMask) {
+        const newMask = new Array(selection.floatingWidth * selection.floatingHeight).fill(false);
+        for (let y = 0; y < selection.floatingHeight; y++) {
+          for (let x = 0; x < selection.floatingWidth; x++) {
+            newMask[y * selection.floatingWidth + (selection.floatingWidth - 1 - x)] = flippedMask[y * selection.floatingWidth + x];
+          }
+        }
+        flippedMask = newMask;
+      }
+      setSelection(prev => ({
+        ...prev,
+        floatingPixels: flipped,
+        floatingMask: flippedMask,
+      }));
+      return;
+    }
+
     const minX = Math.min(selection.startX, selection.endX);
     const maxX = Math.max(selection.startX, selection.endX);
     const minY = Math.min(selection.startY, selection.endY);
@@ -706,8 +861,30 @@ export default function App() {
   };
 
   const handleFlipVerticalSelection = () => {
+    if (!selection.active) return;
     const activeLayer = layers.find(l => l.id === activeLayerId);
-    if (!selection.active || !activeLayer) return;
+    if (!activeLayer) return;
+
+    if (selection.floating) {
+      const flipped = flipPixelsVertical(selection.floatingPixels, selection.floatingWidth, selection.floatingHeight);
+      let flippedMask = selection.floatingMask;
+      if (flippedMask) {
+        const newMask = new Array(selection.floatingWidth * selection.floatingHeight).fill(false);
+        for (let y = 0; y < selection.floatingHeight; y++) {
+          for (let x = 0; x < selection.floatingWidth; x++) {
+            newMask[(selection.floatingHeight - 1 - y) * selection.floatingWidth + x] = flippedMask[y * selection.floatingWidth + x];
+          }
+        }
+        flippedMask = newMask;
+      }
+      setSelection(prev => ({
+        ...prev,
+        floatingPixels: flipped,
+        floatingMask: flippedMask,
+      }));
+      return;
+    }
+
     const minX = Math.min(selection.startX, selection.endX);
     const maxX = Math.max(selection.startX, selection.endX);
     const minY = Math.min(selection.startY, selection.endY);
@@ -732,22 +909,6 @@ export default function App() {
     }
 
     handleUpdateLayerPixels(activeLayer.id, newPixels, true);
-  };
-
-  const handleClearSelection = () => {
-    setSelection({
-      active: false,
-      startX: 0,
-      startY: 0,
-      endX: 0,
-      endY: 0,
-      floating: false,
-      floatingX: 0,
-      floatingY: 0,
-      floatingWidth: 0,
-      floatingHeight: 0,
-      floatingPixels: [],
-    });
   };
 
   // Save Project JSON
@@ -838,6 +999,29 @@ export default function App() {
         setCurrentTool('circle');
       } else if (e.key.toLowerCase() === 'm') {
         setCurrentTool('select');
+      } else if (e.key.toLowerCase() === 'q') {
+        setCurrentTool('lasso');
+      } else if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (selection.active) {
+          e.preventDefault();
+          handleDeleteSelection();
+        }
+      } else if (e.key === 'Enter') {
+        if (selection.active && selection.floating) {
+          e.preventDefault();
+          handleCommitFloatingSelection();
+        }
+      } else if (e.key === 'Escape') {
+        handleClearSelection();
+      } else if (selection.active && selection.floating && (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+        e.preventDefault();
+        const dx = e.key === 'ArrowLeft' ? -1 : e.key === 'ArrowRight' ? 1 : 0;
+        const dy = e.key === 'ArrowUp' ? -1 : e.key === 'ArrowDown' ? 1 : 0;
+        setSelection(prev => ({
+          ...prev,
+          floatingX: prev.floatingX + dx,
+          floatingY: prev.floatingY + dy,
+        }));
       } else if (e.key.toLowerCase() === 'g') {
         setShowGrid(g => !g);
       } else if (e.key.toLowerCase() === 'h') {
@@ -846,8 +1030,6 @@ export default function App() {
         setShowNumbers(n => !n);
       } else if (e.key.toLowerCase() === 's' && !e.ctrlKey && !e.metaKey) {
         setSymmetryActive(s => !s);
-      } else if (e.key === 'Escape') {
-        handleClearSelection();
       } else if (e.key === '[') {
         setBrushSize(b => Math.max(1, b - 1));
       } else if (e.key === ']') {
@@ -857,7 +1039,7 @@ export default function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleUndo, handleRedo]);
+  }, [handleUndo, handleRedo, selection.active, selection.floating, handleDeleteSelection, handleCommitFloatingSelection, handleClearSelection]);
 
   return (
     <div className={`flex flex-col h-screen w-screen overflow-hidden bg-neutral-950 font-sans text-neutral-100 select-none ${animationsEnabled ? '' : 'snappy-mode'}`}>
@@ -922,8 +1104,11 @@ export default function App() {
               symmetryActive={symmetryActive}
               onToggleSymmetry={() => setSymmetryActive(s => !s)}
               hasSelection={selection.active}
+              isFloating={selection.floating}
+              onCommitFloatingSelection={handleCommitFloatingSelection}
               onFlipHorizontalSelection={handleFlipHorizontalSelection}
               onFlipVerticalSelection={handleFlipVerticalSelection}
+              onDeleteSelection={handleDeleteSelection}
               onClearSelection={handleClearSelection}
               canUndo={historyIndex > 0}
               canRedo={historyIndex < history.length - 1}
@@ -980,6 +1165,11 @@ export default function App() {
           references={references}
           selection={selection}
           onUpdateSelection={setSelection}
+          onDeleteSelection={handleDeleteSelection}
+          onCommitFloatingSelection={handleCommitFloatingSelection}
+          onFlipHorizontalSelection={handleFlipHorizontalSelection}
+          onFlipVerticalSelection={handleFlipVerticalSelection}
+          onClearSelection={handleClearSelection}
           zoom={zoom}
           onZoomChange={setZoom}
           animationsEnabled={animationsEnabled}
