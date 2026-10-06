@@ -375,8 +375,20 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
     // 1. Pixel Grid
     if (showGrid && zoom >= 8) {
-      const isLightRetroTheme = currentThemeId === 'retro-skeuomorphic' || (typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'retro-skeuomorphic');
-      ctx.strokeStyle = isLightRetroTheme ? 'rgba(0, 0, 0, 0.18)' : 'rgba(255, 255, 255, 0.09)';
+      const theme = currentThemeId || (typeof document !== 'undefined' ? document.documentElement.getAttribute('data-theme') : 'retro-skeuomorphic');
+      if (theme === 'retro-beige') {
+        // Crisp, darker warm grid line tuned for #FFF1DD and #E6D7C3 checkerboard tiles
+        ctx.strokeStyle = 'rgba(45, 34, 20, 0.22)';
+      } else if (theme === 'retro-skeuomorphic') {
+        // 2008 Chrome Retro (cool light grey)
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.18)';
+      } else if (theme === 'retro-dark') {
+        // 2008 Dark Retro (metallic gunmetal dark)
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.13)';
+      } else {
+        // Dark theme fallback
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.09)';
+      }
       ctx.lineWidth = 1;
       for (let x = 0; x <= canvasWidth; x++) {
         ctx.beginPath();

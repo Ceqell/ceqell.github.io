@@ -117,6 +117,152 @@
   --scrollbar-thumb-hover: #64748b;
 }
 
+[data-theme="retro-beige"] {
+  --bg-app: #E6D7C3;
+  --bg-surface: #f4eada;
+  --bg-surface-raised: #FFF1DD;
+  --bg-input: #fffdf9;
+  --border-ui: #c8b8a2;
+  --border-highlight: #fff8ed;
+  --text-primary: #2d261e;
+  --text-secondary: #635748;
+  --text-muted: #8a7b68;
+  --text-accent: #0284c7;
+  --accent-color: #0284c7;
+
+  /* 50/50 Dual-Tone Chrome Plated Gradients with warm banner beige tones (#FFF1DD and #E6D7C3) */
+  --chrome-button-bg: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #FFF1DD 48%,
+    #E6D7C3 50%,
+    #dacbb5 100%
+  );
+  --chrome-button-border: #b8a690;
+  --chrome-button-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(90, 70, 50, 0.12);
+  
+  --chrome-button-hover: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #fff7eb 48%,
+    #ede0cf 50%,
+    #E6D7C3 100%
+  );
+
+  --chrome-button-active: linear-gradient(
+    180deg,
+    #d4c3ac 0%,
+    #e0d1bb 49%,
+    #c9b8a1 50%,
+    #bfad94 100%
+  );
+  --chrome-button-active-shadow:
+    inset 0 2px 4px rgba(70, 50, 30, 0.28),
+    0 1px 0 rgba(255, 255, 255, 0.8);
+
+  /* Recessed / Groove Divider (Split 50/50: warm shadow on left/top, crisp highlight on right/bottom) */
+  --groove-shadow: #baa993;
+  --groove-highlight: #fff6e8;
+
+  /* Classic YouTube / Web 2.0 Golden Yellow & Red CTA Gradients */
+  --btn-gold: linear-gradient(180deg, #fff3a8 0%, #fcd34d 48%, #f59e0b 50%, #d97706 100%);
+  --btn-gold-border: #b45309;
+  --btn-gold-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 1px 2px rgba(0, 0, 0, 0.18);
+  
+  --btn-red: linear-gradient(180deg, #fca5a5 0%, #ef4444 48%, #dc2626 50%, #b91c1c 100%);
+  --btn-red-border: #991b1b;
+  --btn-red-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 1px 2px rgba(0, 0, 0, 0.22);
+  
+  --btn-blue: linear-gradient(180deg, #e0f2fe 0%, #7dd3fc 48%, #0284c7 50%, #0369a1 100%);
+  --btn-blue-border: #0369a1;
+
+  --checker-bg1: #e8dccb;
+  --checker-bg2: #FFF1DD;
+  --checker-border: #c8b8a2;
+  --canvas-desk-bg: #d9caba;
+  --grid-line-color: rgba(45, 34, 20, 0.22);
+
+  --scrollbar-track: #E6D7C3;
+  --scrollbar-thumb: #baa993;
+  --scrollbar-thumb-hover: #8a7b68;
+}
+
+[data-theme="retro-dark"] {
+  --bg-app: #121318;
+  --bg-surface: #1e2028;
+  --bg-surface-raised: #282a36;
+  --bg-input: #15161d;
+  --border-ui: #383a48;
+  --border-highlight: #4c4f62;
+  --text-primary: #f0f2f8;
+  --text-secondary: #9ea5ba;
+  --text-muted: #676d82;
+  --text-accent: #38bdf8;
+  --accent-color: #38bdf8;
+
+  /* 50/50 Dual-Tone Gunmetal Chrome Plated Gradients (2008 Vintage Dark HUD / Pro App Aesthetic) */
+  --chrome-button-bg: linear-gradient(
+    180deg,
+    #4a4d5f 0%,
+    #373a48 48%,
+    #272934 50%,
+    #1f212a 100%
+  );
+  --chrome-button-border: #464a5c;
+  --chrome-button-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.6),
+    0 1px 2px rgba(0, 0, 0, 0.5);
+  
+  --chrome-button-hover: linear-gradient(
+    180deg,
+    #56596e 0%,
+    #424555 48%,
+    #303342 50%,
+    #272935 100%
+  );
+
+  --chrome-button-active: linear-gradient(
+    180deg,
+    #181922 0%,
+    #232531 49%,
+    #171822 50%,
+    #111218 100%
+  );
+  --chrome-button-active-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.65),
+    0 1px 0 rgba(255, 255, 255, 0.12);
+
+  /* Recessed / Groove Divider (Left/top dark trench, Right/bottom metallic highlight) */
+  --groove-shadow: #101116;
+  --groove-highlight: #454859;
+
+  /* Classic YouTube / Web 2.0 Golden Yellow & Red CTA Gradients */
+  --btn-gold: linear-gradient(180deg, #fff3a8 0%, #fcd34d 48%, #f59e0b 50%, #d97706 100%);
+  --btn-gold-border: #b45309;
+  --btn-gold-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 1px 3px rgba(0, 0, 0, 0.6);
+  
+  --btn-red: linear-gradient(180deg, #fca5a5 0%, #ef4444 48%, #dc2626 50%, #b91c1c 100%);
+  --btn-red-border: #991b1b;
+  --btn-red-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 1px 3px rgba(0, 0, 0, 0.6);
+  
+  --btn-blue: linear-gradient(180deg, #bae6fd 0%, #38bdf8 48%, #0284c7 50%, #0369a1 100%);
+  --btn-blue-border: #0369a1;
+
+  --checker-bg1: #1a1b23;
+  --checker-bg2: #252733;
+  --checker-border: #383a4a;
+  --canvas-desk-bg: #101116;
+  --grid-line-color: rgba(255, 255, 255, 0.13);
+
+  --scrollbar-track: #15161d;
+  --scrollbar-thumb: #363847;
+  --scrollbar-thumb-hover: #50546b;
+}
+
 /* -------------------------------------------------------------------------- */
 /* UTILITIES & SKEUOMORPHIC UI CLASSES                                        */
 /* -------------------------------------------------------------------------- */

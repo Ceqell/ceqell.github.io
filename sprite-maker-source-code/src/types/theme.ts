@@ -1,6 +1,6 @@
 export type ThemeMode = 'light' | 'dark';
 
-export type ThemeId = 'dark-modern' | 'retro-skeuomorphic' | string;
+export type ThemeId = 'dark-modern' | 'retro-skeuomorphic' | 'retro-beige' | 'retro-dark' | string;
 
 export interface ThemeConfig {
   id: ThemeId;

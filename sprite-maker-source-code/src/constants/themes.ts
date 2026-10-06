@@ -10,6 +10,22 @@ export const AVAILABLE_THEMES: ThemeConfig[] = [
     description: 'Authentic 2006–2008 skeuomorphic web UI with chrome buttons, beveled insets, and glossy highlights.',
   },
   {
+    id: 'retro-beige',
+    name: '2008 Beige Retro',
+    mode: 'light',
+    accent: '#0284c7',
+    badge: 'Banner',
+    description: 'Authentic 2008 skeuomorphic web UI matched to the warm #FFF1DD and #E6D7C3 banner colors.',
+  },
+  {
+    id: 'retro-dark',
+    name: '2008 Dark Retro',
+    mode: 'dark',
+    accent: '#38bdf8',
+    badge: 'Gunmetal',
+    description: 'Authentic 2008 skeuomorphic dark UI with dual-tone gunmetal chrome buttons, beveled insets, and metallic highlights.',
+  },
+  {
     id: 'dark-modern',
     name: 'Dark Studio',
     mode: 'dark',
