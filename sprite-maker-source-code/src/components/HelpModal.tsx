@@ -49,7 +49,7 @@ export type HelpTabId = 'overview' | 'tools' | 'selection' | 'guides' | 'layers-
 interface TabDefinition {
   id: HelpTabId;
   label: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
 }
 
 const TABS: TabDefinition[] = [
@@ -105,29 +105,29 @@ export const HelpModal: React.FC<HelpModalProps> = ({
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-neutral-900 border border-neutral-700/80 rounded-2xl shadow-2xl max-w-4xl w-full overflow-hidden flex flex-col max-h-[92vh] text-neutral-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 select-none">
+      <div className="bg-surface-theme border border-ui-theme rounded-2xl shadow-2xl max-w-4xl w-full overflow-hidden flex flex-col max-h-[92vh] text-primary-theme">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-neutral-800 bg-neutral-950/80 shrink-0">
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-ui-theme bg-surface-raised-theme shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+            <div className="w-7 h-7 rounded-lg retro-inset-well flex items-center justify-center" style={{ color: 'var(--text-accent)' }}>
               <BookOpen className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
+              <h2 className="text-sm font-bold text-primary-theme flex items-center gap-2">
                 <span>FigurayMaker Manual & Guide</span>
-                <span className="text-[10px] font-mono font-medium px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                <span className="text-[10px] font-mono font-medium px-1.5 py-0.2 rounded retro-inset-well" style={{ color: 'var(--text-accent)' }}>
                   Docs
                 </span>
               </h2>
-              <p className="text-[11px] text-neutral-400">
+              <p className="text-[11px] text-secondary-theme">
                 Complete guide to drawing, body guides, shortcuts, layers, and references
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded-lg transition-colors cursor-pointer"
+            className="retro-chrome-btn p-1.5 rounded-lg text-primary-theme cursor-pointer"
             title="Close Manual (Esc)"
           >
             <X className="w-5 h-5" />
@@ -135,7 +135,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-1 px-4 py-2 bg-neutral-950 border-b border-neutral-800 shrink-0 overflow-x-auto header-scrollbar">
+        <div className="flex items-center gap-1.5 px-4 py-2 bg-surface-theme border-b border-ui-theme shrink-0 overflow-x-auto header-scrollbar">
           {TABS.map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -143,13 +143,14 @@ export const HelpModal: React.FC<HelpModalProps> = ({
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all cursor-pointer ${
+                className={`retro-chrome-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-amber-500 text-neutral-950 font-bold shadow-md shadow-amber-500/20'
-                    : 'text-neutral-400 hover:text-white hover:bg-neutral-900'
+                    ? 'active font-bold'
+                    : 'text-secondary-theme'
                 }`}
+                style={isActive ? { color: 'var(--text-accent)' } : undefined}
               >
-                <Icon className="w-3.5 h-3.5 shrink-0" />
+                <Icon className="w-3.5 h-3.5 shrink-0" style={isActive ? { color: 'var(--text-accent)' } : undefined} />
                 <span>{tab.label}</span>
               </button>
             );
@@ -157,7 +158,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({
         </div>
 
         {/* Tab Content Body */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-6 text-neutral-300 text-xs leading-relaxed">
+        <div className="flex-1 overflow-y-auto p-5 space-y-6 text-secondary-theme text-xs leading-relaxed">
           {/* TAB 1: OVERVIEW */}
           {activeTab === 'overview' && (
             <div className="space-y-5 animate-in fade-in duration-150">
@@ -641,14 +642,14 @@ export const HelpModal: React.FC<HelpModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-5 py-3 border-t border-neutral-800 bg-neutral-950/80 shrink-0 text-[11px] text-neutral-400">
+        <div className="flex items-center justify-between px-5 py-3 border-t border-ui-theme bg-surface-raised-theme shrink-0 text-[11px] text-secondary-theme">
           <div className="flex items-center gap-1.5">
-            <Info className="w-3.5 h-3.5 text-amber-400" />
-            <span>Press <kbd className="px-1.5 py-0.2 rounded bg-neutral-800 border border-neutral-700 text-amber-300 font-mono text-[10px]">?</kbd> anywhere to open this manual</span>
+            <Info className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />
+            <span>Press <kbd className="px-1.5 py-0.2 rounded retro-inset-well font-mono text-[10px]" style={{ color: 'var(--text-accent)' }}>?</kbd> anywhere to open this manual</span>
           </div>
           <button
             onClick={onClose}
-            className="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-lg text-xs transition-colors cursor-pointer"
+            className="retro-gold-btn px-4 py-1.5 rounded-lg text-xs font-bold cursor-pointer"
           >
             Got It
           </button>

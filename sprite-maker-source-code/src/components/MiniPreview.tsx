@@ -88,39 +88,39 @@ export const MiniPreview: React.FC<MiniPreviewProps> = ({
 
   const getBgClass = () => {
     if (bgStyle === 'checker') return 'canvas-checkerboard-sm';
-    if (bgStyle === 'dark') return 'bg-neutral-950';
+    if (bgStyle === 'dark') return 'bg-[#121318]';
     return 'bg-[#404044]'; // Authentic retro grey background like 1000.png!
   };
 
   return (
-    <div className="flex flex-col bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden shadow-xl text-neutral-200 w-full">
+    <div className="flex flex-col bg-surface-theme border border-ui-theme rounded-xl overflow-hidden shadow-lg text-primary-theme w-full transition-colors">
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-1.5 border-b border-neutral-800 bg-neutral-950/60">
-        <div className="flex items-center gap-1.5 font-medium text-xs text-neutral-300">
-          <Eye className="w-3.5 h-3.5 text-amber-400" />
+      <div className="flex items-center justify-between px-3 py-1.5 border-b border-ui-theme bg-surface-raised-theme">
+        <div className="flex items-center gap-1.5 font-bold text-xs text-primary-theme">
+          <Eye className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />
           <span>Real-time Preview</span>
         </div>
 
         <div className="flex items-center gap-1">
           <button
             onClick={() => setBgStyle(b => b === 'retro' ? 'checker' : b === 'checker' ? 'dark' : 'retro')}
-            className="text-[10px] text-neutral-400 hover:text-white px-1.5 py-0.5 rounded bg-neutral-800"
+            className="retro-chrome-btn text-[10px] px-1.5 py-0.5 rounded cursor-pointer text-primary-theme font-medium"
             title="Cycle background"
           >
             BG: {bgStyle}
           </button>
           <button
             onClick={handleCopyQuick}
-            className="p-1 hover:bg-neutral-800 text-neutral-400 hover:text-amber-400 rounded transition-colors"
+            className="retro-chrome-btn p-1 rounded text-primary-theme cursor-pointer"
             title="Copy 1x PNG to Clipboard"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
           </button>
         </div>
       </div>
 
       {/* Preview Box - Dual Views: 1x (real size) and 3x/4x enlarged */}
-      <div className={`p-4 flex items-center justify-around gap-4 min-h-[110px] ${getBgClass()} transition-colors`}>
+      <div className={`p-4 flex items-center justify-around gap-4 min-h-[110px] ${getBgClass()} transition-colors border-inset shadow-inner`}>
         {/* 1x Real Size */}
         <div className="flex flex-col items-center gap-1">
           <div className="border border-white/20 shadow-md">
@@ -130,7 +130,7 @@ export const MiniPreview: React.FC<MiniPreviewProps> = ({
               className="pixelated block"
             />
           </div>
-          <span className="text-[9px] font-mono text-neutral-400 uppercase tracking-wider">1x (Original)</span>
+          <span className="text-[9px] font-mono text-neutral-300 uppercase tracking-wider font-semibold">1x (Original)</span>
         </div>
 
         {/* 3x Enlarged */}
@@ -154,7 +154,7 @@ export const MiniPreview: React.FC<MiniPreviewProps> = ({
               className="pixelated block"
             />
           </div>
-          <span className="text-[9px] font-mono text-neutral-400 uppercase tracking-wider">3x Scale</span>
+          <span className="text-[9px] font-mono text-neutral-300 uppercase tracking-wider font-semibold">3x Scale</span>
         </div>
       </div>
     </div>

@@ -79,22 +79,22 @@ export const ReferenceManager: React.FC<ReferenceManagerProps> = ({
   const activeRef = references.find(r => r.id === activeRefId) || references[0] || null;
 
   return (
-    <div className="flex flex-col bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden shadow-xl text-neutral-200 w-full max-h-[360px]">
+    <div className="flex flex-col bg-surface-theme border border-ui-theme rounded-xl overflow-hidden shadow-xl text-primary-theme w-full max-h-[360px] transition-colors">
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-neutral-800 bg-neutral-950/60">
-        <div className="flex items-center gap-1.5 font-medium text-xs text-neutral-300">
-          <ImageIcon className="w-3.5 h-3.5 text-amber-400" />
+      <div className="flex items-center justify-between px-3 py-2 border-b border-ui-theme bg-surface-raised-theme">
+        <div className="flex items-center gap-1.5 font-medium text-xs text-primary-theme">
+          <ImageIcon className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />
           <span>References</span>
-          <span className="text-[10px] text-neutral-500 font-mono">({references.length})</span>
+          <span className="text-[10px] text-secondary-theme font-mono">({references.length})</span>
         </div>
 
         <div className="flex items-center gap-1">
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="flex items-center gap-1 px-2 py-0.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded text-xs transition-colors"
+            className="retro-chrome-btn flex items-center gap-1 px-2 py-0.5 rounded text-xs transition-colors cursor-pointer"
             title="Upload one or multiple images"
           >
-            <Upload className="w-3 h-3" />
+            <Upload className="w-3 h-3" style={{ color: 'var(--text-accent)' }} />
             <span>Upload</span>
           </button>
           <input
@@ -110,16 +110,17 @@ export const ReferenceManager: React.FC<ReferenceManagerProps> = ({
 
       {references.length === 0 ? (
         <div className="p-4 text-center space-y-2">
-          <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center mx-auto text-neutral-400">
+          <div className="w-8 h-8 rounded-full retro-inset-well flex items-center justify-center mx-auto text-secondary-theme">
             <Upload className="w-4 h-4" />
           </div>
-          <p className="text-xs text-neutral-400">No reference images added yet.</p>
-          <p className="text-[11px] text-neutral-500">
+          <p className="text-xs text-primary-theme">No reference images added yet.</p>
+          <p className="text-[11px] text-secondary-theme">
             Upload character skins, packages (like iBot), or clothing designs to trace or inspect side-by-side.
           </p>
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="text-xs text-amber-400 hover:text-amber-300 underline font-medium"
+            className="text-xs hover:underline font-medium cursor-pointer"
+            style={{ color: 'var(--text-accent)' }}
           >
             Choose files from computer
           </button>
@@ -136,19 +137,19 @@ export const ReferenceManager: React.FC<ReferenceManagerProps> = ({
                   onClick={() => onSelectRef(ref.id)}
                   className={`flex items-center gap-2 p-1.5 rounded-lg border text-xs cursor-pointer transition-all ${
                     isSelected
-                      ? 'bg-amber-500/10 border-amber-500/40 text-white'
-                      : 'bg-neutral-900/60 border-neutral-800 hover:bg-neutral-800 text-neutral-300'
+                      ? 'bg-surface-raised-theme border-[var(--text-accent)] text-primary-theme shadow-sm font-semibold'
+                      : 'bg-surface-theme border-ui-theme hover:bg-surface-raised-theme text-secondary-theme'
                   }`}
                 >
                   <img
                     src={ref.url}
                     alt={ref.name}
-                    className="w-8 h-8 rounded object-contain bg-neutral-950 border border-neutral-700 shrink-0 pixelated"
+                    className="w-8 h-8 rounded object-contain bg-surface-raised-theme border border-ui-theme shrink-0 pixelated"
                   />
 
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium truncate">{ref.name}</div>
-                    <div className="text-[10px] text-neutral-500 font-mono">
+                    <div className="font-medium truncate text-primary-theme">{ref.name}</div>
+                    <div className="text-[10px] text-secondary-theme font-mono">
                       {ref.width}×{ref.height} px
                     </div>
                   </div>
@@ -159,11 +160,10 @@ export const ReferenceManager: React.FC<ReferenceManagerProps> = ({
                       e.stopPropagation();
                       onUpdateReference(ref.id, { traceMode: !ref.traceMode });
                     }}
-                    className={`px-1.5 py-0.5 text-[10px] rounded border transition-colors ${
-                      ref.traceMode
-                        ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
-                        : 'bg-neutral-800 text-neutral-400 border-neutral-700 hover:text-white'
+                    className={`retro-chrome-btn px-1.5 py-0.5 text-[10px] rounded cursor-pointer ${
+                      ref.traceMode ? 'active font-bold' : 'text-secondary-theme'
                     }`}
+                    style={ref.traceMode ? { color: 'var(--text-accent)' } : undefined}
                     title="Overlay on drawing canvas for tracing"
                   >
                     Trace
@@ -175,9 +175,10 @@ export const ReferenceManager: React.FC<ReferenceManagerProps> = ({
                       e.stopPropagation();
                       onUpdateReference(ref.id, { windowOpen: !ref.windowOpen });
                     }}
-                    className={`p-1 rounded hover:bg-neutral-700 ${
-                      ref.windowOpen ? 'text-amber-400' : 'text-neutral-500'
+                    className={`retro-chrome-btn p-1 rounded cursor-pointer ${
+                      ref.windowOpen ? 'active' : 'text-secondary-theme'
                     }`}
+                    style={ref.windowOpen ? { color: 'var(--text-accent)' } : undefined}
                     title={ref.windowOpen ? 'Hide Floating Window' : 'Open Floating Window'}
                   >
                     <Maximize2 className="w-3.5 h-3.5" />
@@ -189,7 +190,7 @@ export const ReferenceManager: React.FC<ReferenceManagerProps> = ({
                       e.stopPropagation();
                       onDeleteReference(ref.id);
                     }}
-                    className="p-1 rounded text-neutral-500 hover:text-red-400 hover:bg-neutral-700"
+                    className="retro-chrome-btn p-1 rounded text-red-500 hover:text-red-600 cursor-pointer"
                     title="Delete reference"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -201,8 +202,8 @@ export const ReferenceManager: React.FC<ReferenceManagerProps> = ({
 
           {/* Active Reference Settings if Trace is enabled */}
           {activeRef && activeRef.traceMode && (
-            <div className="p-2 bg-neutral-950/80 rounded-lg border border-cyan-500/30 space-y-2 text-xs">
-              <div className="flex items-center justify-between text-cyan-400 text-[11px] font-medium">
+            <div className="p-2 retro-inset-well rounded-lg space-y-2 text-xs">
+              <div className="flex items-center justify-between text-[11px] font-medium" style={{ color: 'var(--text-accent)' }}>
                 <span className="flex items-center gap-1">
                   <Sliders className="w-3 h-3" />
                   Canvas Trace Settings: {activeRef.name}
@@ -212,7 +213,7 @@ export const ReferenceManager: React.FC<ReferenceManagerProps> = ({
 
               {/* Opacity slider */}
               <div className="flex items-center gap-2">
-                <span className="text-[10px] text-neutral-400 w-12">Opacity</span>
+                <span className="text-[10px] text-secondary-theme w-12">Opacity</span>
                 <input
                   type="range"
                   min="0.1"
@@ -220,13 +221,13 @@ export const ReferenceManager: React.FC<ReferenceManagerProps> = ({
                   step="0.05"
                   value={activeRef.traceOpacity}
                   onChange={(e) => onUpdateReference(activeRef.id, { traceOpacity: parseFloat(e.target.value) })}
-                  className="w-full accent-cyan-400 h-1 bg-neutral-800 rounded cursor-pointer"
+                  className="flex-1 cursor-pointer"
                 />
               </div>
 
               {/* Scale slider */}
               <div className="flex items-center gap-2">
-                <span className="text-[10px] text-neutral-400 w-12">Scale</span>
+                <span className="text-[10px] text-secondary-theme w-12">Scale</span>
                 <input
                   type="range"
                   min="0.2"
@@ -234,34 +235,34 @@ export const ReferenceManager: React.FC<ReferenceManagerProps> = ({
                   step="0.1"
                   value={activeRef.traceScale}
                   onChange={(e) => onUpdateReference(activeRef.id, { traceScale: parseFloat(e.target.value) })}
-                  className="w-full accent-cyan-400 h-1 bg-neutral-800 rounded cursor-pointer"
+                  className="flex-1 cursor-pointer"
                 />
-                <span className="text-[10px] font-mono text-neutral-400 w-8 text-right">
+                <span className="text-[10px] font-mono text-secondary-theme w-8 text-right">
                   {activeRef.traceScale.toFixed(1)}x
                 </span>
               </div>
 
               {/* X / Y Offsets */}
               <div className="flex items-center gap-2">
-                <span className="text-[10px] text-neutral-400 w-12">Offset</span>
+                <span className="text-[10px] text-secondary-theme w-12">Offset</span>
                 <div className="flex items-center gap-1 flex-1">
-                  <span className="text-[10px] text-neutral-500">X:</span>
+                  <span className="text-[10px] text-secondary-theme">X:</span>
                   <input
                     type="number"
                     value={activeRef.traceX}
                     onChange={(e) => onUpdateReference(activeRef.id, { traceX: parseInt(e.target.value) || 0 })}
-                    className="w-12 bg-neutral-800 px-1 py-0.5 rounded text-[11px] font-mono border border-neutral-700"
+                    className="w-12 bg-surface-raised-theme px-1 py-0.5 rounded text-[11px] font-mono border border-ui-theme text-primary-theme"
                   />
-                  <span className="text-[10px] text-neutral-500 ml-1">Y:</span>
+                  <span className="text-[10px] text-secondary-theme ml-1">Y:</span>
                   <input
                     type="number"
                     value={activeRef.traceY}
                     onChange={(e) => onUpdateReference(activeRef.id, { traceY: parseInt(e.target.value) || 0 })}
-                    className="w-12 bg-neutral-800 px-1 py-0.5 rounded text-[11px] font-mono border border-neutral-700"
+                    className="w-12 bg-surface-raised-theme px-1 py-0.5 rounded text-[11px] font-mono border border-ui-theme text-primary-theme"
                   />
                   <button
                     onClick={() => onUpdateReference(activeRef.id, { traceX: 0, traceY: 0, traceScale: 1 })}
-                    className="ml-auto p-1 hover:text-white text-neutral-500"
+                    className="retro-chrome-btn ml-auto p-1 text-secondary-theme hover:text-primary-theme cursor-pointer rounded"
                     title="Reset offset & scale"
                   >
                     <RefreshCw className="w-3 h-3" />
@@ -346,37 +347,37 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
       style={{ left: `${position.x}px`, top: `${position.y}px` }}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
-      className="fixed z-40 bg-neutral-900/95 backdrop-blur-md border border-neutral-700/80 rounded-xl shadow-2xl overflow-hidden flex flex-col w-72 max-w-[90vw]"
+      className="fixed z-40 bg-surface-theme border border-ui-theme rounded-xl shadow-2xl overflow-hidden flex flex-col w-72 max-w-[90vw] text-primary-theme"
     >
       {/* Title bar (draggable) */}
       <div
         onMouseDown={handleMouseDown}
-        className="flex items-center justify-between px-3 py-2 bg-neutral-950 border-b border-neutral-800 cursor-move select-none"
+        className="flex items-center justify-between px-3 py-2 bg-surface-raised-theme border-b border-ui-theme cursor-move select-none"
       >
-        <div className="flex items-center gap-1.5 text-xs font-medium text-neutral-300 truncate">
-          <Move className="w-3 h-3 text-amber-400" />
+        <div className="flex items-center gap-1.5 text-xs font-medium text-primary-theme truncate">
+          <Move className="w-3 h-3" style={{ color: 'var(--text-accent)' }} />
           <span className="truncate">{reference.name}</span>
         </div>
 
         <div className="flex items-center gap-1">
           <button
             onClick={() => setZoom(z => Math.max(0.5, z - 0.25))}
-            className="p-1 hover:bg-neutral-800 rounded text-neutral-400 hover:text-white"
+            className="retro-chrome-btn p-1 rounded text-primary-theme cursor-pointer"
             title="Zoom out"
           >
             <ZoomOut className="w-3 h-3" />
           </button>
-          <span className="text-[10px] font-mono text-neutral-400">{Math.round(zoom * 100)}%</span>
+          <span className="text-[10px] font-mono text-secondary-theme">{Math.round(zoom * 100)}%</span>
           <button
             onClick={() => setZoom(z => Math.min(4, z + 0.25))}
-            className="p-1 hover:bg-neutral-800 rounded text-neutral-400 hover:text-white"
+            className="retro-chrome-btn p-1 rounded text-primary-theme cursor-pointer"
             title="Zoom in"
           >
             <ZoomIn className="w-3 h-3" />
           </button>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-red-500/20 text-neutral-400 hover:text-red-400 rounded transition-colors ml-1"
+            className="retro-chrome-btn p-1 rounded text-red-500 hover:text-red-600 transition-colors ml-1 cursor-pointer"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -384,7 +385,7 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
       </div>
 
       {/* Image Preview & Eyedropper area */}
-      <div className="relative p-2 bg-neutral-950/80 overflow-auto max-h-72 flex items-center justify-center canvas-checkerboard">
+      <div className="relative p-2 bg-surface-raised-theme overflow-auto max-h-72 flex items-center justify-center canvas-checkerboard">
         <img
           ref={imgRef}
           src={reference.url}
@@ -396,12 +397,12 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
         />
       </div>
 
-      <div className="px-3 py-1.5 bg-neutral-950 text-[10px] text-neutral-400 flex items-center justify-between border-t border-neutral-800">
+      <div className="px-3 py-1.5 bg-surface-raised-theme text-[10px] text-secondary-theme flex items-center justify-between border-t border-ui-theme">
         <span className="flex items-center gap-1">
-          <Pipette className="w-3 h-3 text-amber-400" />
+          <Pipette className="w-3 h-3" style={{ color: 'var(--text-accent)' }} />
           Click image to sample color
         </span>
-        <span className="font-mono text-neutral-500">{reference.width}×{reference.height}px</span>
+        <span className="font-mono text-secondary-theme">{reference.width}×{reference.height}px</span>
       </div>
     </div>
   );

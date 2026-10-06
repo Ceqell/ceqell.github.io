@@ -1,5 +1,124 @@
 @import "tailwindcss";
 
+/* -------------------------------------------------------------------------- */
+/* THEME TOKENS: MODERN DARK STUDIO & 2008 SKEUOMORPHIC CHROME RETRO           */
+/* -------------------------------------------------------------------------- */
+
+:root,
+[data-theme="dark-modern"] {
+  --bg-app: #0d0e12;
+  --bg-surface: #17181f;
+  --bg-surface-raised: #21222c;
+  --bg-input: #101116;
+  --border-ui: #2b2d38;
+  --border-highlight: #3d404f;
+  --text-primary: #ededed;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --text-accent: #f59e0b;
+  --accent-color: #f59e0b;
+
+  --button-gradient: linear-gradient(180deg, #262732 0%, #1c1d25 100%);
+  --button-border: #3d404f;
+  --shadow-raised: 0 1px 3px rgba(0, 0, 0, 0.4);
+  
+  --btn-gold: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+  --btn-gold-border: #b45309;
+  --btn-gold-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+
+  --btn-red: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+  --btn-red-border: #991b1b;
+  --btn-red-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  
+  --checker-bg1: #1e1e24;
+  --checker-bg2: #2b2b36;
+  --checker-border: #33333e;
+  --canvas-desk-bg: #121318;
+  
+  --groove-shadow: #1e1f29;
+  --groove-highlight: #2f3242;
+
+  --scrollbar-track: rgba(15, 15, 20, 0.6);
+  --scrollbar-thumb: rgba(80, 80, 100, 0.4);
+  --scrollbar-thumb-hover: rgba(120, 120, 150, 0.7);
+}
+
+[data-theme="retro-skeuomorphic"] {
+  --bg-app: #d8dde3;
+  --bg-surface: #e9ecef;
+  --bg-surface-raised: #f8f9fa;
+  --bg-input: #ffffff;
+  --border-ui: #b0b7c0;
+  --border-highlight: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-accent: #0284c7;
+  --accent-color: #0284c7;
+
+  /* 50/50 Dual-Tone Chrome Plated Gradients (Vintage 2006-2008 Web 2.0 / OS X Tiger) */
+  --chrome-button-bg: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #f2f4f7 48%,
+    #e2e6ea 50%,
+    #dbe0e5 100%
+  );
+  --chrome-button-border: #94a3b8;
+  --chrome-button-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.12);
+  
+  --chrome-button-hover: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #f8fafc 48%,
+    #e8edf2 50%,
+    #e2e7ec 100%
+  );
+
+  --chrome-button-active: linear-gradient(
+    180deg,
+    #cfd5dc 0%,
+    #d9dfe5 49%,
+    #c4cbd3 50%,
+    #b8c0c8 100%
+  );
+  --chrome-button-active-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.28),
+    0 1px 0 rgba(255, 255, 255, 0.8);
+
+  /* Recessed / Groove Divider (Split 50/50: dark shadow on left/top, crisp white highlight on right/bottom) */
+  --groove-shadow: #b8c0cc;
+  --groove-highlight: #ffffff;
+
+  /* Classic YouTube / Web 2.0 Golden Yellow & Cyan Accent Gradients */
+  --btn-gold: linear-gradient(180deg, #fff3a8 0%, #fcd34d 48%, #f59e0b 50%, #d97706 100%);
+  --btn-gold-border: #b45309;
+  --btn-gold-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 1px 2px rgba(0, 0, 0, 0.18);
+  
+  --btn-red: linear-gradient(180deg, #fca5a5 0%, #ef4444 48%, #dc2626 50%, #b91c1c 100%);
+  --btn-red-border: #991b1b;
+  --btn-red-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 1px 2px rgba(0, 0, 0, 0.22);
+  
+  --btn-blue: linear-gradient(180deg, #e0f2fe 0%, #7dd3fc 48%, #0284c7 50%, #0369a1 100%);
+  --btn-blue-border: #0369a1;
+
+  --checker-bg1: #e2e8f0;
+  --checker-bg2: #ffffff;
+  --checker-border: #94a3b8;
+  --canvas-desk-bg: #cbd5e1;
+
+  --scrollbar-track: #d8dde3;
+  --scrollbar-thumb: #94a3b8;
+  --scrollbar-thumb-hover: #64748b;
+}
+
+/* -------------------------------------------------------------------------- */
+/* UTILITIES & SKEUOMORPHIC UI CLASSES                                        */
+/* -------------------------------------------------------------------------- */
+
 @layer utilities {
   .pixelated {
     image-rendering: pixelated;
@@ -14,67 +133,179 @@
   .font-mono-code {
     font-family: 'JetBrains Mono', monospace;
   }
+
+  /* Semantic Theme Classes */
+  .bg-app-theme {
+    background-color: var(--bg-app);
+  }
+  .bg-surface-theme {
+    background-color: var(--bg-surface);
+  }
+  .bg-surface-raised-theme {
+    background-color: var(--bg-surface-raised);
+  }
+  .border-ui-theme {
+    border-color: var(--border-ui);
+  }
+  .border-highlight-theme {
+    border-color: var(--border-highlight);
+  }
+  .text-primary-theme {
+    color: var(--text-primary);
+  }
+  .text-secondary-theme {
+    color: var(--text-secondary);
+  }
+  .text-muted-theme {
+    color: var(--text-muted);
+  }
+
+  /* Authentic 2008 Chrome Button */
+  .retro-chrome-btn {
+    background: var(--chrome-button-bg, var(--button-gradient));
+    border: 1px solid var(--chrome-button-border, var(--button-border));
+    box-shadow: var(--chrome-button-shadow, var(--shadow-raised));
+    color: var(--text-primary);
+    transition: filter 0.08s ease, transform 0.08s ease;
+  }
+  .retro-chrome-btn:hover {
+    filter: brightness(1.03);
+  }
+  .retro-chrome-btn:active,
+  .retro-chrome-btn.active {
+    background: var(--chrome-button-active, var(--button-gradient));
+    box-shadow: var(--chrome-button-active-shadow, inset 0 2px 4px rgba(0, 0, 0, 0.35));
+    transform: translateY(1px);
+  }
+
+  /* Gold / Yellow Web 2.0 CTA Button */
+  .retro-gold-btn {
+    background: var(--btn-gold);
+    border: 1px solid var(--btn-gold-border);
+    box-shadow: var(--btn-gold-shadow);
+    color: #111827;
+    font-weight: 600;
+  }
+  .retro-gold-btn:hover {
+    filter: brightness(1.05);
+  }
+  .retro-gold-btn:active {
+    filter: brightness(0.95);
+    transform: translateY(1px);
+  }
+
+  /* Red Web 2.0 CTA Button */
+  .retro-red-btn {
+    background: var(--btn-red);
+    border: 1px solid var(--btn-red-border);
+    box-shadow: var(--btn-red-shadow);
+    color: #ffffff;
+    font-weight: 600;
+  }
+  .retro-red-btn:hover {
+    filter: brightness(1.05);
+  }
+  .retro-red-btn:active {
+    filter: brightness(0.92);
+    transform: translateY(1px);
+  }
+
+  /* Recessed Groove Divider (Vertical 2px split) */
+  .retro-recessed-divider {
+    width: 2px;
+    height: 100%;
+    border-left: 1px solid var(--groove-shadow);
+    border-right: 1px solid var(--groove-highlight);
+  }
+
+  /* Recessed Groove Divider (Horizontal 2px split) */
+  .retro-recessed-divider-h {
+    height: 2px;
+    width: 100%;
+    border-top: 1px solid var(--groove-shadow);
+    border-bottom: 1px solid var(--groove-highlight);
+  }
+
+  /* Recessed Beveled Inset Panel Box */
+  .retro-inset-well {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-ui);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 0 var(--border-highlight);
+  }
+
+  /* Recessed Progress / Track Bar */
+  .retro-inset-track {
+    background-color: var(--bg-surface);
+    box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.22), 0 1px 0 var(--border-highlight);
+    border: 1px solid var(--border-ui);
+  }
 }
 
-/* Retro checkerboard background for transparent pixel canvases */
+/* -------------------------------------------------------------------------- */
+/* ADAPTIVE CANVAS CHECKERBOARD                                               */
+/* -------------------------------------------------------------------------- */
+
 .canvas-checkerboard {
-  background-color: #1e1e24;
+  background-color: var(--checker-bg1);
   background-image: 
-    linear-gradient(45deg, #2b2b36 25%, transparent 25%), 
-    linear-gradient(-45deg, #2b2b36 25%, transparent 25%), 
-    linear-gradient(45deg, transparent 75%, #2b2b36 75%), 
-    linear-gradient(-45deg, transparent 75%, #2b2b36 75%);
+    linear-gradient(45deg, var(--checker-bg2) 25%, transparent 25%), 
+    linear-gradient(-45deg, var(--checker-bg2) 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, var(--checker-bg2) 75%), 
+    linear-gradient(-45deg, transparent 75%, var(--checker-bg2) 75%);
   background-size: 16px 16px;
   background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
 }
 
 .canvas-checkerboard-sm {
-  background-color: #1a1a20;
+  background-color: var(--checker-bg1);
   background-image: 
-    linear-gradient(45deg, #262630 25%, transparent 25%), 
-    linear-gradient(-45deg, #262630 25%, transparent 25%), 
-    linear-gradient(45deg, transparent 75%, #262630 75%), 
-    linear-gradient(-45deg, transparent 75%, #262630 75%);
+    linear-gradient(45deg, var(--checker-bg2) 25%, transparent 25%), 
+    linear-gradient(-45deg, var(--checker-bg2) 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, var(--checker-bg2) 75%), 
+    linear-gradient(-45deg, transparent 75%, var(--checker-bg2) 75%);
   background-size: 8px 8px;
   background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
 }
 
-/* Custom scrollbars */
+/* -------------------------------------------------------------------------- */
+/* SCROLLBARS                                                                 */
+/* -------------------------------------------------------------------------- */
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(15, 15, 20, 0.6);
+  background: var(--scrollbar-track);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(80, 80, 100, 0.4);
+  background: var(--scrollbar-thumb);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(120, 120, 150, 0.7);
+  background: var(--scrollbar-thumb-hover);
 }
 
-/* Sleek horizontal scrollbar for top header on small devices */
 .header-scrollbar::-webkit-scrollbar {
   height: 3px;
 }
 .header-scrollbar::-webkit-scrollbar-track {
-  background: rgba(10, 10, 15, 0.5);
+  background: var(--scrollbar-track);
 }
 .header-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(245, 205, 47, 0.4);
+  background: var(--scrollbar-thumb);
   border-radius: 9999px;
 }
 .header-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(245, 205, 47, 0.8);
+  background: var(--scrollbar-thumb-hover);
 }
 
-/* Snappy Mode - Instant UI with no transition delay or animation lag */
+/* -------------------------------------------------------------------------- */
+/* SNAPPY MODE                                                                */
+/* -------------------------------------------------------------------------- */
+
 .snappy-mode,
 .snappy-mode * {
   transition: none !important;
   animation: none !important;
 }
-
-

@@ -39,6 +39,7 @@ import { ExportModal } from './components/ExportModal';
 import { GuideModal } from './components/GuideModal';
 import { HelpModal, HelpTabId } from './components/HelpModal';
 import { CustomCanvasModal } from './components/CustomCanvasModal';
+import { DEFAULT_THEME_ID } from './constants/themes';
 
 export default function App() {
   // Canvas Size Preset
@@ -124,6 +125,24 @@ export default function App() {
   const [leftCollapsed, setLeftCollapsed] = useState<boolean>(false);
   const [rightSidebarWidth, setRightSidebarWidth] = useState<number>(320);
   const [rightCollapsed, setRightCollapsed] = useState<boolean>(false);
+
+  // Active Theme Engine (2008 Chrome Retro vs Modern Dark)
+  const [currentThemeId, setCurrentThemeId] = useState<string>(() => {
+    try {
+      return localStorage.getItem('figuray_theme') || DEFAULT_THEME_ID;
+    } catch {
+      return DEFAULT_THEME_ID;
+    }
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', currentThemeId);
+    try {
+      localStorage.setItem('figuray_theme', currentThemeId);
+    } catch {
+      // ignore
+    }
+  }, [currentThemeId]);
 
   // Animations & Snappy Mode Toggle
   const [animationsEnabled, setAnimationsEnabled] = useState<boolean>(() => {
@@ -1179,7 +1198,7 @@ export default function App() {
   }, [handleUndo, handleRedo, selection.active, selection.floating, handleDeleteSelection, handleCommitFloatingSelection, handleClearSelection]);
 
   return (
-    <div className={`flex flex-col h-screen w-screen overflow-hidden bg-neutral-950 font-sans text-neutral-100 select-none ${animationsEnabled ? '' : 'snappy-mode'}`}>
+    <div className={`flex flex-col h-screen w-screen overflow-hidden bg-app-theme text-primary-theme font-sans select-none ${animationsEnabled ? '' : 'snappy-mode'}`}>
       {/* Top Header */}
       <Header
         canvasPresetName={activePreset.name}
@@ -1219,6 +1238,8 @@ export default function App() {
         animationsEnabled={animationsEnabled}
         onToggleAnimations={handleToggleAnimations}
         headerHeight={headerHeight}
+        currentThemeId={currentThemeId}
+        onSelectTheme={setCurrentThemeId}
       />
 
       {/* Draggable Splitter on bottom edge of Top Bar */}
@@ -1227,9 +1248,9 @@ export default function App() {
         onTouchStart={handleHeaderResizeTouchStart}
         onDoubleClick={() => setHeaderHeight(undefined)}
         title="Drag to resize Top Bar height (Double-click to reset auto-height)"
-        className="h-1 hover:h-1.5 cursor-row-resize hover:bg-amber-400/60 active:bg-amber-400 transition-all z-40 shrink-0 w-full flex items-center justify-center bg-neutral-800/80"
+        className="h-1 hover:h-1.5 cursor-row-resize hover:bg-[var(--text-accent)] active:bg-[var(--text-accent)] transition-all z-40 shrink-0 w-full flex items-center justify-center bg-surface-raised-theme border-b border-ui-theme"
       >
-        <div className="h-0.5 w-12 bg-neutral-600 hover:bg-amber-400 rounded-full" />
+        <div className="h-0.5 w-12 bg-ui-theme hover:bg-[var(--text-accent)] rounded-full" />
       </div>
 
       {/* Main Workspace */}
@@ -1264,9 +1285,9 @@ export default function App() {
               onTouchStart={handleLeftResizeTouchStart}
               onDoubleClick={() => setLeftSidebarWidth(64)}
               title="Drag to resize Tools Sidebar (Double-click to reset)"
-              className="w-1.5 hover:w-2 cursor-col-resize hover:bg-amber-400/60 active:bg-amber-400 transition-all z-30 flex items-center justify-center -mr-1"
+              className="w-1.5 hover:w-2 cursor-col-resize hover:bg-[var(--text-accent)] active:bg-[var(--text-accent)] transition-all z-30 flex items-center justify-center -mr-1"
             >
-              <div className="w-0.5 h-7 bg-neutral-700 hover:bg-amber-400 rounded-full" />
+              <div className="w-0.5 h-7 bg-ui-theme hover:bg-[var(--text-accent)] rounded-full" />
             </div>
           </div>
         ) : (
@@ -1274,9 +1295,9 @@ export default function App() {
           <button
             onClick={() => setLeftCollapsed(false)}
             title="Expand Tools Sidebar"
-            className="absolute top-3 left-3 z-30 flex items-center gap-1.5 px-2.5 py-1.5 bg-neutral-900/95 border border-neutral-800 hover:border-amber-400/50 text-neutral-300 hover:text-amber-400 rounded-lg shadow-xl backdrop-blur-md transition-all text-xs font-medium cursor-pointer"
+            className="absolute top-3 left-3 z-30 flex items-center gap-1.5 px-2.5 py-1.5 retro-chrome-btn rounded-lg shadow-xl transition-all text-xs font-semibold cursor-pointer text-primary-theme"
           >
-            <PanelLeftOpen className="w-4 h-4 text-amber-400" />
+            <PanelLeftOpen className="w-4 h-4" style={{ color: 'var(--text-accent)' }} />
             <span>Tools</span>
           </button>
         )}
@@ -1325,25 +1346,25 @@ export default function App() {
               onTouchStart={handleRightResizeTouchStart}
               onDoubleClick={() => setRightSidebarWidth(320)}
               title="Drag to resize Panels Sidebar (Double-click to reset 320px)"
-              className="w-1.5 hover:w-2 cursor-col-resize hover:bg-amber-400/60 active:bg-amber-400 transition-all z-30 flex items-center justify-center -ml-1"
+              className="w-1.5 hover:w-2 cursor-col-resize hover:bg-[var(--text-accent)] active:bg-[var(--text-accent)] transition-all z-30 flex items-center justify-center -ml-1"
             >
-              <div className="w-0.5 h-7 bg-neutral-700 hover:bg-amber-400 rounded-full" />
+              <div className="w-0.5 h-7 bg-ui-theme hover:bg-[var(--text-accent)] rounded-full" />
             </div>
 
             <aside 
               style={{ width: `${rightSidebarWidth}px` }}
-              className="bg-neutral-900 border-l border-neutral-800 flex flex-col p-3 gap-3 overflow-y-auto shrink-0 z-20 shadow-2xl"
+              className="bg-surface-theme border-l border-ui-theme flex flex-col p-3 gap-3 overflow-y-auto shrink-0 z-20 shadow-2xl transition-colors"
             >
               {/* Header with Title and Collapse Button */}
-              <div className="flex items-center justify-between pb-1.5 border-b border-neutral-800 shrink-0">
+              <div className="flex items-center justify-between pb-1.5 border-b border-ui-theme shrink-0">
                 <div className="flex items-center gap-1.5">
-                  <LayersIcon className="w-4 h-4 text-amber-400" />
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-300">Panels & Layers</span>
+                  <LayersIcon className="w-4 h-4" style={{ color: 'var(--text-accent)' }} />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-primary-theme">Panels & Layers</span>
                 </div>
                 <button
                   onClick={() => setRightCollapsed(true)}
                   title="Collapse Panels Sidebar"
-                  className="p-1 rounded text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors"
+                  className="retro-chrome-btn p-1 rounded text-primary-theme cursor-pointer"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>

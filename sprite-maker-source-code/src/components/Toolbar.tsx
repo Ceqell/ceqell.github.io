@@ -9,17 +9,17 @@ import {
   Circle, 
   SunMedium, 
   Moon, 
-  Sparkles,
-  Scissors,
-  SplitSquareVertical,
-  FlipHorizontal,
-  FlipVertical,
-  Undo2,
-  Redo2,
-  ChevronLeft,
-  LassoSelect,
-  Trash2,
-  Check
+  Sparkles, 
+  Scissors, 
+  SplitSquareVertical, 
+  FlipHorizontal, 
+  FlipVertical, 
+  Undo2, 
+  Redo2, 
+  ChevronLeft, 
+  LassoSelect, 
+  Trash2, 
+  Check 
 } from 'lucide-react';
 import { ToolType } from '../types/sprite';
 
@@ -89,18 +89,18 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   return (
     <div 
       style={{ width: `${width}px` }}
-      className="flex flex-col gap-2.5 bg-neutral-900 border-r border-neutral-800 p-2 items-center shrink-0 z-20 select-none overflow-x-hidden overflow-y-auto"
+      className="flex flex-col gap-2.5 bg-surface-theme border-r border-ui-theme p-2 items-center shrink-0 z-20 select-none overflow-x-hidden overflow-y-auto shadow-sm transition-colors"
     >
       {/* Collapse button header */}
       <div className="flex items-center justify-between w-full px-0.5">
         {width >= 90 && (
-          <span className="text-[10px] uppercase font-bold tracking-wider text-neutral-400">Tools</span>
+          <span className="text-[10px] uppercase font-bold tracking-wider text-secondary-theme">Tools</span>
         )}
         {onCollapse && (
           <button
             onClick={onCollapse}
             title="Collapse Sidebar"
-            className="p-1 rounded text-neutral-500 hover:text-white hover:bg-neutral-800 transition-colors ml-auto cursor-pointer"
+            className="retro-chrome-btn p-1 rounded text-primary-theme transition-colors ml-auto cursor-pointer"
           >
             <ChevronLeft className="w-3.5 h-3.5" />
           </button>
@@ -108,12 +108,12 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       </div>
 
       {/* Undo & Redo Shortcuts */}
-      <div className={`flex items-center gap-1 w-full justify-center bg-neutral-950 p-1 rounded-lg border border-neutral-800/80 ${isWide ? 'px-2' : ''}`}>
+      <div className={`flex items-center gap-1 w-full justify-center retro-inset-well p-1 rounded-lg ${isWide ? 'px-2' : ''}`}>
         <button
           onClick={onUndo}
           disabled={!canUndo}
           title="Undo (Ctrl+Z)"
-          className={`p-1.5 rounded text-neutral-400 hover:text-amber-400 hover:bg-neutral-800 disabled:opacity-20 disabled:pointer-events-none transition-colors flex items-center justify-center cursor-pointer ${isWide ? 'flex-1 gap-1 text-xs' : ''}`}
+          className={`retro-chrome-btn p-1.5 rounded disabled:opacity-25 disabled:pointer-events-none transition-colors flex items-center justify-center cursor-pointer text-primary-theme ${isWide ? 'flex-1 gap-1 text-xs font-semibold' : ''}`}
         >
           <Undo2 className="w-3.5 h-3.5" />
           {isWide && <span>Undo</span>}
@@ -123,14 +123,14 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           onClick={onRedo}
           disabled={!canRedo}
           title="Redo (Ctrl+Y / Ctrl+Shift+Z)"
-          className={`p-1.5 rounded text-neutral-400 hover:text-amber-400 hover:bg-neutral-800 disabled:opacity-20 disabled:pointer-events-none transition-colors flex items-center justify-center cursor-pointer ${isWide ? 'flex-1 gap-1 text-xs' : ''}`}
+          className={`retro-chrome-btn p-1.5 rounded disabled:opacity-25 disabled:pointer-events-none transition-colors flex items-center justify-center cursor-pointer text-primary-theme ${isWide ? 'flex-1 gap-1 text-xs font-semibold' : ''}`}
         >
           <Redo2 className="w-3.5 h-3.5" />
           {isWide && <span>Redo</span>}
         </button>
       </div>
 
-      <div className="w-full h-px bg-neutral-800" />
+      <div className="retro-recessed-divider-h my-0.5 shrink-0" />
 
       {/* Primary Drawing Tools */}
       <div className={`w-full ${isWide ? 'flex flex-col gap-1' : isMedium ? 'grid grid-cols-2 gap-1' : 'flex flex-col gap-1 items-center'}`}>
@@ -142,17 +142,17 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               key={tool.id}
               onClick={() => onSelectTool(tool.id)}
               title={tool.label}
-              className={`rounded-lg transition-all flex items-center cursor-pointer ${
+              className={`retro-chrome-btn rounded-lg transition-all flex items-center cursor-pointer ${
                 isWide ? 'px-2 py-1.5 gap-2 w-full justify-start' : 'p-2 justify-center'
               } ${
-                isActive
-                  ? 'bg-amber-500 text-neutral-950 font-bold shadow-lg shadow-amber-500/20'
-                  : 'text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800'
+                isActive ? 'active font-bold' : 'text-secondary-theme'
               }`}
+              style={isActive ? { color: 'var(--text-accent)' } : undefined}
             >
               <Icon 
                 className="w-4 h-4 shrink-0" 
                 fill={tool.fill ? 'currentColor' : 'none'} 
+                style={isActive ? { color: 'var(--text-accent)' } : undefined}
               />
               
               {isWide ? (
@@ -167,21 +167,20 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         })}
       </div>
 
-      <div className="w-full h-px bg-neutral-800 my-1" />
+      <div className="retro-recessed-divider-h my-0.5 shrink-0" />
 
       {/* Brush Size */}
       <div className="flex flex-col items-center gap-1.5 w-full">
-        <span className="text-[10px] uppercase font-bold tracking-wider text-neutral-500">Size</span>
-        <div className="grid grid-cols-2 gap-1 w-full">
+        <span className="text-[10px] uppercase font-bold tracking-wider text-secondary-theme">Size</span>
+        <div className="retro-inset-well p-1 rounded-lg grid grid-cols-2 gap-1 w-full">
           {[1, 2, 3, 4].map(size => (
             <button
               key={size}
               onClick={() => onBrushSizeChange(size)}
-              className={`h-6 text-xs font-mono rounded flex items-center justify-center transition-colors cursor-pointer ${
-                brushSize === size
-                  ? 'bg-amber-500 text-neutral-950 font-bold'
-                  : 'bg-neutral-800 text-neutral-400 hover:text-white'
+              className={`h-6 text-xs font-mono rounded flex items-center justify-center transition-colors cursor-pointer retro-chrome-btn ${
+                brushSize === size ? 'active font-bold' : 'text-secondary-theme'
               }`}
+              style={brushSize === size ? { color: 'var(--text-accent)' } : undefined}
               title={`Brush size: ${size}px ([ or ])`}
             >
               {size}
@@ -190,27 +189,25 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </div>
       </div>
 
-      <div className="w-full h-px bg-neutral-800 my-1" />
+      <div className="retro-recessed-divider-h my-0.5 shrink-0" />
 
       {/* Vertical Symmetry Toggle */}
       <button
         onClick={onToggleSymmetry}
         title="Mirror / Vertical Symmetry Mode (Draws on both left & right) (S)"
-        className={`p-2 w-full rounded-lg transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
-          symmetryActive
-            ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 shadow-sm'
-            : 'text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800'
+        className={`retro-chrome-btn p-2 w-full rounded-lg transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
+          symmetryActive ? 'active font-bold' : 'text-secondary-theme'
         }`}
       >
-        <SplitSquareVertical className="w-4 h-4" />
-        <span className="text-[9px] font-mono font-medium">Mirror</span>
+        <SplitSquareVertical className="w-4 h-4" style={symmetryActive ? { color: 'var(--text-accent)' } : undefined} />
+        <span className="text-[9px] font-mono font-medium" style={symmetryActive ? { color: 'var(--text-accent)' } : undefined}>Mirror</span>
       </button>
 
       {/* Selection operations if active */}
       {hasSelection && (
         <div className="flex flex-col gap-1 w-full animate-in fade-in duration-200">
-          <div className="w-full h-px bg-neutral-800 my-1" />
-          <span className="text-[9px] font-bold text-amber-400 text-center uppercase">
+          <div className="retro-recessed-divider-h my-1 shrink-0" />
+          <span className="text-[9px] font-bold text-center uppercase" style={{ color: 'var(--text-accent)' }}>
             {isFloating ? 'Moving Pixels' : 'Selection'}
           </span>
           
@@ -218,7 +215,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             <button
               onClick={onCommitFloatingSelection}
               title="Stamp / Commit Moved Pixels (Enter)"
-              className={`p-1.5 text-neutral-950 bg-amber-400 hover:bg-amber-300 font-bold rounded flex items-center justify-center transition-colors shadow ${isWide ? 'gap-1.5 px-2 text-xs justify-start' : ''}`}
+              className={`retro-gold-btn p-1.5 rounded flex items-center justify-center transition-all cursor-pointer ${isWide ? 'gap-1.5 px-2 text-xs justify-start' : ''}`}
             >
               <Check className="w-3.5 h-3.5 shrink-0" />
               {isWide && <span>Stamp (Enter)</span>}
@@ -228,7 +225,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           <button
             onClick={onDeleteSelection}
             title="Delete Selected Pixels (Delete / Backspace)"
-            className={`p-1.5 text-red-400 hover:text-red-200 hover:bg-red-500/20 rounded flex items-center justify-center transition-colors border border-red-500/30 ${isWide ? 'gap-1.5 px-2 text-xs justify-start' : ''}`}
+            className={`retro-chrome-btn p-1.5 text-red-500 hover:text-red-600 rounded flex items-center justify-center transition-colors cursor-pointer ${isWide ? 'gap-1.5 px-2 text-xs justify-start' : ''}`}
           >
             <Trash2 className="w-3.5 h-3.5 shrink-0" />
             {isWide && <span>Delete Pixels</span>}
@@ -238,14 +235,14 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             <button
               onClick={onFlipHorizontalSelection}
               title="Flip Selection Horizontal"
-              className="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded flex items-center justify-center transition-colors"
+              className="retro-chrome-btn p-1.5 text-primary-theme rounded flex items-center justify-center transition-colors cursor-pointer"
             >
               <FlipHorizontal className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={onFlipVerticalSelection}
               title="Flip Selection Vertical"
-              className="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded flex items-center justify-center transition-colors"
+              className="retro-chrome-btn p-1.5 text-primary-theme rounded flex items-center justify-center transition-colors cursor-pointer"
             >
               <FlipVertical className="w-3.5 h-3.5" />
             </button>
@@ -254,7 +251,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           <button
             onClick={onClearSelection}
             title="Deselect (Escape)"
-            className="text-[10px] py-1 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white rounded transition-colors text-center"
+            className="retro-chrome-btn text-[10px] py-1 text-secondary-theme rounded transition-colors text-center cursor-pointer"
           >
             {isWide ? 'Deselect (Esc)' : 'Esc'}
           </button>

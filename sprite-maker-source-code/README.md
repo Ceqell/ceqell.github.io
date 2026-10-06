@@ -1,13 +1,13 @@
 <div align="center">
-  <img src="FigurayMaker.png" alt="FigurayMaker Icon" width="128" height="128" style="border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);" />
+  <img src="FigurayMakerBanner4.png" alt="FigurayMaker Banner" style="max-width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.3);" />
 
-  # Retro Dev Character Sprite Maker (FigurayMaker)
+  # FigurayMaker
 
-  ### <p>Make your own <strong>Retro Dev</strong> character sprites and pixel avatars!</p>
+  ### <p>Make your own custom character sprites and pixel avatars!</p>
   
 </div>
 
-A specialized, professional pixel art editor and sprite construction studio built specifically for designing and exporting authentic Retro Dev character sprites and pixel avatars.
+A specialized, professional pixel art editor and sprite construction studio built specifically for designing and exporting character sprites and pixel avatars.
 
 Features exact anatomical dimensions (Head 9×8, Torso 11×10, Arms 5×10, Legs 11×10), moveable guide overlays, advanced layer management, reference image tracing, freehand lasso and box selection tools with pixel moving, and high-resolution PNG export.
 

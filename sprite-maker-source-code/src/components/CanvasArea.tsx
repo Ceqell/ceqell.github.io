@@ -1439,7 +1439,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchEnd}
-      className={`relative flex-1 h-full w-full overflow-hidden flex items-center justify-center bg-neutral-950 canvas-checkerboard select-none touch-none ${
+      className={`relative flex-1 h-full w-full overflow-hidden flex items-center justify-center bg-[var(--canvas-desk-bg)] canvas-checkerboard select-none touch-none ${
         isPanning 
           ? 'cursor-grab' 
           : isDraggingGuide 
@@ -1455,25 +1455,25 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     >
       {/* Floating Guide Position Controller */}
       {isMovingGuide && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-40 bg-neutral-900/95 border border-amber-500/50 rounded-2xl px-4 py-2.5 shadow-2xl flex items-center gap-3.5 backdrop-blur-md animate-in fade-in slide-in-from-top-3">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-40 bg-surface-theme/95 border border-ui-theme rounded-2xl px-4 py-2.5 shadow-2xl flex items-center gap-3.5 backdrop-blur-md animate-in fade-in slide-in-from-top-3 text-primary-theme">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping" />
             <div>
-              <span className="text-xs font-bold text-amber-300 block leading-tight">Move Guide Mode</span>
-              <span className="text-[10px] text-neutral-400 block">Click & drag guide anywhere</span>
+              <span className="text-xs font-bold text-primary-theme block leading-tight">Move Guide Mode</span>
+              <span className="text-[10px] text-secondary-theme block">Click & drag guide anywhere</span>
             </div>
           </div>
 
-          <div className="h-6 w-px bg-neutral-800" />
+          <div className="retro-recessed-divider h-6" />
 
           {/* Coordinate Display */}
-          <div className="flex items-center gap-2 font-mono text-xs text-neutral-300 bg-neutral-950 px-2.5 py-1 rounded-lg border border-neutral-800">
-            <span>X: <strong className="text-white font-bold">{bodyOffsetX}</strong></span>
-            <span>Y: <strong className="text-white font-bold">{bodyOffsetY}</strong></span>
+          <div className="flex items-center gap-2 font-mono text-xs text-primary-theme retro-inset-well px-2.5 py-1 rounded-lg">
+            <span>X: <strong className="font-bold" style={{ color: 'var(--text-accent)' }}>{bodyOffsetX}</strong></span>
+            <span>Y: <strong className="font-bold" style={{ color: 'var(--text-accent)' }}>{bodyOffsetY}</strong></span>
           </div>
 
           {/* Pixel Nudge Arrow Buttons */}
-          <div className="flex items-center gap-1 bg-neutral-950 p-0.5 rounded-lg border border-neutral-800">
+          <div className="flex items-center gap-0.5 retro-inset-well p-0.5 rounded-lg">
             <button
               type="button"
               onClick={(e) => {
@@ -1481,7 +1481,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                 onGuideOffsetChange?.({ x: bodyOffsetX - 1, y: bodyOffsetY });
               }}
               title="Nudge Left 1px"
-              className="w-6 h-6 flex items-center justify-center rounded hover:bg-neutral-800 text-neutral-300 hover:text-white text-xs font-mono"
+              className="retro-chrome-btn w-6 h-6 flex items-center justify-center rounded text-primary-theme text-xs font-mono cursor-pointer"
             >
               ◀
             </button>
@@ -1492,7 +1492,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                 onGuideOffsetChange?.({ x: bodyOffsetX, y: bodyOffsetY - 1 });
               }}
               title="Nudge Up 1px"
-              className="w-6 h-6 flex items-center justify-center rounded hover:bg-neutral-800 text-neutral-300 hover:text-white text-xs font-mono"
+              className="retro-chrome-btn w-6 h-6 flex items-center justify-center rounded text-primary-theme text-xs font-mono cursor-pointer"
             >
               ▲
             </button>
@@ -1503,7 +1503,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                 onGuideOffsetChange?.({ x: bodyOffsetX, y: bodyOffsetY + 1 });
               }}
               title="Nudge Down 1px"
-              className="w-6 h-6 flex items-center justify-center rounded hover:bg-neutral-800 text-neutral-300 hover:text-white text-xs font-mono"
+              className="retro-chrome-btn w-6 h-6 flex items-center justify-center rounded text-primary-theme text-xs font-mono cursor-pointer"
             >
               ▼
             </button>
@@ -1514,7 +1514,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                 onGuideOffsetChange?.({ x: bodyOffsetX + 1, y: bodyOffsetY });
               }}
               title="Nudge Right 1px"
-              className="w-6 h-6 flex items-center justify-center rounded hover:bg-neutral-800 text-neutral-300 hover:text-white text-xs font-mono"
+              className="retro-chrome-btn w-6 h-6 flex items-center justify-center rounded text-primary-theme text-xs font-mono cursor-pointer"
             >
               ▶
             </button>
@@ -1528,7 +1528,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                 e.stopPropagation();
                 onCenterGuide();
               }}
-              className="px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 hover:text-white text-xs font-medium transition-colors border border-neutral-700"
+              className="retro-chrome-btn px-2.5 py-1 rounded-lg text-primary-theme text-xs font-medium transition-colors cursor-pointer"
             >
               Center Guide
             </button>
@@ -1542,7 +1542,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                 e.stopPropagation();
                 onToggleMoveGuide();
               }}
-              className="px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-neutral-950 text-xs font-bold transition-colors shadow-md shadow-amber-500/20"
+              className="retro-gold-btn px-3 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer"
             >
               Done / Lock
             </button>

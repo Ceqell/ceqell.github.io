@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Palette, Plus, Trash2, Pipette, Sparkles } from 'lucide-react';
-import { Palette as PaletteType } from '../types/sprite';
+import { Palette, Plus, Trash2, Pipette } from 'lucide-react';
 import { DEFAULT_PALETTES } from '../constants/retroDev';
 
 interface ColorPaletteProps {
@@ -42,23 +41,23 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
   };
 
   return (
-    <div className="flex flex-col bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden shadow-xl text-neutral-200 w-full">
+    <div className="flex flex-col bg-surface-theme border border-ui-theme rounded-xl overflow-hidden shadow-lg text-primary-theme w-full transition-colors">
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-neutral-800 bg-neutral-950/60">
-        <div className="flex items-center gap-1.5 font-medium text-xs text-neutral-300">
-          <Palette className="w-3.5 h-3.5 text-amber-400" />
+      <div className="flex items-center justify-between px-3 py-2 border-b border-ui-theme bg-surface-raised-theme">
+        <div className="flex items-center gap-1.5 font-bold text-xs text-primary-theme">
+          <Palette className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />
           <span>Color Palette</span>
         </div>
 
         <select
           value={selectedPaletteId}
           onChange={(e) => setSelectedPaletteId(e.target.value)}
-          className="bg-neutral-800 text-[11px] text-neutral-200 border border-neutral-700 rounded px-1.5 py-0.5 outline-none hover:border-amber-500/50"
+          className="retro-chrome-btn text-[11px] text-primary-theme rounded px-2 py-0.5 outline-none cursor-pointer"
         >
           {DEFAULT_PALETTES.map(p => (
-            <option key={p.id} value={p.id}>{p.name}</option>
+            <option key={p.id} value={p.id} className="bg-surface-theme text-primary-theme">{p.name}</option>
           ))}
-          <option value="custom">My Custom Palette</option>
+          <option value="custom" className="bg-surface-theme text-primary-theme font-bold">My Custom Palette</option>
         </select>
       </div>
 
@@ -66,7 +65,7 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
         {/* Main Color Picker Box & Inputs */}
         <div className="flex items-center gap-3">
           {/* Native HTML Color Input preview trigger */}
-          <div className="relative w-10 h-10 rounded-lg overflow-hidden border-2 border-neutral-700 shadow-inner shrink-0 group">
+          <div className="relative w-10 h-10 rounded-lg overflow-hidden border-2 border-ui-theme shadow-inner shrink-0 group">
             <input
               type="color"
               value={currentColor.slice(0, 7)}
@@ -82,31 +81,31 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
 
           <div className="flex-1 flex flex-col gap-1.5">
             <div className="flex items-center gap-1.5">
-              <span className="text-[11px] text-neutral-400 font-mono">HEX</span>
+              <span className="text-[11px] text-secondary-theme font-mono font-medium">HEX</span>
               <input
                 type="text"
                 value={hexInput}
                 onChange={handleHexChange}
                 placeholder="#RRGGBB"
                 maxLength={7}
-                className="bg-neutral-950 border border-neutral-700 rounded px-2 py-1 text-xs font-mono text-neutral-100 uppercase w-24 outline-none focus:border-amber-500"
+                className="bg-surface-raised-theme border border-ui-theme rounded px-2 py-1 text-xs font-mono text-primary-theme uppercase w-24 outline-none focus:border-[var(--text-accent)]"
               />
               {/* Native Eyedropper API button if supported */}
               {typeof window !== 'undefined' && 'EyeDropper' in window && (
                 <button
                   type="button"
                   onClick={onPickWithNativeEyedropper}
-                  className="p-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white rounded border border-neutral-700 transition-colors"
+                  className="retro-chrome-btn p-1.5 rounded cursor-pointer text-primary-theme"
                   title="Sample any color from screen"
                 >
-                  <Pipette className="w-3.5 h-3.5 text-amber-400" />
+                  <Pipette className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />
                 </button>
               )}
 
               <button
                 type="button"
                 onClick={() => onAddCustomColor(currentColor)}
-                className="p-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-amber-400 rounded border border-neutral-700 transition-colors ml-auto flex items-center gap-1 text-[11px]"
+                className="retro-chrome-btn p-1.5 rounded ml-auto flex items-center gap-1 text-[11px] cursor-pointer text-primary-theme font-medium"
                 title="Add current color to custom palette"
               >
                 <Plus className="w-3.5 h-3.5" />
@@ -114,9 +113,9 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
               </button>
             </div>
 
-            {/* Quick Noob Palette Shortcuts */}
+            {/* Quick Palette Shortcuts */}
             <div className="flex items-center gap-1">
-              <span className="text-[10px] text-neutral-500 uppercase font-mono">Quick:</span>
+              <span className="text-[10px] text-secondary-theme uppercase font-mono font-semibold">Quick:</span>
               {[
                 { name: 'Head/Arms', color: '#F5CD2F' },
                 { name: 'Torso', color: '#0D69AC' },
@@ -128,10 +127,10 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
                 <button
                   key={item.name}
                   onClick={() => handleColorPick(item.color)}
-                  className={`w-4 h-4 rounded-sm border transition-transform hover:scale-110 ${
+                  className={`w-4 h-4 rounded-sm border transition-transform hover:scale-110 cursor-pointer ${
                     currentColor.toUpperCase() === item.color.toUpperCase()
-                      ? 'border-white ring-1 ring-amber-400'
-                      : 'border-neutral-700'
+                      ? 'border-white ring-2 ring-[var(--text-accent)]'
+                      : 'border-ui-theme'
                   }`}
                   style={{ backgroundColor: item.color }}
                   title={`${item.name} (${item.color})`}
@@ -143,26 +142,26 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
 
         {/* Selected Palette Swatches Grid */}
         <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-[11px] text-neutral-400">
-            <span className="font-medium">
+          <div className="flex items-center justify-between text-[11px] text-secondary-theme">
+            <span className="font-semibold text-primary-theme">
               {selectedPaletteId === 'custom' ? 'Custom Swatches' : activePalette.name}
             </span>
-            <span className="text-[10px] text-neutral-500 font-mono">
+            <span className="text-[10px] font-mono">
               {selectedPaletteId === 'custom' ? customColors.length : activePalette.colors.length} colors
             </span>
           </div>
 
-          <div className="grid grid-cols-8 gap-1 max-h-32 overflow-y-auto p-1 bg-neutral-950/60 rounded-lg border border-neutral-800/80">
+          <div className="grid grid-cols-8 gap-1 max-h-32 overflow-y-auto p-1.5 retro-inset-well rounded-lg">
             {selectedPaletteId === 'custom' ? (
               customColors.length > 0 ? (
                 customColors.map((color, idx) => (
                   <div key={idx} className="relative group">
                     <button
                       onClick={() => handleColorPick(color)}
-                      className={`w-6 h-6 rounded border transition-all ${
+                      className={`w-6 h-6 rounded border transition-all cursor-pointer ${
                         currentColor.toUpperCase() === color.toUpperCase()
-                          ? 'border-amber-400 ring-2 ring-amber-400/50 scale-105 z-10'
-                          : 'border-neutral-700/80 hover:border-neutral-400'
+                          ? 'ring-2 ring-[var(--text-accent)] scale-105 z-10 border-white'
+                          : 'border-ui-theme hover:scale-105'
                       }`}
                       style={{ backgroundColor: color }}
                       title={color}
@@ -172,7 +171,7 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
                         e.stopPropagation();
                         onRemoveCustomColor(color);
                       }}
-                      className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 hover:scale-110 transition-opacity shadow-md"
+                      className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 hover:scale-110 transition-opacity shadow-md cursor-pointer"
                       title="Remove from custom"
                     >
                       <Trash2 className="w-2.5 h-2.5" />
@@ -180,7 +179,7 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
                   </div>
                 ))
               ) : (
-                <div className="col-span-8 py-3 text-center text-xs text-neutral-500 italic">
+                <div className="col-span-8 py-3 text-center text-xs text-secondary-theme italic">
                   Click "+ Save" above to add colors here
                 </div>
               )
@@ -189,10 +188,10 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
                 <button
                   key={idx}
                   onClick={() => handleColorPick(color)}
-                  className={`w-6 h-6 rounded border transition-all ${
+                  className={`w-6 h-6 rounded border transition-all cursor-pointer ${
                     currentColor.toUpperCase() === color.toUpperCase()
-                      ? 'border-amber-400 ring-2 ring-amber-400/50 scale-105 z-10'
-                      : 'border-neutral-700/80 hover:border-neutral-400'
+                      ? 'ring-2 ring-[var(--text-accent)] scale-105 z-10 border-white'
+                      : 'border-ui-theme hover:scale-105'
                   }`}
                   style={{ backgroundColor: color }}
                   title={color}
@@ -205,16 +204,16 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
         {/* Recently Used Color History */}
         {colorHistory.length > 0 && (
           <div className="space-y-1">
-            <div className="text-[10px] text-neutral-500 font-mono uppercase">Recent History</div>
+            <div className="text-[10px] text-secondary-theme font-mono uppercase font-semibold">Recent History</div>
             <div className="flex items-center gap-1 overflow-x-auto py-1">
               {colorHistory.slice(0, 12).map((color, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleColorPick(color)}
-                  className={`w-5 h-5 rounded-sm border shrink-0 transition-transform hover:scale-110 ${
+                  className={`w-5 h-5 rounded-sm border shrink-0 transition-transform hover:scale-110 cursor-pointer ${
                     currentColor.toUpperCase() === color.toUpperCase()
-                      ? 'border-amber-400 ring-1 ring-amber-400'
-                      : 'border-neutral-700'
+                      ? 'border-white ring-2 ring-[var(--text-accent)]'
+                      : 'border-ui-theme'
                   }`}
                   style={{ backgroundColor: color }}
                   title={color}
