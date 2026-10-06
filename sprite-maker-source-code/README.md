@@ -51,7 +51,7 @@ Features exact anatomical dimensions (Head 9×8, Torso 11×10, Arms 5×10, Legs 
 - **On-Canvas Floating Action Bar**: Dedicated quick-action pill with Stamp, Delete, Flip, and Deselect controls optimized for mouse and touchscreen gestures.
 
 ### Layer management
-- Unlimited transparent layers with custom naming and reordering.
+- (virtually) Unlimited transparent layers with custom naming and reordering.
 - Per-layer visibility toggle, lock protection, and opacity slider (0% to 100%).
 - **Duplicate Layer** and **Merge Down** operations.
 - Undo / Redo history with multi-step stack.
