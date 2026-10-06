@@ -6,6 +6,7 @@ import {
   Grid, 
   Layers, 
   HelpCircle, 
+  BookOpen,
   Save, 
   FolderOpen, 
   ZoomIn, 
@@ -52,6 +53,7 @@ interface HeaderProps {
   onZoomChange: (newZoom: number) => void;
   onOpenExportModal: () => void;
   onOpenGuideModal: () => void;
+  onOpenHelpModal?: () => void;
   onSaveProject: () => void;
   onLoadProject: (file: File) => void;
   leftCollapsed?: boolean;
@@ -88,6 +90,7 @@ export const Header: React.FC<HeaderProps> = ({
   onZoomChange,
   onOpenExportModal,
   onOpenGuideModal,
+  onOpenHelpModal,
   onSaveProject,
   onLoadProject,
   leftCollapsed = false,
@@ -118,12 +121,11 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header 
       ref={headerRef}
-      onWheel={handleHeaderWheel}
-      style={{ height: `${headerHeight}px` }}
-      className="bg-neutral-900 border-b border-neutral-800 px-3 flex items-center justify-between gap-3 text-neutral-200 select-none z-30 shrink-0 overflow-x-auto overflow-y-hidden header-scrollbar scroll-smooth w-full"
+      style={{ minHeight: headerHeight ? `${headerHeight}px` : undefined }}
+      className="bg-neutral-900 border-b border-neutral-800 px-3 py-2 flex flex-wrap items-center justify-between gap-y-2 gap-x-3 text-neutral-200 select-none z-30 shrink-0 w-full"
     >
       {/* Brand & Canvas Dimensions Preset */}
-      <div className="flex items-center gap-2.5 shrink-0 whitespace-nowrap">
+      <div className="flex items-center flex-wrap gap-2.5">
         {onToggleLeftSidebar && (
           <button
             onClick={onToggleLeftSidebar}
@@ -140,13 +142,11 @@ export const Header: React.FC<HeaderProps> = ({
 
         <div className="flex items-center gap-2 shrink-0">
           {/* App Brand Icon */}
-          <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center shadow-md shadow-pink-500/20 border border-neutral-700/80 bg-neutral-950 shrink-0">
-            <img 
-              src="FigurayMaker.png" 
-              alt="FigurayMaker Icon" 
-              className="w-full h-full object-cover"
-            />
-          </div>
+          <img 
+            src="FigurayMaker.png" 
+            alt="FigurayMaker Icon" 
+            className="w-8 h-8 object-contain pixelated shrink-0 select-none"
+          />
           <div className="shrink-0">
             <div className="flex items-center gap-1.5 whitespace-nowrap">
               <h1 className="font-bold text-sm tracking-tight text-white whitespace-nowrap">Retro Dev</h1>
@@ -222,7 +222,7 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Middle Controls: Undo/Redo & Toggles */}
-      <div className="flex items-center gap-1 shrink-0 whitespace-nowrap">
+      <div className="flex items-center flex-wrap gap-1.5">
         {/* Undo / Redo */}
         <div className="flex items-center bg-neutral-950 rounded-lg p-0.5 border border-neutral-800 shrink-0">
           <button
@@ -363,7 +363,19 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Right Actions: Guide, Project Save/Load, Export */}
-      <div className="flex items-center gap-2 shrink-0 whitespace-nowrap ml-auto">
+      <div className="flex items-center flex-wrap gap-2 ml-auto">
+        {/* Help & Documentation Modal */}
+        {onOpenHelpModal && (
+          <button
+            onClick={onOpenHelpModal}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 hover:text-white rounded-lg text-xs font-medium transition-colors shrink-0 cursor-pointer border border-neutral-700/60"
+            title="Open Help & Documentation Manual (?)"
+          >
+            <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+            <span className="hidden md:inline">Help & Docs</span>
+          </button>
+        )}
+
         {/* Dimensions Wiki Guide Modal */}
         <button
           onClick={onOpenGuideModal}

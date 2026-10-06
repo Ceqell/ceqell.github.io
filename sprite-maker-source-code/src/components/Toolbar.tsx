@@ -89,7 +89,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   return (
     <div 
       style={{ width: `${width}px` }}
-      className="flex flex-col gap-2.5 bg-neutral-900 border-r border-neutral-800 p-2 items-center shrink-0 z-20 select-none overflow-y-auto"
+      className="flex flex-col gap-2.5 bg-neutral-900 border-r border-neutral-800 p-2 items-center shrink-0 z-20 select-none overflow-x-hidden overflow-y-auto"
     >
       {/* Collapse button header */}
       <div className="flex items-center justify-between w-full px-0.5">
@@ -100,7 +100,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           <button
             onClick={onCollapse}
             title="Collapse Sidebar"
-            className="p-1 rounded text-neutral-500 hover:text-white hover:bg-neutral-800 transition-colors ml-auto"
+            className="p-1 rounded text-neutral-500 hover:text-white hover:bg-neutral-800 transition-colors ml-auto cursor-pointer"
           >
             <ChevronLeft className="w-3.5 h-3.5" />
           </button>
@@ -113,30 +113,20 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           onClick={onUndo}
           disabled={!canUndo}
           title="Undo (Ctrl+Z)"
-          className={`relative p-1.5 rounded text-neutral-400 hover:text-amber-400 hover:bg-neutral-800 disabled:opacity-20 disabled:pointer-events-none transition-colors group flex items-center justify-center ${isWide ? 'flex-1 gap-1 text-xs' : ''}`}
+          className={`p-1.5 rounded text-neutral-400 hover:text-amber-400 hover:bg-neutral-800 disabled:opacity-20 disabled:pointer-events-none transition-colors flex items-center justify-center cursor-pointer ${isWide ? 'flex-1 gap-1 text-xs' : ''}`}
         >
           <Undo2 className="w-3.5 h-3.5" />
           {isWide && <span>Undo</span>}
-          {!isWide && (
-            <div className="absolute left-full ml-2 px-2 py-1 bg-neutral-800 text-neutral-100 text-xs rounded border border-neutral-700 whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-xl">
-              Undo (Ctrl+Z)
-            </div>
-          )}
         </button>
 
         <button
           onClick={onRedo}
           disabled={!canRedo}
           title="Redo (Ctrl+Y / Ctrl+Shift+Z)"
-          className={`relative p-1.5 rounded text-neutral-400 hover:text-amber-400 hover:bg-neutral-800 disabled:opacity-20 disabled:pointer-events-none transition-colors group flex items-center justify-center ${isWide ? 'flex-1 gap-1 text-xs' : ''}`}
+          className={`p-1.5 rounded text-neutral-400 hover:text-amber-400 hover:bg-neutral-800 disabled:opacity-20 disabled:pointer-events-none transition-colors flex items-center justify-center cursor-pointer ${isWide ? 'flex-1 gap-1 text-xs' : ''}`}
         >
           <Redo2 className="w-3.5 h-3.5" />
           {isWide && <span>Redo</span>}
-          {!isWide && (
-            <div className="absolute left-full ml-2 px-2 py-1 bg-neutral-800 text-neutral-100 text-xs rounded border border-neutral-700 whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-xl">
-              Redo (Ctrl+Y)
-            </div>
-          )}
         </button>
       </div>
 
@@ -152,7 +142,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               key={tool.id}
               onClick={() => onSelectTool(tool.id)}
               title={tool.label}
-              className={`relative rounded-lg transition-all flex items-center group ${
+              className={`rounded-lg transition-all flex items-center cursor-pointer ${
                 isWide ? 'px-2 py-1.5 gap-2 w-full justify-start' : 'p-2 justify-center'
               } ${
                 isActive
@@ -172,13 +162,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               ) : (
                 <span className="sr-only">{tool.label}</span>
               )}
-              
-              {/* Tooltip for narrow modes */}
-              {!isWide && (
-                <div className="absolute left-full ml-2 px-2 py-1 bg-neutral-800 text-neutral-100 text-xs rounded border border-neutral-700 whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-xl">
-                  {tool.label}
-                </div>
-              )}
             </button>
           );
         })}
@@ -194,12 +177,12 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             <button
               key={size}
               onClick={() => onBrushSizeChange(size)}
-              className={`h-6 text-xs font-mono rounded flex items-center justify-center transition-colors ${
+              className={`h-6 text-xs font-mono rounded flex items-center justify-center transition-colors cursor-pointer ${
                 brushSize === size
                   ? 'bg-amber-500 text-neutral-950 font-bold'
                   : 'bg-neutral-800 text-neutral-400 hover:text-white'
               }`}
-              title={`Brush size: ${size}px`}
+              title={`Brush size: ${size}px ([ or ])`}
             >
               {size}
             </button>
@@ -212,8 +195,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       {/* Vertical Symmetry Toggle */}
       <button
         onClick={onToggleSymmetry}
-        title="Mirror / Vertical Symmetry Mode"
-        className={`relative p-2 w-full rounded-lg transition-all flex flex-col items-center justify-center gap-0.5 group ${
+        title="Mirror / Vertical Symmetry Mode (Draws on both left & right) (S)"
+        className={`p-2 w-full rounded-lg transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
           symmetryActive
             ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 shadow-sm'
             : 'text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800'
@@ -221,9 +204,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       >
         <SplitSquareVertical className="w-4 h-4" />
         <span className="text-[9px] font-mono font-medium">Mirror</span>
-        <div className="absolute left-full ml-2 px-2 py-1 bg-neutral-800 text-neutral-100 text-xs rounded border border-neutral-700 whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-xl">
-          Vertical Mirror / Symmetry Mode (Draws on both left & right)
-        </div>
       </button>
 
       {/* Selection operations if active */}

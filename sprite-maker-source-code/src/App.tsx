@@ -37,6 +37,7 @@ import { ReferenceManager, FloatingReferenceWindow } from './components/Referenc
 import { MiniPreview } from './components/MiniPreview';
 import { ExportModal } from './components/ExportModal';
 import { GuideModal } from './components/GuideModal';
+import { HelpModal, HelpTabId } from './components/HelpModal';
 import { CustomCanvasModal } from './components/CustomCanvasModal';
 
 export default function App() {
@@ -111,12 +112,14 @@ export default function App() {
   // Modals
   const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
   const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
+  const [isHelpOpen, setIsHelpOpen] = useState<boolean>(false);
+  const [helpInitialTab, setHelpInitialTab] = useState<HelpTabId>('overview');
 
   // Right sidebar tab state for smaller screens
   const [rightTab, setRightTab] = useState<'layers' | 'palette' | 'references'>('layers');
 
   // Sidebars & Top Bar Size and Collapse State
-  const [headerHeight, setHeaderHeight] = useState<number>(56);
+  const [headerHeight, setHeaderHeight] = useState<number | undefined>(undefined);
   const [leftSidebarWidth, setLeftSidebarWidth] = useState<number>(64);
   const [leftCollapsed, setLeftCollapsed] = useState<boolean>(false);
   const [rightSidebarWidth, setRightSidebarWidth] = useState<number>(320);
@@ -1164,6 +1167,10 @@ export default function App() {
         setBrushSize(b => Math.max(1, b - 1));
       } else if (e.key === ']') {
         setBrushSize(b => Math.min(4, b + 1));
+      } else if (e.key === '?' || (e.key === '/' && e.shiftKey) || e.key === 'F1') {
+        e.preventDefault();
+        setHelpInitialTab('overview');
+        setIsHelpOpen(true);
       }
     };
 
@@ -1199,6 +1206,10 @@ export default function App() {
         onZoomChange={setZoom}
         onOpenExportModal={() => setIsExportOpen(true)}
         onOpenGuideModal={() => setIsGuideOpen(true)}
+        onOpenHelpModal={() => {
+          setHelpInitialTab('overview');
+          setIsHelpOpen(true);
+        }}
         onSaveProject={handleSaveProject}
         onLoadProject={handleLoadProject}
         leftCollapsed={leftCollapsed}
@@ -1214,8 +1225,8 @@ export default function App() {
       <div
         onMouseDown={handleHeaderResizeMouseDown}
         onTouchStart={handleHeaderResizeTouchStart}
-        onDoubleClick={() => setHeaderHeight(56)}
-        title="Drag to resize Top Bar height (Double-click to reset 56px)"
+        onDoubleClick={() => setHeaderHeight(undefined)}
+        title="Drag to resize Top Bar height (Double-click to reset auto-height)"
         className="h-1 hover:h-1.5 cursor-row-resize hover:bg-amber-400/60 active:bg-amber-400 transition-all z-40 shrink-0 w-full flex items-center justify-center bg-neutral-800/80"
       >
         <div className="h-0.5 w-12 bg-neutral-600 hover:bg-amber-400 rounded-full" />
@@ -1428,6 +1439,13 @@ export default function App() {
         isOpen={isGuideOpen}
         onClose={() => setIsGuideOpen(false)}
         onLoadTemplate={handleSelectStarterTemplate}
+      />
+
+      {/* FigurayMaker Comprehensive Help & Documentation Manual */}
+      <HelpModal
+        isOpen={isHelpOpen}
+        onClose={() => setIsHelpOpen(false)}
+        initialTab={helpInitialTab}
       />
 
       {/* Custom Canvas Size & Dimensions Modal */}
