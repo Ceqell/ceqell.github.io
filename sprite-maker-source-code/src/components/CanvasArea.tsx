@@ -55,6 +55,7 @@ interface CanvasAreaProps {
   zoom: number;
   onZoomChange: (newZoom: number) => void;
   animationsEnabled?: boolean;
+  currentThemeId?: string;
 }
 
 export const CanvasArea: React.FC<CanvasAreaProps> = ({
@@ -89,6 +90,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
   zoom,
   onZoomChange,
   animationsEnabled = true,
+  currentThemeId,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const mainCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -373,7 +375,8 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
     // 1. Pixel Grid
     if (showGrid && zoom >= 8) {
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      const isLightRetroTheme = currentThemeId === 'retro-skeuomorphic' || (typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'retro-skeuomorphic');
+      ctx.strokeStyle = isLightRetroTheme ? 'rgba(0, 0, 0, 0.18)' : 'rgba(255, 255, 255, 0.09)';
       ctx.lineWidth = 1;
       for (let x = 0; x <= canvasWidth; x++) {
         ctx.beginPath();
@@ -700,7 +703,8 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     brushSize,
     layout,
     isLassoing,
-    lassoPoints
+    lassoPoints,
+    currentThemeId
   ]);
 
   // Apply pixel changes to active layer with symmetry support
@@ -1439,7 +1443,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchEnd}
-      className={`relative flex-1 h-full w-full overflow-hidden flex items-center justify-center bg-[var(--canvas-desk-bg)] canvas-checkerboard select-none touch-none ${
+      className={`relative flex-1 h-full w-full overflow-hidden flex items-center justify-center bg-[var(--canvas-desk-bg)] select-none touch-none ${
         isPanning 
           ? 'cursor-grab' 
           : isDraggingGuide 
@@ -1558,7 +1562,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
           height: `${canvasHeight * zoom}px`,
           transition: (animationsEnabled && !isPanning && touchState.current.mode !== 'pinch') ? 'transform 75ms ease-out' : 'none',
         }}
-        className="relative shadow-2xl shrink-0"
+        className="relative shadow-2xl shrink-0 canvas-checkerboard border border-ui-theme"
       >
         {/* Main Composite Canvas (low resolution scaled with CSS pixelated) */}
         <canvas
@@ -1603,21 +1607,21 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                 }}
                 onMouseDown={(e) => e.stopPropagation()}
                 onTouchStart={(e) => e.stopPropagation()}
-                className="absolute z-30 bg-neutral-900/95 border border-amber-500/50 rounded-xl px-2 py-1 shadow-2xl flex items-center gap-1.5 backdrop-blur-md animate-in fade-in select-none pointer-events-auto"
+                className="absolute z-30 bg-surface-theme/95 border border-ui-theme rounded-xl px-2 py-1 shadow-2xl flex items-center gap-1.5 backdrop-blur-md animate-in fade-in select-none pointer-events-auto"
               >
-                <div className="flex items-center gap-1 text-[10px] font-bold text-amber-300 px-1">
-                  <Move className="w-3 h-3 text-amber-400" />
+                <div className="flex items-center gap-1 text-[10px] font-bold px-1" style={{ color: 'var(--text-accent)' }}>
+                  <Move className="w-3 h-3" style={{ color: 'var(--text-accent)' }} />
                   <span>{selection.floating ? 'Moving Pixels' : selection.type === 'lasso' ? 'Lasso' : 'Box'}</span>
                 </div>
 
-                <div className="h-4 w-px bg-neutral-800" />
+                <div className="retro-recessed-divider h-4" />
 
                 {selection.floating && onCommitFloatingSelection && (
                   <button
                     type="button"
                     onClick={onCommitFloatingSelection}
                     title="Stamp / Commit Moved Pixels (Enter)"
-                    className="flex items-center gap-1 px-2 py-0.5 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs rounded transition-colors shadow"
+                    className="retro-gold-btn flex items-center gap-1 px-2 py-0.5 text-xs rounded transition-all shadow cursor-pointer font-bold"
                   >
                     <Check className="w-3.5 h-3.5" />
                     <span>Stamp</span>
@@ -1629,7 +1633,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                     type="button"
                     onClick={onDeleteSelection}
                     title="Delete Selected Pixels (Delete / Backspace)"
-                    className="flex items-center gap-1 px-2 py-0.5 bg-red-600/90 hover:bg-red-500 text-white font-medium text-xs rounded transition-colors shadow"
+                    className="retro-red-btn flex items-center gap-1 px-2 py-0.5 text-xs rounded transition-all shadow cursor-pointer font-medium"
                   >
                     <Trash2 className="w-3 h-3" />
                     <span>Del</span>
@@ -1642,7 +1646,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                       type="button"
                       onClick={onFlipHorizontalSelection}
                       title="Flip Horizontal"
-                      className="p-1 hover:bg-neutral-800 rounded text-neutral-300 hover:text-white transition-colors"
+                      className="retro-chrome-btn p-1 rounded text-primary-theme cursor-pointer"
                     >
                       <FlipHorizontal className="w-3 h-3" />
                     </button>
@@ -1652,7 +1656,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                       type="button"
                       onClick={onFlipVerticalSelection}
                       title="Flip Vertical"
-                      className="p-1 hover:bg-neutral-800 rounded text-neutral-300 hover:text-white transition-colors"
+                      className="retro-chrome-btn p-1 rounded text-primary-theme cursor-pointer"
                     >
                       <FlipVertical className="w-3 h-3" />
                     </button>
@@ -1662,7 +1666,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                       type="button"
                       onClick={onClearSelection}
                       title="Deselect (Escape)"
-                      className="p-1 hover:bg-neutral-800 rounded text-neutral-400 hover:text-white transition-colors ml-0.5"
+                      className="retro-chrome-btn p-1 rounded text-secondary-theme hover:text-primary-theme cursor-pointer ml-0.5"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -1675,22 +1679,22 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       </div>
 
       {/* Coordinate & Zoom pill indicator in bottom left */}
-      <div className="absolute bottom-3 left-3 bg-neutral-900/90 backdrop-blur border border-neutral-800 rounded-lg px-2.5 py-1 text-xs font-mono text-neutral-300 flex items-center gap-3 shadow-lg pointer-events-none">
+      <div className="absolute bottom-3 left-3 bg-surface-theme/90 backdrop-blur border border-ui-theme retro-inset-well rounded-lg px-2.5 py-1 text-xs font-mono text-primary-theme flex items-center gap-3 shadow-lg pointer-events-none transition-colors">
         <div>
           {hoverPixel && hoverPixel.x >= 0 && hoverPixel.x < canvasWidth && hoverPixel.y >= 0 && hoverPixel.y < canvasHeight ? (
             <span>
-              X: <span className="text-amber-400">{hoverPixel.x}</span> Y: <span className="text-amber-400">{hoverPixel.y}</span>
+              X: <span className="font-bold" style={{ color: 'var(--text-accent)' }}>{hoverPixel.x}</span> Y: <span className="font-bold" style={{ color: 'var(--text-accent)' }}>{hoverPixel.y}</span>
             </span>
           ) : (
-            <span className="text-neutral-500">X: -- Y: --</span>
+            <span className="text-secondary-theme">X: -- Y: --</span>
           )}
         </div>
-        <div className="w-px h-3 bg-neutral-700" />
-        <span className="text-neutral-400">
-          Canvas: <span className="text-white">{canvasWidth}×{canvasHeight}</span>
+        <div className="retro-recessed-divider h-3.5 my-auto" />
+        <span className="text-secondary-theme">
+          Canvas: <span className="font-bold text-primary-theme">{canvasWidth}×{canvasHeight}</span>
         </span>
-        <div className="w-px h-3 bg-neutral-700" />
-        <span className="text-amber-400 font-bold">{Math.round((zoom / 16) * 100)}%</span>
+        <div className="retro-recessed-divider h-3.5 my-auto" />
+        <span className="font-bold" style={{ color: 'var(--text-accent)' }}>{Math.round((zoom / 16) * 100)}%</span>
       </div>
     </div>
   );

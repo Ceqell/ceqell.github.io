@@ -17,6 +17,7 @@ import {
   Info
 } from 'lucide-react';
 import { ReferenceImage } from '../types/sprite';
+import { CollapsibleSection } from './CollapsibleSection';
 
 interface ReferenceManagerProps {
   references: ReferenceImage[];
@@ -79,15 +80,13 @@ export const ReferenceManager: React.FC<ReferenceManagerProps> = ({
   const activeRef = references.find(r => r.id === activeRefId) || references[0] || null;
 
   return (
-    <div className="flex flex-col bg-surface-theme border border-ui-theme rounded-xl overflow-hidden shadow-xl text-primary-theme w-full max-h-[360px] transition-colors">
-      {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-ui-theme bg-surface-raised-theme">
-        <div className="flex items-center gap-1.5 font-medium text-xs text-primary-theme">
-          <ImageIcon className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />
-          <span>References</span>
-          <span className="text-[10px] text-secondary-theme font-mono">({references.length})</span>
-        </div>
-
+    <CollapsibleSection
+      id="references"
+      title="References"
+      icon={<ImageIcon className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />}
+      badge={<span className="text-[10px] text-secondary-theme font-mono">({references.length})</span>}
+      defaultOpen={false}
+      headerActions={
         <div className="flex items-center gap-1">
           <button
             onClick={() => fileInputRef.current?.click()}
@@ -106,7 +105,8 @@ export const ReferenceManager: React.FC<ReferenceManagerProps> = ({
             className="hidden"
           />
         </div>
-      </div>
+      }
+    >
 
       {references.length === 0 ? (
         <div className="p-4 text-center space-y-2">
@@ -273,7 +273,7 @@ export const ReferenceManager: React.FC<ReferenceManagerProps> = ({
           )}
         </div>
       )}
-    </div>
+    </CollapsibleSection>
   );
 };
 

@@ -106,7 +106,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 select-none">
-      <div className="bg-surface-theme border border-ui-theme rounded-2xl shadow-2xl max-w-4xl w-full overflow-hidden flex flex-col max-h-[92vh] text-primary-theme">
+      <div className="bg-surface-theme border border-ui-theme rounded-2xl shadow-2xl max-w-4xl w-full overflow-hidden flex flex-col max-h-[92vh] text-primary-theme transition-colors">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-ui-theme bg-surface-raised-theme shrink-0">
           <div className="flex items-center gap-2.5">
@@ -116,7 +116,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({
             <div>
               <h2 className="text-sm font-bold text-primary-theme flex items-center gap-2">
                 <span>FigurayMaker Manual & Guide</span>
-                <span className="text-[10px] font-mono font-medium px-1.5 py-0.2 rounded retro-inset-well" style={{ color: 'var(--text-accent)' }}>
+                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded retro-inset-well" style={{ color: 'var(--text-accent)' }}>
                   Docs
                 </span>
               </h2>
@@ -162,12 +162,12 @@ export const HelpModal: React.FC<HelpModalProps> = ({
           {/* TAB 1: OVERVIEW */}
           {activeTab === 'overview' && (
             <div className="space-y-5 animate-in fade-in duration-150">
-              <div className="p-4 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/30 rounded-xl space-y-2">
-                <div className="flex items-center gap-2 font-bold text-amber-400 text-sm">
+              <div className="p-4 rounded-xl border border-ui-theme bg-surface-raised-theme retro-inset-well space-y-2">
+                <div className="flex items-center gap-2 font-bold text-sm" style={{ color: 'var(--text-accent)' }}>
                   <Sparkles className="w-4 h-4" />
                   <span>Welcome to FigurayMaker</span>
                 </div>
-                <p className="text-neutral-300 text-xs leading-relaxed">
+                <p className="text-primary-theme text-xs leading-relaxed">
                   <strong>FigurayMaker</strong> is a precision pixel art creation studio designed specifically for authoring authentic 
                   <strong> Retro Dev</strong> character sprites and avatars. It combines traditional pixel editing tools with official proportional 
                   body guides, real-time avatar previews, multi-layer compositing, and reference image tracing.
@@ -175,49 +175,49 @@ export const HelpModal: React.FC<HelpModalProps> = ({
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-                <div className="p-3.5 bg-neutral-950 rounded-xl border border-neutral-800 space-y-2">
-                  <div className="flex items-center gap-2 font-bold text-white text-xs">
-                    <div className="p-1 bg-amber-500/20 text-amber-400 rounded">1</div>
+                <div className="p-3.5 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well space-y-2">
+                  <div className="flex items-center gap-2 font-bold text-primary-theme text-xs">
+                    <div className="w-5 h-5 rounded-md flex items-center justify-center font-bold text-[10px] retro-chrome-btn" style={{ color: 'var(--text-accent)' }}>1</div>
                     <span>Proportional Guides</span>
                   </div>
-                  <p className="text-neutral-400 text-[11px] leading-relaxed">
-                    Designed around the standard Retro Dev body spec (Head 9×8, Torso 11×10, Arms 5×10, Legs 11×10). Guides can be dragged anywhere using <code className="text-amber-300 font-mono">Alt + Drag</code>.
+                  <p className="text-secondary-theme text-[11px] leading-relaxed">
+                    Designed around the standard Retro Dev body spec (Head 9×8, Torso 11×10, Arms 5×10, Legs 11×10). Guides can be dragged anywhere using <code className="px-1.5 py-0.5 rounded retro-inset-well font-mono text-[10px] font-bold" style={{ color: 'var(--text-accent)' }}>Alt + Drag</code>.
                   </p>
                 </div>
 
-                <div className="p-3.5 bg-neutral-950 rounded-xl border border-neutral-800 space-y-2">
-                  <div className="flex items-center gap-2 font-bold text-white text-xs">
-                    <div className="p-1 bg-cyan-500/20 text-cyan-400 rounded">2</div>
+                <div className="p-3.5 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well space-y-2">
+                  <div className="flex items-center gap-2 font-bold text-primary-theme text-xs">
+                    <div className="w-5 h-5 rounded-md flex items-center justify-center font-bold text-[10px] retro-chrome-btn" style={{ color: 'var(--text-accent)' }}>2</div>
                     <span>Multi-Layer Workflow</span>
                   </div>
-                  <p className="text-neutral-400 text-[11px] leading-relaxed">
+                  <p className="text-secondary-theme text-[11px] leading-relaxed">
                     Separate your character into independent layers: Base Skin, Hair, Clothing, Outlines, and Accessories. Reorder, hide, lock, adjust opacity, and merge layers down.
                   </p>
                 </div>
 
-                <div className="p-3.5 bg-neutral-950 rounded-xl border border-neutral-800 space-y-2">
-                  <div className="flex items-center gap-2 font-bold text-white text-xs">
-                    <div className="p-1 bg-pink-500/20 text-pink-400 rounded">3</div>
+                <div className="p-3.5 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well space-y-2">
+                  <div className="flex items-center gap-2 font-bold text-primary-theme text-xs">
+                    <div className="w-5 h-5 rounded-md flex items-center justify-center font-bold text-[10px] retro-chrome-btn" style={{ color: 'var(--text-accent)' }}>3</div>
                     <span>Export & Formats</span>
                   </div>
-                  <p className="text-neutral-400 text-[11px] leading-relaxed">
-                    Export high-res upscaled PNGs (1x to 32x), SVG vectors, sprite sheet grids, animated turnaround GIFs, JSON project files, and raw data arrays for game engines.
+                  <p className="text-secondary-theme text-[11px] leading-relaxed">
+                    Export crystal-clear pixel-perfect PNGs (1x to 64x scale or custom resolution) with transparency, solid colors, or dimension numbers, as well as JSON project files.
                   </p>
                 </div>
               </div>
 
               {/* Core Workflow Tips */}
-              <div className="border border-neutral-800 rounded-xl bg-neutral-950/60 p-4 space-y-3">
-                <h3 className="font-bold text-white text-xs flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <div className="border border-ui-theme rounded-xl bg-surface-raised-theme retro-inset-well p-4 space-y-3">
+                <h3 className="font-bold text-primary-theme text-xs flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                   <span>Recommended Creation Workflow</span>
                 </h3>
-                <ol className="list-decimal list-inside space-y-1.5 text-neutral-300 text-xs pl-1">
-                  <li><strong>Select a Canvas Preset</strong>: Start with default 21×28 or 24×32, or create custom dimensions via the header dropdown.</li>
-                  <li><strong>Sketch the Head & Body</strong>: Turn on the body guides (<code className="text-amber-300 font-mono">H</code>) to match the official head, torso, arm, and leg boundaries.</li>
-                  <li><strong>Enable Mirroring</strong>: Press <code className="text-cyan-300 font-mono">S</code> for symmetrical bodies and faces to paint both left and right sides simultaneously.</li>
-                  <li><strong>Use Shading Tools</strong>: Use Lighten (<code className="text-amber-300 font-mono">Dodge</code>) and Darken (<code className="text-amber-300 font-mono">Burn</code>) to add depth, highlights, and shadow gradients.</li>
-                  <li><strong>Import References</strong>: Add reference photos or character sheets in the References panel to trace or sample color palettes directly.</li>
+                <ol className="list-decimal list-inside space-y-1.5 text-secondary-theme text-xs pl-1">
+                  <li><strong className="text-primary-theme font-semibold">Select a Canvas Preset</strong>: Start with default 21×28 or 25×32, or create custom dimensions via the header dropdown.</li>
+                  <li><strong className="text-primary-theme font-semibold">Sketch the Head & Body</strong>: Turn on the body guides (<code className="px-1.5 py-0.5 rounded retro-inset-well font-mono text-[10px] font-bold" style={{ color: 'var(--text-accent)' }}>H</code>) to match the official head, torso, arm, and leg boundaries.</li>
+                  <li><strong className="text-primary-theme font-semibold">Enable Mirroring</strong>: Press <code className="px-1.5 py-0.5 rounded retro-inset-well font-mono text-[10px] font-bold" style={{ color: 'var(--text-accent)' }}>S</code> for symmetrical bodies and faces to paint both left and right sides simultaneously.</li>
+                  <li><strong className="text-primary-theme font-semibold">Use Shading Tools</strong>: Use Lighten (<strong className="text-primary-theme font-semibold">Dodge</strong>) and Darken (<strong className="text-primary-theme font-semibold">Burn</strong>) to add depth, highlights, and shadow gradients.</li>
+                  <li><strong className="text-primary-theme font-semibold">Import References</strong>: Add reference photos or character sheets in the References panel to trace or sample color palettes directly.</li>
                 </ol>
               </div>
             </div>
@@ -226,135 +226,135 @@ export const HelpModal: React.FC<HelpModalProps> = ({
           {/* TAB 2: DRAWING TOOLS */}
           {activeTab === 'tools' && (
             <div className="space-y-4 animate-in fade-in duration-150">
-              <p className="text-neutral-400 text-xs">
+              <p className="text-secondary-theme text-xs">
                 FigurayMaker provides 14 dedicated drawing and editing tools accessible from the left toolbar or via keyboard shortcuts:
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800 flex items-start gap-3">
-                  <div className="p-2 bg-amber-500/10 text-amber-400 rounded-lg shrink-0 mt-0.5">
+                <div className="p-3 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well flex items-start gap-3">
+                  <div className="p-2 rounded-lg shrink-0 mt-0.5 retro-chrome-btn" style={{ color: 'var(--text-accent)' }}>
                     <Pencil className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="font-bold text-white text-xs flex items-center gap-1.5">
+                    <div className="font-bold text-primary-theme text-xs flex items-center gap-1.5">
                       <span>Pencil</span>
-                      <span className="font-mono text-[10px] text-amber-400">(P)</span>
+                      <span className="font-mono text-[10px]" style={{ color: 'var(--text-accent)' }}>(P)</span>
                     </div>
-                    <p className="text-neutral-400 text-[11px] mt-0.5">
-                      Standard pixel drawing pen. Click or drag to draw pixels. Supports brush sizes from 1px to 32px using the size buttons or <code className="text-neutral-200 font-mono">[</code> and <code className="text-neutral-200 font-mono">]</code>.
+                    <p className="text-secondary-theme text-[11px] mt-0.5">
+                      Standard pixel drawing pen. Click or drag to draw pixels. Supports brush sizes from 1px to 4px using the size buttons or <code className="px-1 py-0.5 rounded retro-inset-well font-mono text-[10px] text-primary-theme">[</code> and <code className="px-1 py-0.5 rounded retro-inset-well font-mono text-[10px] text-primary-theme">]</code>.
                     </p>
                   </div>
                 </div>
 
-                <div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800 flex items-start gap-3">
-                  <div className="p-2 bg-red-500/10 text-red-400 rounded-lg shrink-0 mt-0.5">
+                <div className="p-3 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well flex items-start gap-3">
+                  <div className="p-2 rounded-lg shrink-0 mt-0.5 retro-chrome-btn text-red-500">
                     <Eraser className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="font-bold text-white text-xs flex items-center gap-1.5">
+                    <div className="font-bold text-primary-theme text-xs flex items-center gap-1.5">
                       <span>Eraser</span>
-                      <span className="font-mono text-[10px] text-red-400">(E)</span>
+                      <span className="font-mono text-[10px] text-red-500">(E)</span>
                     </div>
-                    <p className="text-neutral-400 text-[11px] mt-0.5">
+                    <p className="text-secondary-theme text-[11px] mt-0.5">
                       Clears pixels to transparent on the active layer. Does not erase pixels on other layers.
                     </p>
                   </div>
                 </div>
 
-                <div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800 flex items-start gap-3">
-                  <div className="p-2 bg-blue-500/10 text-blue-400 rounded-lg shrink-0 mt-0.5">
+                <div className="p-3 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well flex items-start gap-3">
+                  <div className="p-2 rounded-lg shrink-0 mt-0.5 retro-chrome-btn" style={{ color: 'var(--text-accent)' }}>
                     <PaintBucket className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="font-bold text-white text-xs flex items-center gap-1.5">
+                    <div className="font-bold text-primary-theme text-xs flex items-center gap-1.5">
                       <span>Bucket Fill</span>
-                      <span className="font-mono text-[10px] text-blue-400">(B)</span>
+                      <span className="font-mono text-[10px]" style={{ color: 'var(--text-accent)' }}>(B)</span>
                     </div>
-                    <p className="text-neutral-400 text-[11px] mt-0.5">
+                    <p className="text-secondary-theme text-[11px] mt-0.5">
                       Flood-fills contiguous pixels of the same color or empty space with the currently selected color.
                     </p>
                   </div>
                 </div>
 
-                <div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800 flex items-start gap-3">
-                  <div className="p-2 bg-yellow-500/10 text-yellow-400 rounded-lg shrink-0 mt-0.5">
+                <div className="p-3 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well flex items-start gap-3">
+                  <div className="p-2 rounded-lg shrink-0 mt-0.5 retro-chrome-btn" style={{ color: 'var(--text-accent)' }}>
                     <Pipette className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="font-bold text-white text-xs flex items-center gap-1.5">
+                    <div className="font-bold text-primary-theme text-xs flex items-center gap-1.5">
                       <span>Eyedropper</span>
-                      <span className="font-mono text-[10px] text-yellow-400">(I)</span>
+                      <span className="font-mono text-[10px]" style={{ color: 'var(--text-accent)' }}>(I)</span>
                     </div>
-                    <p className="text-neutral-400 text-[11px] mt-0.5">
-                      Sample any color from visible layers on the canvas. Automatically switches back to your pen once a color is chosen.
+                    <p className="text-secondary-theme text-[11px] mt-0.5">
+                      Sample any color from visible layers on the canvas. Automatically updates your active color swatch.
                     </p>
                   </div>
                 </div>
 
-                <div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800 flex items-start gap-3">
-                  <div className="p-2 bg-purple-500/10 text-purple-400 rounded-lg shrink-0 mt-0.5">
+                <div className="p-3 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well flex items-start gap-3">
+                  <div className="p-2 rounded-lg shrink-0 mt-0.5 retro-chrome-btn" style={{ color: 'var(--text-accent)' }}>
                     <Minus className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="font-bold text-white text-xs flex items-center gap-1.5">
+                    <div className="font-bold text-primary-theme text-xs flex items-center gap-1.5">
                       <span>Line</span>
-                      <span className="font-mono text-[10px] text-purple-400">(L)</span>
+                      <span className="font-mono text-[10px]" style={{ color: 'var(--text-accent)' }}>(L)</span>
                     </div>
-                    <p className="text-neutral-400 text-[11px] mt-0.5">
+                    <p className="text-secondary-theme text-[11px] mt-0.5">
                       Draws clean straight lines using Bresenham's pixel algorithm. Click and drag to position.
                     </p>
                   </div>
                 </div>
 
-                <div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800 flex items-start gap-3">
-                  <div className="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg shrink-0 mt-0.5">
+                <div className="p-3 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well flex items-start gap-3">
+                  <div className="p-2 rounded-lg shrink-0 mt-0.5 retro-chrome-btn" style={{ color: 'var(--text-accent)' }}>
                     <Square className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="font-bold text-white text-xs flex items-center gap-1.5">
+                    <div className="font-bold text-primary-theme text-xs flex items-center gap-1.5">
                       <span>Rectangle & Filled Box</span>
-                      <span className="font-mono text-[10px] text-emerald-400">(U)</span>
+                      <span className="font-mono text-[10px]" style={{ color: 'var(--text-accent)' }}>(U)</span>
                     </div>
-                    <p className="text-neutral-400 text-[11px] mt-0.5">
+                    <p className="text-secondary-theme text-[11px] mt-0.5">
                       Draws hollow pixel box outlines or solid filled rectangles. Drag to set dimensions.
                     </p>
                   </div>
                 </div>
 
-                <div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800 flex items-start gap-3">
-                  <div className="p-2 bg-teal-500/10 text-teal-400 rounded-lg shrink-0 mt-0.5">
+                <div className="p-3 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well flex items-start gap-3">
+                  <div className="p-2 rounded-lg shrink-0 mt-0.5 retro-chrome-btn" style={{ color: 'var(--text-accent)' }}>
                     <Circle className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="font-bold text-white text-xs flex items-center gap-1.5">
+                    <div className="font-bold text-primary-theme text-xs flex items-center gap-1.5">
                       <span>Circle & Filled Circle</span>
-                      <span className="font-mono text-[10px] text-teal-400">(C)</span>
+                      <span className="font-mono text-[10px]" style={{ color: 'var(--text-accent)' }}>(C)</span>
                     </div>
-                    <p className="text-neutral-400 text-[11px] mt-0.5">
+                    <p className="text-secondary-theme text-[11px] mt-0.5">
                       Draws hollow pixel circles or solid filled ellipses. Drag from corner to opposite corner.
                     </p>
                   </div>
                 </div>
 
-                <div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800 flex items-start gap-3">
-                  <div className="p-2 bg-amber-500/10 text-amber-400 rounded-lg shrink-0 mt-0.5">
+                <div className="p-3 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well flex items-start gap-3">
+                  <div className="p-2 rounded-lg shrink-0 mt-0.5 retro-chrome-btn" style={{ color: 'var(--text-accent)' }}>
                     <SunMedium className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="font-bold text-white text-xs">Lighten (Dodge) & Darken (Burn)</div>
-                    <p className="text-neutral-400 text-[11px] mt-0.5">
+                    <div className="font-bold text-primary-theme text-xs">Lighten (Dodge) & Darken (Burn)</div>
+                    <p className="text-secondary-theme text-[11px] mt-0.5">
                       Click existing pixels to progressively lighten or darken their shading without needing to change your color palette.
                     </p>
                   </div>
                 </div>
 
-                <div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800 flex items-start gap-3 md:col-span-2">
-                  <div className="p-2 bg-pink-500/10 text-pink-400 rounded-lg shrink-0 mt-0.5">
+                <div className="p-3 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well flex items-start gap-3 md:col-span-2">
+                  <div className="p-2 rounded-lg shrink-0 mt-0.5 retro-chrome-btn" style={{ color: 'var(--text-accent)' }}>
                     <Sparkles className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="font-bold text-white text-xs">Color Replace</div>
-                    <p className="text-neutral-400 text-[11px] mt-0.5">
+                    <div className="font-bold text-primary-theme text-xs">Color Replace</div>
+                    <p className="text-secondary-theme text-[11px] mt-0.5">
                       Click any pixel to replace all matching occurrences of that color across the entire active layer with the currently selected color in a single click.
                     </p>
                   </div>
@@ -366,75 +366,81 @@ export const HelpModal: React.FC<HelpModalProps> = ({
           {/* TAB 3: SELECTION & TRANSFORM */}
           {activeTab === 'selection' && (
             <div className="space-y-4 animate-in fade-in duration-150">
-              <div className="p-3.5 bg-neutral-950 rounded-xl border border-neutral-800 space-y-2">
-                <div className="font-bold text-white text-xs flex items-center gap-2">
-                  <Scissors className="w-4 h-4 text-amber-400" />
+              <div className="p-3.5 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well space-y-2">
+                <div className="font-bold text-primary-theme text-xs flex items-center gap-2" style={{ color: 'var(--text-accent)' }}>
+                  <Scissors className="w-4 h-4" />
                   <span>How Selection & Pixel Manipulation Works</span>
                 </div>
-                <p className="text-neutral-400 text-[11px]">
+                <p className="text-secondary-theme text-[11px]">
                   Selections allow you to cut, move, transform, and delete regions of pixels on the active layer without affecting other layers.
                 </p>
               </div>
 
               <div className="space-y-3">
-                <div className="p-3 bg-neutral-950/80 rounded-xl border border-neutral-800 flex items-start gap-3">
-                  <div className="p-2 bg-neutral-800 text-amber-400 rounded-lg shrink-0">
+                <div className="p-3 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well flex items-start gap-3">
+                  <div className="p-2 rounded-lg shrink-0 retro-chrome-btn" style={{ color: 'var(--text-accent)' }}>
                     <Scissors className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="font-bold text-white text-xs">Box Select <span className="font-mono text-amber-400">(M)</span> & Freehand Lasso <span className="font-mono text-amber-400">(Q)</span></div>
-                    <p className="text-neutral-400 text-[11px] mt-1">
+                    <div className="font-bold text-primary-theme text-xs">
+                      Box Select <span className="font-mono" style={{ color: 'var(--text-accent)' }}>(M)</span> & Freehand Lasso <span className="font-mono" style={{ color: 'var(--text-accent)' }}>(Q)</span>
+                    </div>
+                    <p className="text-secondary-theme text-[11px] mt-1">
                       Drag a rectangular marquee or draw any custom freehand lasso outline around pixels you wish to isolate.
                     </p>
                   </div>
                 </div>
 
-                <div className="p-3 bg-neutral-950/80 rounded-xl border border-neutral-800 flex items-start gap-3">
-                  <div className="p-2 bg-neutral-800 text-cyan-400 rounded-lg shrink-0">
+                <div className="p-3 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well flex items-start gap-3">
+                  <div className="p-2 rounded-lg shrink-0 retro-chrome-btn" style={{ color: 'var(--text-accent)' }}>
                     <Move className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="font-bold text-white text-xs">Moving & Floating Pixels</div>
-                    <p className="text-neutral-400 text-[11px] mt-1">
+                    <div className="font-bold text-primary-theme text-xs">Moving & Floating Pixels</div>
+                    <p className="text-secondary-theme text-[11px] mt-1">
                       Click and drag inside any active selection to "lift" the pixels into a floating state. You can also use the 
-                      <strong className="text-white"> Arrow Keys</strong> (<code className="text-cyan-300 font-mono">↑ ↓ ← →</code>) to nudge floating pixels by exact 1-pixel increments.
+                      <strong className="text-primary-theme font-semibold"> Arrow Keys</strong> (<code className="px-1.5 py-0.5 rounded retro-inset-well font-mono text-[10px] font-bold" style={{ color: 'var(--text-accent)' }}>↑ ↓ ← →</code>) to nudge floating pixels by exact 1-pixel increments.
                     </p>
                   </div>
                 </div>
 
-                <div className="p-3 bg-neutral-950/80 rounded-xl border border-neutral-800 flex items-start gap-3">
-                  <div className="p-2 bg-neutral-800 text-emerald-400 rounded-lg shrink-0">
+                <div className="p-3 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well flex items-start gap-3">
+                  <div className="p-2 rounded-lg shrink-0 retro-chrome-btn text-emerald-500">
                     <Check className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="font-bold text-white text-xs">Stamping & Committing <span className="font-mono text-emerald-400">(Enter)</span></div>
-                    <p className="text-neutral-400 text-[11px] mt-1">
-                      Once you have positioned your floating pixels, press <code className="text-emerald-300 font-mono">Enter</code> or click the green 
-                      <strong> Stamp</strong> button in the left toolbar to bake the pixels back into the active layer.
+                    <div className="font-bold text-primary-theme text-xs">
+                      Stamping & Committing <span className="font-mono text-emerald-500">(Enter)</span>
+                    </div>
+                    <p className="text-secondary-theme text-[11px] mt-1">
+                      Once you have positioned your floating pixels, press <code className="px-1.5 py-0.5 rounded retro-inset-well font-mono text-[10px] font-bold text-emerald-500">Enter</code> or click the 
+                      <strong className="text-primary-theme font-semibold"> Stamp</strong> button in the left toolbar or floating action bar to commit the pixels back into the active layer.
                     </p>
                   </div>
                 </div>
 
-                <div className="p-3 bg-neutral-950/80 rounded-xl border border-neutral-800 flex items-start gap-3">
-                  <div className="p-2 bg-neutral-800 text-pink-400 rounded-lg shrink-0">
+                <div className="p-3 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well flex items-start gap-3">
+                  <div className="p-2 rounded-lg shrink-0 retro-chrome-btn" style={{ color: 'var(--text-accent)' }}>
                     <FlipHorizontal className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="font-bold text-white text-xs">Horizontal & Vertical Flipping</div>
-                    <p className="text-neutral-400 text-[11px] mt-1">
+                    <div className="font-bold text-primary-theme text-xs">Horizontal & Vertical Flipping</div>
+                    <p className="text-secondary-theme text-[11px] mt-1">
                       Use the flip buttons in the toolbar while a selection is active to mirror the selected sprite segment (perfect for flipping weapons, arms, or eyes).
                     </p>
                   </div>
                 </div>
 
-                <div className="p-3 bg-neutral-950/80 rounded-xl border border-neutral-800 flex items-start gap-3">
-                  <div className="p-2 bg-neutral-800 text-red-400 rounded-lg shrink-0">
+                <div className="p-3 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well flex items-start gap-3">
+                  <div className="p-2 rounded-lg shrink-0 retro-chrome-btn text-red-500">
                     <Trash2 className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="font-bold text-white text-xs">Deleting Selected Pixels <span className="font-mono text-red-400">(Delete / Backspace)</span></div>
-                    <p className="text-neutral-400 text-[11px] mt-1">
-                      Press <code className="text-red-300 font-mono">Delete</code> or <code className="text-red-300 font-mono">Backspace</code> to erase all pixels inside the active selection. Press <code className="text-neutral-200 font-mono">Esc</code> to deselect.
+                    <div className="font-bold text-primary-theme text-xs">
+                      Deleting Selected Pixels <span className="font-mono text-red-500">(Delete / Backspace)</span>
+                    </div>
+                    <p className="text-secondary-theme text-[11px] mt-1">
+                      Press <code className="px-1.5 py-0.5 rounded retro-inset-well font-mono text-[10px] font-bold text-red-500">Delete</code> or <code className="px-1.5 py-0.5 rounded retro-inset-well font-mono text-[10px] font-bold text-red-500">Backspace</code> to erase all pixels inside the active selection. Press <code className="px-1.5 py-0.5 rounded retro-inset-well font-mono text-[10px] text-primary-theme">Esc</code> to deselect.
                     </p>
                   </div>
                 </div>
@@ -445,9 +451,9 @@ export const HelpModal: React.FC<HelpModalProps> = ({
           {/* TAB 4: GUIDES & DIMENSIONS */}
           {activeTab === 'guides' && (
             <div className="space-y-4 animate-in fade-in duration-150">
-              <div className="p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-xl space-y-1.5">
-                <div className="font-bold text-amber-400 text-xs">Official Retro Dev Specification</div>
-                <p className="italic text-neutral-300 text-[11px]">
+              <div className="p-3.5 bg-surface-raised-theme border border-ui-theme border-l-4 rounded-xl space-y-1.5 retro-inset-well" style={{ borderLeftColor: 'var(--text-accent)' }}>
+                <div className="font-bold text-xs" style={{ color: 'var(--text-accent)' }}>Official Retro Dev Specification</div>
+                <p className="italic text-primary-theme text-[11px]">
                   "The process of making a character sprite's body parts are very easy. 
                   The legs and torso are 11x10 pixels, the arms are 5x10 and the head is 9x8. 
                   After you are done with the body, design on the accessories begins."
@@ -456,71 +462,71 @@ export const HelpModal: React.FC<HelpModalProps> = ({
 
               {/* Dimension Breakdown Cards */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
-                <div className="p-3 bg-neutral-950 rounded-xl border border-yellow-500/30">
-                  <div className="text-[10px] uppercase font-mono font-bold text-yellow-400">Head</div>
-                  <div className="text-lg font-bold font-mono text-white mt-0.5">9 × 8</div>
-                  <div className="text-[10px] text-neutral-400 mt-1 leading-snug">
+                <div className="p-3 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well">
+                  <div className="text-[10px] uppercase font-mono font-bold text-amber-500">Head</div>
+                  <div className="text-lg font-bold font-mono text-primary-theme mt-0.5">9 × 8</div>
+                  <div className="text-[10px] text-secondary-theme mt-1 leading-snug">
                     Round contour (3px top, 7px row 2, 9px center, 7px bottom, 5px neck).
                   </div>
                 </div>
 
-                <div className="p-3 bg-neutral-950 rounded-xl border border-cyan-500/30">
-                  <div className="text-[10px] uppercase font-mono font-bold text-cyan-400">Torso</div>
-                  <div className="text-lg font-bold font-mono text-white mt-0.5">11 × 10</div>
-                  <div className="text-[10px] text-neutral-400 mt-1 leading-snug">
+                <div className="p-3 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well">
+                  <div className="text-[10px] uppercase font-mono font-bold text-sky-500">Torso</div>
+                  <div className="text-lg font-bold font-mono text-primary-theme mt-0.5">11 × 10</div>
+                  <div className="text-[10px] text-secondary-theme mt-1 leading-snug">
                     Main upper body block (aligned between arms).
                   </div>
                 </div>
 
-                <div className="p-3 bg-neutral-950 rounded-xl border border-yellow-500/30">
-                  <div className="text-[10px] uppercase font-mono font-bold text-yellow-400">Arms (L / R)</div>
-                  <div className="text-lg font-bold font-mono text-white mt-0.5">5 × 10 each</div>
-                  <div className="text-[10px] text-neutral-400 mt-1 leading-snug">
+                <div className="p-3 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well">
+                  <div className="text-[10px] uppercase font-mono font-bold text-amber-500">Arms (L / R)</div>
+                  <div className="text-lg font-bold font-mono text-primary-theme mt-0.5">5 × 10 each</div>
+                  <div className="text-[10px] text-secondary-theme mt-1 leading-snug">
                     Flank torso on left and right, top-aligned with shoulders.
                   </div>
                 </div>
 
-                <div className="p-3 bg-neutral-950 rounded-xl border border-cyan-500/30">
-                  <div className="text-[10px] uppercase font-mono font-bold text-cyan-400">Legs</div>
-                  <div className="text-lg font-bold font-mono text-white mt-0.5">11 × 10</div>
-                  <div className="text-[10px] text-neutral-400 mt-1 leading-snug">
-                    Lower body block (can be split into two 5px legs with 1px gap).
+                <div className="p-3 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well">
+                  <div className="text-[10px] uppercase font-mono font-bold text-emerald-500">Legs</div>
+                  <div className="text-lg font-bold font-mono text-primary-theme mt-0.5">11 × 10</div>
+                  <div className="text-[10px] text-secondary-theme mt-1 leading-snug">
+                    Lower body block (split into two 5px legs with 1px seam divider).
                   </div>
                 </div>
               </div>
 
               {/* Moving Guides Instruction Box */}
-              <div className="p-3.5 bg-neutral-950 rounded-xl border border-neutral-800 space-y-2">
-                <div className="font-bold text-white text-xs flex items-center gap-2">
-                  <Move className="w-4 h-4 text-amber-400" />
+              <div className="p-3.5 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well space-y-2">
+                <div className="font-bold text-primary-theme text-xs flex items-center gap-2">
+                  <Move className="w-4 h-4" style={{ color: 'var(--text-accent)' }} />
                   <span>How to Move & Reposition Body Guides</span>
                 </div>
-                <div className="space-y-1.5 text-neutral-300 text-xs">
+                <div className="space-y-1.5 text-secondary-theme text-xs">
                   <p>
                     Body guides are not locked in place! You can reposition them anywhere on the canvas:
                   </p>
-                  <ul className="list-disc list-inside space-y-1 text-neutral-400 text-[11px] pl-1">
+                  <ul className="list-disc list-inside space-y-1 text-secondary-theme text-[11px] pl-1">
                     <li>
-                      <strong className="text-white">Hold Alt and Drag on Canvas</strong>: While holding <code className="text-amber-300 font-mono">Alt</code>, click anywhere over the body guides and drag to slide them freely.
+                      <strong className="text-primary-theme font-semibold">Hold Alt and Drag on Canvas</strong>: While holding <code className="px-1 py-0.5 rounded retro-inset-well font-mono text-[10px]" style={{ color: 'var(--text-accent)' }}>Alt</code>, click anywhere over the body guides and drag to slide them freely.
                     </li>
                     <li>
-                      <strong className="text-white">Move Guide Button (Top Bar)</strong>: Click the <code className="text-amber-300 font-mono">Guide</code> icon in the header to toggle guide-moving mode, drag the guides, and click again when done.
+                      <strong className="text-primary-theme font-semibold">Move Guide Button (Top Bar)</strong>: Click the <code className="px-1 py-0.5 rounded retro-inset-well font-mono text-[10px]" style={{ color: 'var(--text-accent)' }}>Move Guide</code> toggle in the header, drag or nudge the guides with pixel arrows, and click Done when finished.
                     </li>
                     <li>
-                      <strong className="text-white">Center Guide</strong>: Click the <code className="text-neutral-200 font-mono">Center</code> button next to the guide controls in the header to instantly snap the guide back to the canvas center.
+                      <strong className="text-primary-theme font-semibold">Center Guide</strong>: Click the <code className="px-1 py-0.5 rounded retro-inset-well font-mono text-[10px] text-primary-theme">Center Guide</code> button in the floating guide controller to instantly snap the guide back to the canvas center.
                     </li>
                   </ul>
                 </div>
               </div>
 
               {/* Symmetry */}
-              <div className="p-3.5 bg-neutral-950 rounded-xl border border-neutral-800 space-y-2">
-                <div className="font-bold text-white text-xs flex items-center gap-2">
-                  <SplitSquareVertical className="w-4 h-4 text-cyan-400" />
+              <div className="p-3.5 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well space-y-2">
+                <div className="font-bold text-primary-theme text-xs flex items-center gap-2">
+                  <SplitSquareVertical className="w-4 h-4" style={{ color: 'var(--text-accent)' }} />
                   <span>Vertical Symmetry / Mirror Mode (S)</span>
                 </div>
-                <p className="text-neutral-400 text-[11px]">
-                  Press <code className="text-cyan-300 font-mono">S</code> to activate symmetry mode. A dashed vertical axis line appears down the center of the canvas. Every pixel drawn, erased, or shaded on one side is automatically reflected on the opposite side in real time.
+                <p className="text-secondary-theme text-[11px]">
+                  Press <code className="px-1 py-0.5 rounded retro-inset-well font-mono text-[10px] font-bold" style={{ color: 'var(--text-accent)' }}>S</code> to activate symmetry mode. A dashed vertical axis line appears down the center of the character's torso. Every pixel drawn, erased, or shaded on one side is automatically reflected on the opposite side in real time.
                 </p>
               </div>
             </div>
@@ -530,53 +536,53 @@ export const HelpModal: React.FC<HelpModalProps> = ({
           {activeTab === 'layers-refs' && (
             <div className="space-y-4 animate-in fade-in duration-150">
               {/* Layers Section */}
-              <div className="p-3.5 bg-neutral-950 rounded-xl border border-neutral-800 space-y-2">
-                <div className="font-bold text-white text-xs flex items-center gap-2">
-                  <LayersIcon className="w-4 h-4 text-amber-400" />
+              <div className="p-3.5 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well space-y-2">
+                <div className="font-bold text-primary-theme text-xs flex items-center gap-2">
+                  <LayersIcon className="w-4 h-4" style={{ color: 'var(--text-accent)' }} />
                   <span>Layers Panel Workflow</span>
                 </div>
-                <p className="text-neutral-400 text-[11px]">
+                <p className="text-secondary-theme text-[11px]">
                   Layers stack on top of each other from bottom to top. Working with multiple layers allows you to paint clothing and accessories over body outlines without damaging previous work.
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-[11px]">
-                  <div className="p-2 bg-neutral-900 rounded-lg">
-                    <span className="font-bold text-white">Add & Duplicate:</span> Create fresh empty layers or clone your active layer to test alternative colors.
+                  <div className="p-2 bg-surface-theme border border-ui-theme rounded-lg">
+                    <span className="font-bold text-primary-theme">Add & Duplicate:</span> Create fresh empty layers or clone your active layer to test alternative colors.
                   </div>
-                  <div className="p-2 bg-neutral-900 rounded-lg">
-                    <span className="font-bold text-white">Merge Down:</span> Flattens the active layer into the layer immediately below it.
+                  <div className="p-2 bg-surface-theme border border-ui-theme rounded-lg">
+                    <span className="font-bold text-primary-theme">Merge Down:</span> Flattens the active layer into the layer immediately below it.
                   </div>
-                  <div className="p-2 bg-neutral-900 rounded-lg">
-                    <span className="font-bold text-white">Lock Layer:</span> Prevents accidental edits, bucket fills, or erasing on protected layers.
+                  <div className="p-2 bg-surface-theme border border-ui-theme rounded-lg">
+                    <span className="font-bold text-primary-theme">Lock Layer:</span> Prevents accidental edits, bucket fills, or erasing on protected layers.
                   </div>
-                  <div className="p-2 bg-neutral-900 rounded-lg">
-                    <span className="font-bold text-white">Opacity Slider:</span> Fade out reference outlines or sketch layers while detailing the final sprite.
+                  <div className="p-2 bg-surface-theme border border-ui-theme rounded-lg">
+                    <span className="font-bold text-primary-theme">Opacity Slider:</span> Fade out reference outlines or sketch layers while detailing the final sprite.
                   </div>
                 </div>
               </div>
 
               {/* References Section */}
-              <div className="p-3.5 bg-neutral-950 rounded-xl border border-neutral-800 space-y-2">
-                <div className="font-bold text-white text-xs flex items-center gap-2">
-                  <ImageIcon className="w-4 h-4 text-pink-400" />
+              <div className="p-3.5 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well space-y-2">
+                <div className="font-bold text-primary-theme text-xs flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4" style={{ color: 'var(--text-accent)' }} />
                   <span>Reference Images & Tracing</span>
                 </div>
-                <p className="text-neutral-400 text-[11px]">
+                <p className="text-secondary-theme text-[11px]">
                   Import your own PNGs, JPEGs, or WebP images using the References panel. FigurayMaker offers two ways to use reference images:
                 </p>
 
                 <div className="space-y-2 text-[11px]">
-                  <div className="p-2.5 bg-neutral-900 rounded-lg border border-neutral-800">
-                    <div className="font-bold text-pink-300">1. Floating Reference Window (Popout)</div>
-                    <p className="text-neutral-400 mt-0.5">
-                      Open a movable popout window displaying your image. You can zoom in and out, and click anywhere directly on the reference image to <strong>eyedrop and sample its colors</strong> into your active palette!
+                  <div className="p-2.5 bg-surface-theme rounded-lg border border-ui-theme">
+                    <div className="font-bold text-xs" style={{ color: 'var(--text-accent)' }}>1. Floating Reference Window (Popout)</div>
+                    <p className="text-secondary-theme mt-0.5">
+                      Open a movable popout window displaying your image. You can zoom in and out, and click anywhere directly on the reference image to <strong className="text-primary-theme">eyedrop and sample its colors</strong> into your active palette!
                     </p>
                   </div>
 
-                  <div className="p-2.5 bg-neutral-900 rounded-lg border border-neutral-800">
-                    <div className="font-bold text-amber-300">2. In-Canvas Tracing Overlay Mode</div>
-                    <p className="text-neutral-400 mt-0.5">
-                      Toggle <strong>Trace Mode</strong> to project your reference image directly underneath or over your pixel drawing canvas with custom opacity (e.g. 45%), scale, and X/Y offset sliders. Trace pixel-by-pixel over reference sketches with ease.
+                  <div className="p-2.5 bg-surface-theme rounded-lg border border-ui-theme">
+                    <div className="font-bold text-xs" style={{ color: 'var(--text-accent)' }}>2. In-Canvas Tracing Overlay Mode</div>
+                    <p className="text-secondary-theme mt-0.5">
+                      Toggle <strong className="text-primary-theme">Trace Mode</strong> to project your reference image directly onto your pixel drawing canvas with custom opacity (e.g. 45%), scale, and X/Y offset sliders. Trace pixel-by-pixel over reference sketches with ease.
                     </p>
                   </div>
                 </div>
@@ -589,39 +595,39 @@ export const HelpModal: React.FC<HelpModalProps> = ({
             <div className="space-y-3 animate-in fade-in duration-150">
               {/* Search Bar */}
               <div className="relative">
-                <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-3.5 h-3.5 text-secondary-theme absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   placeholder="Filter keyboard shortcuts (e.g. pencil, select, alt, zoom)..."
                   value={shortcutSearch}
                   onChange={e => setShortcutSearch(e.target.value)}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-amber-400/60"
+                  className="w-full bg-surface-raised-theme border border-ui-theme rounded-xl pl-9 pr-3 py-2 text-xs text-primary-theme placeholder:text-secondary-theme focus:outline-none focus:border-[var(--text-accent)]"
                 />
               </div>
 
               {/* Shortcuts Table */}
-              <div className="border border-neutral-800 rounded-xl overflow-hidden bg-neutral-950">
+              <div className="border border-ui-theme rounded-xl overflow-hidden retro-inset-well bg-surface-theme">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-neutral-900/80 border-b border-neutral-800 text-[10px] uppercase font-bold tracking-wider text-neutral-400">
+                  <thead className="bg-surface-raised-theme border-b border-ui-theme text-[10px] uppercase font-bold tracking-wider text-secondary-theme">
                     <tr>
                       <th className="px-4 py-2 w-44">Shortcut Key</th>
                       <th className="px-4 py-2">Action</th>
                       <th className="px-4 py-2 w-28 text-right">Category</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-neutral-800/60 font-mono text-[11px]">
+                  <tbody className="divide-y divide-ui-theme font-mono text-[11px]">
                     {filteredShortcuts.map((s, idx) => (
-                      <tr key={idx} className="hover:bg-neutral-900/50 transition-colors">
+                      <tr key={idx} className="hover:bg-surface-raised-theme/70 transition-colors">
                         <td className="px-4 py-2">
-                          <kbd className="px-2 py-0.5 rounded bg-neutral-800 border border-neutral-700 text-amber-300 font-bold shadow-sm inline-block">
+                          <kbd className="retro-chrome-btn px-2.5 py-0.5 rounded font-mono text-xs font-bold shadow-sm inline-block" style={{ color: 'var(--text-accent)' }}>
                             {s.key}
                           </kbd>
                         </td>
-                        <td className="px-4 py-2 text-neutral-200 font-sans text-xs">
+                        <td className="px-4 py-2 text-primary-theme font-sans text-xs">
                           {s.action}
                         </td>
                         <td className="px-4 py-2 text-right">
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-400">
+                          <span className="text-[10px] px-2 py-0.5 rounded retro-inset-well text-secondary-theme border border-ui-theme font-sans">
                             {s.category}
                           </span>
                         </td>
@@ -629,7 +635,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({
                     ))}
                     {filteredShortcuts.length === 0 && (
                       <tr>
-                        <td colSpan={3} className="px-4 py-6 text-center text-neutral-500 font-sans">
+                        <td colSpan={3} className="px-4 py-6 text-center text-secondary-theme font-sans">
                           No shortcuts found matching "{shortcutSearch}"
                         </td>
                       </tr>
@@ -645,7 +651,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({
         <div className="flex items-center justify-between px-5 py-3 border-t border-ui-theme bg-surface-raised-theme shrink-0 text-[11px] text-secondary-theme">
           <div className="flex items-center gap-1.5">
             <Info className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />
-            <span>Press <kbd className="px-1.5 py-0.2 rounded retro-inset-well font-mono text-[10px]" style={{ color: 'var(--text-accent)' }}>?</kbd> anywhere to open this manual</span>
+            <span>Press <kbd className="px-1.5 py-0.5 rounded retro-chrome-btn font-mono text-[10px] font-bold" style={{ color: 'var(--text-accent)' }}>?</kbd> anywhere to open this manual</span>
           </div>
           <button
             onClick={onClose}

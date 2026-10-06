@@ -22,6 +22,7 @@ interface ExportModalProps {
   layers: Layer[];
   bodyOffsetX?: number;
   bodyOffsetY?: number;
+  defaultFilename?: string;
 }
 
 export const ExportModal: React.FC<ExportModalProps> = ({
@@ -32,6 +33,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
   layers,
   bodyOffsetX = 0,
   bodyOffsetY = 0,
+  defaultFilename,
 }) => {
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -46,8 +48,14 @@ export const ExportModal: React.FC<ExportModalProps> = ({
     includeGuides: false,
     includeNumbers: false,
     visibleLayersOnly: true,
-    filename: 'figuraymaker-sprite',
+    filename: defaultFilename || 'figuraymaker-sprite',
   });
+
+  useEffect(() => {
+    if (defaultFilename) {
+      setSettings(prev => ({ ...prev, filename: defaultFilename }));
+    }
+  }, [defaultFilename, isOpen]);
 
   const [copied, setCopied] = useState(false);
 

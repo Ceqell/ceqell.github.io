@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Palette, Plus, Trash2, Pipette } from 'lucide-react';
 import { DEFAULT_PALETTES } from '../constants/retroDev';
+import { CollapsibleSection } from './CollapsibleSection';
 
 interface ColorPaletteProps {
   currentColor: string;
@@ -41,14 +42,12 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
   };
 
   return (
-    <div className="flex flex-col bg-surface-theme border border-ui-theme rounded-xl overflow-hidden shadow-lg text-primary-theme w-full transition-colors">
-      {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-ui-theme bg-surface-raised-theme">
-        <div className="flex items-center gap-1.5 font-bold text-xs text-primary-theme">
-          <Palette className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />
-          <span>Color Palette</span>
-        </div>
-
+    <CollapsibleSection
+      id="palette"
+      title="Color Palette"
+      icon={<Palette className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />}
+      defaultOpen={true}
+      headerActions={
         <select
           value={selectedPaletteId}
           onChange={(e) => setSelectedPaletteId(e.target.value)}
@@ -59,8 +58,8 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
           ))}
           <option value="custom" className="bg-surface-theme text-primary-theme font-bold">My Custom Palette</option>
         </select>
-      </div>
-
+      }
+    >
       <div className="p-3 space-y-3">
         {/* Main Color Picker Box & Inputs */}
         <div className="flex items-center gap-3">
@@ -223,6 +222,6 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
           </div>
         )}
       </div>
-    </div>
+    </CollapsibleSection>
   );
 };

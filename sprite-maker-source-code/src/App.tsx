@@ -85,6 +85,9 @@ export default function App() {
     '#F5CD2F', '#0D69AC', '#287F46', '#1C5831', '#1B2A34', '#FFFFFF', '#A0A5A9', '#DA2A2A'
   ]);
 
+  // Project Name
+  const [projectName, setProjectName] = useState<string>('figuraymaker-sprite');
+
   // Display Toggles
   const [showGrid, setShowGrid] = useState<boolean>(true);
   const [showGuides, setShowGuides] = useState<boolean>(true);
@@ -1058,6 +1061,67 @@ export default function App() {
     handleUpdateLayerPixels(activeLayer.id, newPixels, true);
   };
 
+  // Active Layer Transform Helpers (for Header Desktop Ribbon)
+  const handleFlipActiveLayerH = useCallback(() => {
+    const layer = layers.find(l => l.id === activeLayerId);
+    if (!layer || layer.locked) return;
+    const flipped = flipPixelsHorizontal(layer.pixels, canvasWidth, canvasHeight);
+    handleUpdateLayerPixels(activeLayerId, flipped, true);
+  }, [layers, activeLayerId, canvasWidth, canvasHeight, handleUpdateLayerPixels]);
+
+  const handleFlipActiveLayerV = useCallback(() => {
+    const layer = layers.find(l => l.id === activeLayerId);
+    if (!layer || layer.locked) return;
+    const flipped = flipPixelsVertical(layer.pixels, canvasWidth, canvasHeight);
+    handleUpdateLayerPixels(activeLayerId, flipped, true);
+  }, [layers, activeLayerId, canvasWidth, canvasHeight, handleUpdateLayerPixels]);
+
+  const handleCenterActiveLayer = useCallback(() => {
+    const layer = layers.find(l => l.id === activeLayerId);
+    if (!layer || layer.locked) return;
+    let minX = canvasWidth, maxX = -1, minY = canvasHeight, maxY = -1;
+    for (let y = 0; y < canvasHeight; y++) {
+      for (let x = 0; x < canvasWidth; x++) {
+        if (layer.pixels[y * canvasWidth + x]) {
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+      }
+    }
+    if (maxX < 0) return; // layer is empty
+    const contentW = maxX - minX + 1;
+    const contentH = maxY - minY + 1;
+    const targetX = Math.floor((canvasWidth - contentW) / 2);
+    const targetY = Math.floor((canvasHeight - contentH) / 2);
+    const dx = targetX - minX;
+    const dy = targetY - minY;
+    if (dx === 0 && dy === 0) return;
+
+    const newPixels = new Array(canvasWidth * canvasHeight).fill('');
+    for (let y = 0; y < canvasHeight; y++) {
+      for (let x = 0; x < canvasWidth; x++) {
+        const color = layer.pixels[y * canvasWidth + x];
+        if (color) {
+          const nx = x + dx;
+          const ny = y + dy;
+          if (nx >= 0 && nx < canvasWidth && ny >= 0 && ny < canvasHeight) {
+            newPixels[ny * canvasWidth + nx] = color;
+          }
+        }
+      }
+    }
+    handleUpdateLayerPixels(activeLayerId, newPixels, true);
+  }, [layers, activeLayerId, canvasWidth, canvasHeight, handleUpdateLayerPixels]);
+
+  const handleClearActiveLayer = useCallback(() => {
+    const layer = layers.find(l => l.id === activeLayerId);
+    if (!layer || layer.locked) return;
+    const empty = new Array(canvasWidth * canvasHeight).fill('');
+    handleUpdateLayerPixels(activeLayerId, empty, true);
+  }, [layers, activeLayerId, canvasWidth, canvasHeight, handleUpdateLayerPixels]);
+
   // Save Project JSON
   const handleSaveProject = () => {
     const project: ProjectState = {
@@ -1076,7 +1140,8 @@ export default function App() {
     const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.download = `retro-dev-${activePreset.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}.json`;
+    const safeName = (projectName || 'figuraymaker-sprite').toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+    a.download = `${safeName}.json`;
     a.href = url;
     document.body.appendChild(a);
     a.click();
@@ -1240,6 +1305,14 @@ export default function App() {
         headerHeight={headerHeight}
         currentThemeId={currentThemeId}
         onSelectTheme={setCurrentThemeId}
+        projectName={projectName}
+        onProjectNameChange={setProjectName}
+        activeLayerName={layers.find(l => l.id === activeLayerId)?.name || 'Body'}
+        currentColor={currentColor}
+        onFlipActiveLayerH={handleFlipActiveLayerH}
+        onFlipActiveLayerV={handleFlipActiveLayerV}
+        onCenterActiveLayer={handleCenterActiveLayer}
+        onClearActiveLayer={handleClearActiveLayer}
       />
 
       {/* Draggable Splitter on bottom edge of Top Bar */}
@@ -1335,6 +1408,7 @@ export default function App() {
           zoom={zoom}
           onZoomChange={setZoom}
           animationsEnabled={animationsEnabled}
+          currentThemeId={currentThemeId}
         />
 
         {/* Right Dock: Mini Preview, Layers, Palette, References */}
@@ -1353,7 +1427,7 @@ export default function App() {
 
             <aside 
               style={{ width: `${rightSidebarWidth}px` }}
-              className="bg-surface-theme border-l border-ui-theme flex flex-col p-3 gap-3 overflow-y-auto shrink-0 z-20 shadow-2xl transition-colors"
+              className="bg-surface-theme border-l border-ui-theme flex flex-col p-3 gap-3 h-full min-h-0 overflow-y-auto overscroll-contain shrink-0 z-20 shadow-2xl transition-colors select-none max-w-[calc(100vw-3rem)]"
             >
               {/* Header with Title and Collapse Button */}
               <div className="flex items-center justify-between pb-1.5 border-b border-ui-theme shrink-0">
@@ -1423,9 +1497,9 @@ export default function App() {
           <button
             onClick={() => setRightCollapsed(false)}
             title="Expand Panels Sidebar"
-            className="absolute top-3 right-3 z-30 flex items-center gap-1.5 px-2.5 py-1.5 bg-neutral-900/95 border border-neutral-800 hover:border-amber-400/50 text-neutral-300 hover:text-amber-400 rounded-lg shadow-xl backdrop-blur-md transition-all text-xs font-medium cursor-pointer"
+            className="absolute top-3 right-3 z-30 flex items-center gap-1.5 px-2.5 py-1.5 retro-chrome-btn rounded-lg shadow-xl transition-all text-xs font-semibold cursor-pointer text-primary-theme"
           >
-            <PanelRightOpen className="w-4 h-4 text-amber-400" />
+            <PanelRightOpen className="w-4 h-4" style={{ color: 'var(--text-accent)' }} />
             <span>Panels</span>
           </button>
         )}
@@ -1453,6 +1527,7 @@ export default function App() {
         layers={layers}
         bodyOffsetX={bodyOffsetX}
         bodyOffsetY={bodyOffsetY}
+        defaultFilename={projectName}
       />
 
       {/* Retro Dev Wiki Dimensions & Tutorial Modal */}

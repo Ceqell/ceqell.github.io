@@ -15,6 +15,7 @@ import {
   Check
 } from 'lucide-react';
 import { Layer } from '../types/sprite';
+import { CollapsibleSection } from './CollapsibleSection';
 
 interface LayersPanelProps {
   layers: Layer[];
@@ -66,15 +67,13 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
   };
 
   return (
-    <div className="flex flex-col bg-surface-theme border border-ui-theme rounded-xl overflow-hidden shadow-lg text-primary-theme w-full max-h-[360px] transition-colors">
-      {/* Header & Actions */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-ui-theme bg-surface-raised-theme">
-        <div className="flex items-center gap-1.5 font-bold text-xs text-primary-theme">
-          <LayersIcon className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />
-          <span>Layers</span>
-          <span className="text-[10px] text-secondary-theme font-mono">({layers.length})</span>
-        </div>
-
+    <CollapsibleSection
+      id="layers"
+      title="Layers"
+      icon={<LayersIcon className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />}
+      badge={<span className="text-[10px] text-secondary-theme font-mono">({layers.length})</span>}
+      defaultOpen={true}
+      headerActions={
         <div className="flex items-center gap-1">
           <button
             onClick={onAddLayer}
@@ -107,10 +106,10 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
             <Trash2 className="w-3.5 h-3.5" />
           </button>
         </div>
-      </div>
-
+      }
+    >
       {/* Layer List (stacked top layer first, so reversed array) */}
-      <div className="flex-1 overflow-y-auto p-1.5 space-y-1">
+      <div className="max-h-[260px] overflow-y-auto p-1.5 space-y-1 overscroll-contain">
         {[...layers].reverse().map((layer, index) => {
           const actualIndex = layers.length - 1 - index;
           const isActive = layer.id === activeLayerId;
@@ -259,6 +258,6 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
           </span>
         </div>
       )}
-    </div>
+    </CollapsibleSection>
   );
 };

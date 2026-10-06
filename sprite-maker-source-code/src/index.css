@@ -34,6 +34,7 @@
   --checker-bg2: #2b2b36;
   --checker-border: #33333e;
   --canvas-desk-bg: #121318;
+  --grid-line-color: rgba(255, 255, 255, 0.09);
   
   --groove-shadow: #1e1f29;
   --groove-highlight: #2f3242;
@@ -109,6 +110,7 @@
   --checker-bg2: #ffffff;
   --checker-border: #94a3b8;
   --canvas-desk-bg: #cbd5e1;
+  --grid-line-color: rgba(0, 0, 0, 0.16);
 
   --scrollbar-track: #d8dde3;
   --scrollbar-thumb: #94a3b8;

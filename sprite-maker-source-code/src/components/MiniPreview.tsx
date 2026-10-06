@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Layer } from '../types/sprite';
 import { Eye, Copy, Check } from 'lucide-react';
+import { CollapsibleSection } from './CollapsibleSection';
 
 interface MiniPreviewProps {
   canvasWidth: number;
@@ -93,14 +94,12 @@ export const MiniPreview: React.FC<MiniPreviewProps> = ({
   };
 
   return (
-    <div className="flex flex-col bg-surface-theme border border-ui-theme rounded-xl overflow-hidden shadow-lg text-primary-theme w-full transition-colors">
-      {/* Header */}
-      <div className="flex items-center justify-between px-3 py-1.5 border-b border-ui-theme bg-surface-raised-theme">
-        <div className="flex items-center gap-1.5 font-bold text-xs text-primary-theme">
-          <Eye className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />
-          <span>Real-time Preview</span>
-        </div>
-
+    <CollapsibleSection
+      id="preview"
+      title="Real-time Preview"
+      icon={<Eye className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />}
+      defaultOpen={true}
+      headerActions={
         <div className="flex items-center gap-1">
           <button
             onClick={() => setBgStyle(b => b === 'retro' ? 'checker' : b === 'checker' ? 'dark' : 'retro')}
@@ -117,8 +116,8 @@ export const MiniPreview: React.FC<MiniPreviewProps> = ({
             {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
           </button>
         </div>
-      </div>
-
+      }
+    >
       {/* Preview Box - Dual Views: 1x (real size) and 3x/4x enlarged */}
       <div className={`p-4 flex items-center justify-around gap-4 min-h-[110px] ${getBgClass()} transition-colors border-inset shadow-inner`}>
         {/* 1x Real Size */}
@@ -157,6 +156,6 @@ export const MiniPreview: React.FC<MiniPreviewProps> = ({
           <span className="text-[9px] font-mono text-neutral-300 uppercase tracking-wider font-semibold">3x Scale</span>
         </div>
       </div>
-    </div>
+    </CollapsibleSection>
   );
 };
