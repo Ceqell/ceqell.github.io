@@ -35,7 +35,8 @@ import {
   Sliders, 
   CheckCircle2,
   Maximize2,
-  Search
+  Search,
+  Eye
 } from 'lucide-react';
 
 interface HelpModalProps {
@@ -604,6 +605,34 @@ export const HelpModal: React.FC<HelpModalProps> = ({
                     </p>
                   </div>
                 </div>
+              </div>
+
+              {/* Real-time Preview & Canvas Background Section */}
+              <div className="p-3.5 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well space-y-2">
+                <div className="font-bold text-primary-theme text-xs flex items-center gap-2">
+                  <Eye className="w-4 h-4" style={{ color: 'var(--text-accent)' }} />
+                  <span>Real-time Preview & Canvas Backgrounds</span>
+                </div>
+                <p className="text-secondary-theme text-[11px] leading-relaxed">
+                  The <strong className="text-primary-theme font-semibold">Real-time Preview</strong> panel renders your sprite simultaneously at both 1x original resolution and 3x scale. By default across all themes, <strong className="text-primary-theme font-semibold">Dark-Checker</strong> is enabled to provide clear contrast against character sprites (including bright skin tones and the default Noob template). Using the <code className="px-1.5 py-0.5 rounded retro-inset-well font-mono text-[10px] font-bold" style={{ color: 'var(--text-accent)' }}>BG</code> toggle button in the preview header, bottom canvas indicator, or top bar, you can cycle backgrounds:
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                  <div className="p-2 bg-surface-theme border border-ui-theme rounded-lg">
+                    <strong className="text-primary-theme">Dark-Checker (Default):</strong> Deep obsidian and charcoal dark checkerboard pattern, constant across all themes for optimal sprite contrast.
+                  </div>
+                  <div className="p-2 bg-surface-theme border border-ui-theme rounded-lg">
+                    <strong className="text-primary-theme">Light-Checker:</strong> High-contrast crisp light grey and white checkerboard pattern, constant across all themes.
+                  </div>
+                  <div className="p-2 bg-surface-theme border border-ui-theme rounded-lg">
+                    <strong className="text-primary-theme">Retro:</strong> Authentic solid neutral grey (<code className="font-mono text-[10px]">#404044</code>) background matching classic sprite dev sheets.
+                  </div>
+                  <div className="p-2 bg-surface-theme border border-ui-theme rounded-lg">
+                    <strong className="text-primary-theme">Dark:</strong> Pure solid dark (<code className="font-mono text-[10px]">#121318</code>) background for checking neon and light character silhouettes.
+                  </div>
+                </div>
+                <p className="text-secondary-theme text-[10px] italic">
+                  Background settings seamlessly apply to both the mini preview box and the central drawing canvas stage simultaneously.
+                </p>
               </div>
             </div>
           )}

@@ -508,6 +508,62 @@
   background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
 }
 
+/* Explicit Light Checkerboard - constant regardless of active theme */
+.canvas-checkerboard-light {
+  background-color: #e2e8f0;
+  background-image: 
+    linear-gradient(45deg, #ffffff 25%, transparent 25%), 
+    linear-gradient(-45deg, #ffffff 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #ffffff 75%), 
+    linear-gradient(-45deg, transparent 75%, #ffffff 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+}
+
+/* Explicit Dark Checkerboard - constant regardless of active theme */
+.canvas-checkerboard-dark {
+  background-color: #12131a;
+  background-image: 
+    linear-gradient(45deg, #1e2029 25%, transparent 25%), 
+    linear-gradient(-45deg, #1e2029 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #1e2029 75%), 
+    linear-gradient(-45deg, transparent 75%, #1e2029 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+}
+
+/* Small 8px tile versions for Mini Preview */
+.canvas-checkerboard-sm-light {
+  background-color: #e2e8f0;
+  background-image: 
+    linear-gradient(45deg, #ffffff 25%, transparent 25%), 
+    linear-gradient(-45deg, #ffffff 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #ffffff 75%), 
+    linear-gradient(-45deg, transparent 75%, #ffffff 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+}
+
+.canvas-checkerboard-sm-dark {
+  background-color: #12131a;
+  background-image: 
+    linear-gradient(45deg, #1e2029 25%, transparent 25%), 
+    linear-gradient(-45deg, #1e2029 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #1e2029 75%), 
+    linear-gradient(-45deg, transparent 75%, #1e2029 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+}
+
+/* Solid Canvas Backgrounds */
+.canvas-bg-retro {
+  background-color: #404044;
+}
+
+.canvas-bg-dark {
+  background-color: #121318;
+}
+
 /* -------------------------------------------------------------------------- */
 /* SCROLLBARS                                                                 */
 /* -------------------------------------------------------------------------- */

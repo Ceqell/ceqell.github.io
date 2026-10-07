@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Layer } from '../types/sprite';
+import { Layer, CanvasBgStyle } from '../types/sprite';
 import { Eye, Copy, Check } from 'lucide-react';
 import { CollapsibleSection } from './CollapsibleSection';
 
@@ -7,15 +7,22 @@ interface MiniPreviewProps {
   canvasWidth: number;
   canvasHeight: number;
   layers: Layer[];
+  bgStyle?: CanvasBgStyle;
+  onBgStyleChange?: (style: CanvasBgStyle) => void;
 }
 
 export const MiniPreview: React.FC<MiniPreviewProps> = ({
   canvasWidth,
   canvasHeight,
   layers,
+  bgStyle,
+  onBgStyleChange,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [bgStyle, setBgStyle] = useState<'retro' | 'dark' | 'checker'>('retro');
+  const [internalBgStyle, setInternalBgStyle] = useState<CanvasBgStyle>('dark-checker');
+  const currentBgStyle: CanvasBgStyle = bgStyle ?? internalBgStyle;
+  const setBg = onBgStyleChange ?? setInternalBgStyle;
+
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -87,10 +94,31 @@ export const MiniPreview: React.FC<MiniPreviewProps> = ({
     });
   };
 
+  const cycleBgStyle = () => {
+    const sequence: CanvasBgStyle[] = ['dark-checker', 'light-checker', 'retro', 'dark'];
+    const currentIndex = sequence.indexOf(currentBgStyle);
+    const nextStyle = sequence[(currentIndex + 1) % sequence.length];
+    setBg(nextStyle);
+  };
+
+  const getBgLabel = (style: CanvasBgStyle) => {
+    switch (style) {
+      case 'light-checker': return 'Light-Check';
+      case 'dark-checker': return 'Dark-Check';
+      case 'retro': return 'Retro';
+      case 'dark': return 'Dark';
+    }
+  };
+
   const getBgClass = () => {
-    if (bgStyle === 'checker') return 'canvas-checkerboard-sm';
-    if (bgStyle === 'dark') return 'bg-[#121318]';
-    return 'bg-[#404044]'; // Authentic retro grey background like 1000.png!
+    switch (currentBgStyle) {
+      case 'light-checker': return 'canvas-checkerboard-sm-light';
+      case 'dark-checker': return 'canvas-checkerboard-sm-dark';
+      case 'dark': return 'bg-[#121318]';
+      case 'retro':
+      default:
+        return 'bg-[#404044]'; // Authentic retro grey background like 1000.png!
+    }
   };
 
   return (
@@ -102,11 +130,12 @@ export const MiniPreview: React.FC<MiniPreviewProps> = ({
       headerActions={
         <div className="flex items-center gap-1">
           <button
-            onClick={() => setBgStyle(b => b === 'retro' ? 'checker' : b === 'checker' ? 'dark' : 'retro')}
-            className="retro-chrome-btn text-[10px] px-1.5 py-0.5 rounded cursor-pointer text-primary-theme font-medium"
-            title="Cycle background"
+            onClick={cycleBgStyle}
+            className="retro-chrome-btn text-[10px] px-1.5 py-0.5 rounded cursor-pointer text-primary-theme font-medium flex items-center gap-1"
+            title={`Canvas & Preview Background: ${getBgLabel(currentBgStyle)} (Click to cycle Light-Checker, Dark-Checker, Retro, Dark)`}
           >
-            BG: {bgStyle}
+            <span className="text-secondary-theme">BG:</span>
+            <span>{getBgLabel(currentBgStyle)}</span>
           </button>
           <button
             onClick={handleCopyQuick}

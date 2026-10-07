@@ -14,6 +14,8 @@ export type ToolType =
   | 'darken'
   | 'replace';
 
+export type CanvasBgStyle = 'light-checker' | 'dark-checker' | 'retro' | 'dark';
+
 export interface Layer {
   id: string;
   name: string;

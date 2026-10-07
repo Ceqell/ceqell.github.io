@@ -62,6 +62,10 @@ Features exact anatomical dimensions (Head 9×8, Torso 11×10, Arms 5×10, Legs 
 - **Trace Mode**: Overlay translucent reference images directly onto the canvas with adjustable opacity, position offset, and scaling.
 - **Floating PIP Window**: Detachable, draggable, and zoomable picture-in-picture preview window.
 
+### Real-time preview & Canvas backgrounds
+- **Synchronized Backgrounds**: Toggle between Dark Checkerboard (`Dark-Check`, default across all themes for optimal contrast with characters and noobs), Light Checkerboard (`Light-Check`), authentic Retro Grey (`#404044`), and solid Dark (`#121318`).
+- **Unified Preview & Stage**: Changing the background in the Real-time Preview panel, bottom canvas indicator, or top bar immediately updates both the 1×/3× real-time preview and the main central drawing canvas stage regardless of the active UI theme.
+
 ### Canvas presets & Saving/loading
 - **Built-in Presets**:
   - **Retro Dev Classic (21 × 28)**: Exact wiki body boundary.

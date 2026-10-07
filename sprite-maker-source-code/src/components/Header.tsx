@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import { CANVAS_PRESETS, STARTER_TEMPLATES } from '../constants/retroDev';
 import { AVAILABLE_THEMES } from '../constants/themes';
+import { CanvasBgStyle } from '../types/sprite';
 
 interface HeaderProps {
   canvasPresetName: string;
@@ -74,6 +75,8 @@ interface HeaderProps {
   headerHeight?: number;
   currentThemeId?: string;
   onSelectTheme?: (themeId: string) => void;
+  canvasBg?: CanvasBgStyle;
+  onCycleCanvasBg?: () => void;
   // Desktop Ribbon Props
   projectName?: string;
   onProjectNameChange?: (name: string) => void;
@@ -124,6 +127,8 @@ export const Header: React.FC<HeaderProps> = ({
   headerHeight,
   currentThemeId,
   onSelectTheme,
+  canvasBg = 'dark-checker',
+  onCycleCanvasBg,
   projectName = 'figuraymaker-sprite',
   onProjectNameChange,
   activeLayerName,
@@ -492,6 +497,20 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 <Zap className={`w-3.5 h-3.5 ${!animationsEnabled ? 'animate-pulse' : ''}`} style={!animationsEnabled ? { color: 'var(--text-accent)' } : undefined} />
                 <span className="hidden xl:inline text-[11px]">{!animationsEnabled ? 'Snappy' : 'Anim'}</span>
+              </button>
+            )}
+
+            {/* Canvas Background Style Toggle */}
+            {onCycleCanvasBg && (
+              <button
+                onClick={onCycleCanvasBg}
+                title={`Canvas Background: ${canvasBg === 'light-checker' ? 'Light Checker' : canvasBg === 'dark-checker' ? 'Dark Checker' : canvasBg === 'retro' ? 'Retro Grey (#404044)' : 'Solid Dark (#121318)'} (Click to cycle Light-Checker, Dark-Checker, Retro, Dark)`}
+                className="retro-chrome-btn flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors cursor-pointer text-primary-theme font-medium"
+              >
+                <span className="text-secondary-theme text-[10px]">BG:</span>
+                <span className="font-semibold text-[11px]">
+                  {canvasBg === 'light-checker' ? 'Light' : canvasBg === 'dark-checker' ? 'Dark' : canvasBg === 'retro' ? 'Retro' : 'Solid'}
+                </span>
               </button>
             )}
           </div>

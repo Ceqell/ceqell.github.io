@@ -3,7 +3,8 @@ import {
   Layer, 
   ToolType, 
   ReferenceImage, 
-  SelectionState 
+  SelectionState,
+  CanvasBgStyle
 } from '../types/sprite';
 import { getBodyLayout, isHeadPixel } from '../constants/retroDev';
 import { 
@@ -57,6 +58,8 @@ interface CanvasAreaProps {
   onZoomChange: (newZoom: number) => void;
   animationsEnabled?: boolean;
   currentThemeId?: string;
+  canvasBg?: CanvasBgStyle;
+  onCycleCanvasBg?: () => void;
 }
 
 export const CanvasArea: React.FC<CanvasAreaProps> = ({
@@ -93,6 +96,8 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
   onZoomChange,
   animationsEnabled = true,
   currentThemeId,
+  canvasBg = 'light-checker',
+  onCycleCanvasBg,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const mainCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -381,22 +386,36 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
     // 1. Pixel Grid
     if (showGrid && zoom >= 8) {
-      const theme = currentThemeId || (typeof document !== 'undefined' ? document.documentElement.getAttribute('data-theme') : 'retro-skeuomorphic');
-      if (theme === 'retro-beige') {
-        // Crisp, darker warm grid line tuned for #FFF1DD and #E6D7C3 checkerboard tiles
-        ctx.strokeStyle = 'rgba(45, 34, 20, 0.22)';
-      } else if (theme === 'retro-skeuomorphic') {
-        // 2008 Chrome Retro (cool light grey)
+      if (canvasBg === 'light-checker') {
+        // Crisp, darker grid line for light checkerboard
         ctx.strokeStyle = 'rgba(0, 0, 0, 0.18)';
-      } else if (theme === 'retro-dark') {
-        // 2008 Dark Retro (metallic gunmetal dark)
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.13)';
-      } else if (theme === 'oled-dark') {
-        // OLED Dark (pure black background, clean subtle grid lines)
+      } else if (canvasBg === 'dark-checker') {
+        // Subtle light grid line for dark checkerboard
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
+      } else if (canvasBg === 'dark') {
+        // Pure dark background
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+      } else if (canvasBg === 'retro') {
+        // #404044 retro grey background
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
       } else {
-        // Dark theme fallback
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.09)';
+        const theme = currentThemeId || (typeof document !== 'undefined' ? document.documentElement.getAttribute('data-theme') : 'retro-skeuomorphic');
+        if (theme === 'retro-beige') {
+          // Crisp, darker warm grid line tuned for #FFF1DD and #E6D7C3 checkerboard tiles
+          ctx.strokeStyle = 'rgba(45, 34, 20, 0.22)';
+        } else if (theme === 'retro-skeuomorphic') {
+          // 2008 Chrome Retro (cool light grey)
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.18)';
+        } else if (theme === 'retro-dark') {
+          // 2008 Dark Retro (metallic gunmetal dark)
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.13)';
+        } else if (theme === 'oled-dark') {
+          // OLED Dark (pure black background, clean subtle grid lines)
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+        } else {
+          // Dark theme fallback
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.09)';
+        }
       }
       ctx.lineWidth = 1;
       for (let x = 0; x <= canvasWidth; x++) {
@@ -1449,6 +1468,31 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     touchState.current.mode = 'none';
   };
 
+  const getCanvasBgClass = () => {
+    switch (canvasBg) {
+      case 'dark-checker':
+        return 'canvas-checkerboard-dark';
+      case 'light-checker':
+        return 'canvas-checkerboard-light';
+      case 'dark':
+        return 'canvas-bg-dark';
+      case 'retro':
+        return 'canvas-bg-retro';
+      default:
+        return 'canvas-checkerboard-dark';
+    }
+  };
+
+  const getCanvasBgLabel = () => {
+    switch (canvasBg) {
+      case 'dark-checker': return 'Dark-Check';
+      case 'light-checker': return 'Light-Check';
+      case 'retro': return 'Retro';
+      case 'dark': return 'Dark';
+      default: return 'Dark-Check';
+    }
+  };
+
   return (
     <div
       ref={containerRef}
@@ -1579,7 +1623,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
           height: `${canvasHeight * zoom}px`,
           transition: (animationsEnabled && !isPanning && touchState.current.mode !== 'pinch') ? 'transform 75ms ease-out' : 'none',
         }}
-        className="relative shadow-2xl shrink-0 canvas-checkerboard border border-ui-theme"
+        className={`relative shadow-2xl shrink-0 border border-ui-theme ${getCanvasBgClass()}`}
       >
         {/* Main Composite Canvas (low resolution scaled with CSS pixelated) */}
         <canvas
@@ -1712,6 +1756,20 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
         </span>
         <div className="retro-recessed-divider h-3.5 my-auto" />
         <span className="font-bold" style={{ color: 'var(--text-accent)' }}>{Math.round((zoom / 16) * 100)}%</span>
+        {onCycleCanvasBg && (
+          <>
+            <div className="retro-recessed-divider h-3.5 my-auto" />
+            <button
+              type="button"
+              onClick={onCycleCanvasBg}
+              title={`Canvas Background: ${getCanvasBgLabel()} (Click to cycle Light-Checker, Dark-Checker, Retro, Dark)`}
+              className="pointer-events-auto hover:text-[var(--text-accent)] cursor-pointer transition-colors flex items-center gap-1 font-sans text-[11px]"
+            >
+              <span className="text-secondary-theme">BG:</span>
+              <span className="font-semibold text-primary-theme">{getCanvasBgLabel()}</span>
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

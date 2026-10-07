@@ -17,7 +17,8 @@ import {
   SelectionState, 
   CanvasDimensions, 
   ProjectState,
-  HistoryEntry 
+  HistoryEntry,
+  CanvasBgStyle 
 } from './types/sprite';
 import { 
   CANVAS_PRESETS, 
@@ -62,6 +63,29 @@ export default function App() {
 
   const dismissToast = useCallback((id: string) => {
     setToasts(prev => prev.filter(t => t.id !== id));
+  }, []);
+
+  // Canvas & Preview Background Style
+  const [canvasBg, setCanvasBg] = useState<CanvasBgStyle>(() => {
+    const saved = localStorage.getItem('figuraymaker_canvas_bg');
+    if (saved === 'light-checker' || saved === 'dark-checker' || saved === 'retro' || saved === 'dark') {
+      return saved as CanvasBgStyle;
+    }
+    return 'dark-checker';
+  });
+
+  const handleCycleCanvasBg = useCallback(() => {
+    setCanvasBg(prev => {
+      const sequence: CanvasBgStyle[] = ['dark-checker', 'light-checker', 'retro', 'dark'];
+      const next = sequence[(sequence.indexOf(prev) + 1) % sequence.length];
+      localStorage.setItem('figuraymaker_canvas_bg', next);
+      return next;
+    });
+  }, []);
+
+  const handleSetCanvasBg = useCallback((style: CanvasBgStyle) => {
+    setCanvasBg(style);
+    localStorage.setItem('figuraymaker_canvas_bg', style);
   }, []);
 
   // Canvas Size Preset
@@ -1564,6 +1588,8 @@ export default function App() {
         headerHeight={headerHeight}
         currentThemeId={currentThemeId}
         onSelectTheme={setCurrentThemeId}
+        canvasBg={canvasBg}
+        onCycleCanvasBg={handleCycleCanvasBg}
         projectName={projectName}
         onProjectNameChange={setProjectName}
         activeLayerName={layers.find(l => l.id === activeLayerId)?.name || 'Body'}
@@ -1671,6 +1697,8 @@ export default function App() {
           onZoomChange={setZoom}
           animationsEnabled={animationsEnabled}
           currentThemeId={currentThemeId}
+          canvasBg={canvasBg}
+          onCycleCanvasBg={handleCycleCanvasBg}
         />
 
         {/* Right Dock: Mini Preview, Layers, Palette, References */}
@@ -1711,6 +1739,8 @@ export default function App() {
                 canvasWidth={canvasWidth}
                 canvasHeight={canvasHeight}
                 layers={layers}
+                bgStyle={canvasBg}
+                onBgStyleChange={handleSetCanvasBg}
               />
 
               {/* Color Palette Selector */}
