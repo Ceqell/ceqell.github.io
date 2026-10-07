@@ -38,6 +38,7 @@ import { MiniPreview } from './components/MiniPreview';
 import { ExportModal } from './components/ExportModal';
 import { GuideModal } from './components/GuideModal';
 import { HelpModal, HelpTabId } from './components/HelpModal';
+import { AboutModal } from './components/AboutModal';
 import { CustomCanvasModal } from './components/CustomCanvasModal';
 import { DEFAULT_THEME_ID } from './constants/themes';
 
@@ -117,6 +118,7 @@ export default function App() {
   const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
   const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
   const [isHelpOpen, setIsHelpOpen] = useState<boolean>(false);
+  const [isAboutOpen, setIsAboutOpen] = useState<boolean>(false);
   const [helpInitialTab, setHelpInitialTab] = useState<HelpTabId>('overview');
 
   // Right sidebar tab state for smaller screens
@@ -559,6 +561,11 @@ export default function App() {
     setLayers(updated);
     pushHistory(updated, id);
   };
+
+  const handleReorderLayers = useCallback((newLayers: Layer[]) => {
+    setLayers(newLayers);
+    pushHistory(newLayers, activeLayerId);
+  }, [activeLayerId, pushHistory]);
 
   const handleToggleVisibility = (id: string) => {
     setLayers(prev => prev.map(l => l.id === id ? { ...l, visible: !l.visible } : l));
@@ -1294,6 +1301,7 @@ export default function App() {
           setHelpInitialTab('overview');
           setIsHelpOpen(true);
         }}
+        onOpenAboutModal={() => setIsAboutOpen(true)}
         onSaveProject={handleSaveProject}
         onLoadProject={handleLoadProject}
         leftCollapsed={leftCollapsed}
@@ -1472,6 +1480,7 @@ export default function App() {
                 onDuplicateLayer={handleDuplicateLayer}
                 onMergeDownLayer={handleMergeDown}
                 onMoveLayer={handleMoveLayer}
+                onReorderLayers={handleReorderLayers}
                 onToggleVisibility={handleToggleVisibility}
                 onToggleLock={handleToggleLock}
                 onChangeOpacity={handleChangeOpacity}
@@ -1543,6 +1552,12 @@ export default function App() {
         isOpen={isHelpOpen}
         onClose={() => setIsHelpOpen(false)}
         initialTab={helpInitialTab}
+      />
+
+      {/* macOS Style About FigurayMaker Modal */}
+      <AboutModal
+        isOpen={isAboutOpen}
+        onClose={() => setIsAboutOpen(false)}
       />
 
       {/* Custom Canvas Size & Dimensions Modal */}

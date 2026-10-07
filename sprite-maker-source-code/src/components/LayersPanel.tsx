@@ -12,7 +12,8 @@ import {
   Layers as LayersIcon,
   Combine,
   Edit2,
-  Check
+  Check,
+  GripVertical
 } from 'lucide-react';
 import { Layer } from '../types/sprite';
 import { CollapsibleSection } from './CollapsibleSection';
@@ -26,6 +27,7 @@ interface LayersPanelProps {
   onDuplicateLayer: (id: string) => void;
   onMergeDownLayer: (id: string) => void;
   onMoveLayer: (id: string, direction: 'up' | 'down') => void;
+  onReorderLayers?: (newLayers: Layer[]) => void;
   onToggleVisibility: (id: string) => void;
   onToggleLock: (id: string) => void;
   onChangeOpacity: (id: string, opacity: number) => void;
@@ -43,6 +45,7 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
   onDuplicateLayer,
   onMergeDownLayer,
   onMoveLayer,
+  onReorderLayers,
   onToggleVisibility,
   onToggleLock,
   onChangeOpacity,
@@ -50,6 +53,11 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
 }) => {
   const [editingLayerId, setEditingLayerId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
+
+  // Drag-and-Drop state
+  const [draggedLayerId, setDraggedLayerId] = useState<string | null>(null);
+  const [canDragId, setCanDragId] = useState<string | null>(null);
+  const [dropTarget, setDropTarget] = useState<{ layerId: string; position: 'top' | 'bottom' } | null>(null);
 
   const activeLayer = layers.find(l => l.id === activeLayerId);
   const activeIndex = layers.findIndex(l => l.id === activeLayerId);
@@ -64,6 +72,65 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
       onRenameLayer(id, editingName.trim());
     }
     setEditingLayerId(null);
+  };
+
+  const handleDragStart = (e: React.DragEvent, id: string) => {
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', id);
+    setDraggedLayerId(id);
+  };
+
+  const handleDragOver = (e: React.DragEvent, targetId: string) => {
+    if (!draggedLayerId || draggedLayerId === targetId) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    const position = e.clientY - rect.top < rect.height / 2 ? 'top' : 'bottom';
+
+    if (!dropTarget || dropTarget.layerId !== targetId || dropTarget.position !== position) {
+      setDropTarget({ layerId: targetId, position });
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    if (e.currentTarget.contains(e.relatedTarget as Node)) return;
+    setDropTarget(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedLayerId(null);
+    setCanDragId(null);
+    setDropTarget(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, targetId: string) => {
+    e.preventDefault();
+    if (!draggedLayerId || draggedLayerId === targetId || !dropTarget || !onReorderLayers) {
+      handleDragEnd();
+      return;
+    }
+
+    // Work with the visual layers array (top-most layer first)
+    const visualLayers = [...layers].reverse();
+    const fromVisualIndex = visualLayers.findIndex(l => l.id === draggedLayerId);
+    const toVisualIndex = visualLayers.findIndex(l => l.id === targetId);
+
+    if (fromVisualIndex === -1 || toVisualIndex === -1) {
+      handleDragEnd();
+      return;
+    }
+
+    const reorderedVisual = [...visualLayers];
+    const [moved] = reorderedVisual.splice(fromVisualIndex, 1);
+    const newTargetVisualIndex = reorderedVisual.findIndex(l => l.id === targetId);
+    const insertIndex = dropTarget.position === 'top' ? newTargetVisualIndex : newTargetVisualIndex + 1;
+
+    reorderedVisual.splice(insertIndex, 0, moved);
+    const newModelLayers = [...reorderedVisual].reverse();
+
+    onReorderLayers(newModelLayers);
+    handleDragEnd();
   };
 
   return (
@@ -118,12 +185,36 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
             <div
               key={layer.id}
               onClick={() => onSelectLayer(layer.id)}
-              className={`group flex items-center gap-2 px-2 py-1.5 rounded-lg border text-xs cursor-pointer transition-all ${
+              draggable={canDragId === layer.id}
+              onDragStart={(e) => handleDragStart(e, layer.id)}
+              onDragOver={(e) => handleDragOver(e, layer.id)}
+              onDragLeave={handleDragLeave}
+              onDrop={(e) => handleDrop(e, layer.id)}
+              onDragEnd={handleDragEnd}
+              className={`group relative flex items-center gap-1.5 px-2 py-1.5 rounded-lg border text-xs cursor-pointer transition-all ${
                 isActive
                   ? 'bg-surface-raised-theme border-[var(--text-accent)] text-primary-theme shadow-sm font-semibold'
                   : 'bg-surface-theme border-ui-theme hover:bg-surface-raised-theme text-secondary-theme'
-              }`}
+              } ${draggedLayerId === layer.id ? 'opacity-35 scale-[0.98] border-dashed border-[var(--text-accent)]' : ''}`}
             >
+              {/* Drop Insertion Bar Indicator */}
+              {dropTarget?.layerId === layer.id && dropTarget.position === 'top' && (
+                <div className="absolute -top-[2px] left-0 right-0 h-[3px] rounded-full bg-[var(--text-accent)] shadow-[0_0_8px_var(--text-accent)] z-20 pointer-events-none" />
+              )}
+              {dropTarget?.layerId === layer.id && dropTarget.position === 'bottom' && (
+                <div className="absolute -bottom-[2px] left-0 right-0 h-[3px] rounded-full bg-[var(--text-accent)] shadow-[0_0_8px_var(--text-accent)] z-20 pointer-events-none" />
+              )}
+
+              {/* Drag Grip Handle */}
+              <div
+                onMouseDown={() => setCanDragId(layer.id)}
+                onMouseUp={() => setCanDragId(null)}
+                className="p-0.5 -ml-1 text-secondary-theme hover:text-primary-theme cursor-grab active:cursor-grabbing opacity-35 group-hover:opacity-100 transition-opacity shrink-0 select-none"
+                title="Drag to reorder layer"
+              >
+                <GripVertical className="w-3.5 h-3.5" />
+              </div>
+
               {/* Visibility Toggle */}
               <button
                 type="button"

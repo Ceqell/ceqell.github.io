@@ -62,6 +62,7 @@ interface HeaderProps {
   onOpenExportModal: () => void;
   onOpenGuideModal: () => void;
   onOpenHelpModal?: () => void;
+  onOpenAboutModal?: () => void;
   onSaveProject: () => void;
   onLoadProject: (file: File) => void;
   leftCollapsed?: boolean;
@@ -110,6 +111,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenExportModal,
   onOpenGuideModal,
   onOpenHelpModal,
+  onOpenAboutModal,
   onSaveProject,
   onLoadProject,
   leftCollapsed = false,
@@ -199,13 +201,19 @@ export const Header: React.FC<HeaderProps> = ({
           )}
 
           <div className="flex items-center gap-2 shrink-0">
-            {/* App Brand Banner */}
-            <img 
-              src="FigurayMakerBanner4.png" 
-              alt="FigurayMaker" 
-              className="h-8 md:h-9 object-contain select-none shrink-0" 
-              title="FigurayMaker: Make your own custom character sprite!"
-            />
+            {/* App Brand Banner (Click to open About FigurayMaker) */}
+            <button
+              type="button"
+              onClick={onOpenAboutModal}
+              title="About FigurayMaker"
+              className="p-0 border-0 bg-transparent cursor-pointer hover:opacity-90 active:scale-95 transition-transform flex items-center"
+            >
+              <img 
+                src="FigurayMakerBanner4.png" 
+                alt="FigurayMaker" 
+                className="h-8 md:h-9 object-contain select-none shrink-0" 
+              />
+            </button>
           </div>
 
           <div className="retro-recessed-divider h-6 mx-0.5 shrink-0" />
@@ -308,6 +316,18 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <BookOpen className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />
               <span className="hidden xl:inline">Help & Docs</span>
+            </button>
+          )}
+
+          {/* About FigurayMaker Modal */}
+          {onOpenAboutModal && (
+            <button
+              onClick={onOpenAboutModal}
+              className="retro-chrome-btn flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 cursor-pointer text-primary-theme"
+              title="About FigurayMaker (Version, Specs & License)"
+            >
+              <Info className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />
+              <span className="hidden xl:inline">About</span>
             </button>
           )}
 
