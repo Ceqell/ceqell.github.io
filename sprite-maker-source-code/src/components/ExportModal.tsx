@@ -207,14 +207,15 @@ export const ExportModal: React.FC<ExportModalProps> = ({
                     <button
                       key={s}
                       onClick={() => handleScalePreset(s)}
-                      className={`py-1.5 text-xs font-mono rounded-lg border transition-all cursor-pointer ${
+                      className={`py-1 px-1 text-xs font-mono rounded-lg border transition-all cursor-pointer flex flex-col items-center justify-center leading-tight ${
                         isSelected
                           ? 'bg-surface-raised-theme border-[var(--text-accent)] shadow-sm font-bold'
                           : 'retro-chrome-btn border-ui-theme text-secondary-theme'
                       }`}
                       style={isSelected ? { color: 'var(--text-accent)' } : undefined}
                     >
-                      {s}x ({canvasWidth * s}px)
+                      <span>{s}x</span>
+                      <span className="text-[10px] opacity-80 font-normal">({canvasWidth * s}px)</span>
                     </button>
                   );
                 })}
