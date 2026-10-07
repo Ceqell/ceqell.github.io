@@ -208,7 +208,7 @@ export const Header: React.FC<HeaderProps> = ({
             />
           </div>
 
-          <div className="retro-recessed-divider h-6 mx-0.5 hidden sm:block shrink-0" />
+          <div className="retro-recessed-divider h-6 mx-0.5 shrink-0" />
 
           {/* Canvas Size Preset Selector & Custom Button */}
           <div className="flex items-center gap-1.5 retro-inset-well px-2 py-1 rounded-lg shrink-0">
@@ -247,7 +247,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Starter Template quick load dropdown */}
-          <div className="hidden lg:flex items-center gap-1 retro-inset-well px-2 py-1 rounded-lg shrink-0">
+          <div className="flex items-center gap-1 retro-inset-well px-2 py-1 rounded-lg shrink-0">
             <Sparkles className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--text-accent)' }} />
             <select
               onChange={(e) => {
@@ -315,7 +315,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onSaveProject}
             title="Save Sprite Project (JSON)"
-            className="retro-chrome-btn p-1.5 rounded-lg transition-colors hidden sm:block shrink-0 cursor-pointer text-primary-theme"
+            className="retro-chrome-btn p-1.5 rounded-lg transition-colors shrink-0 cursor-pointer text-primary-theme flex items-center justify-center"
           >
             <Save className="w-3.5 h-3.5" />
           </button>
@@ -323,7 +323,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={() => fileInputRef.current?.click()}
             title="Load Sprite Project (JSON)"
-            className="retro-chrome-btn p-1.5 rounded-lg transition-colors hidden sm:block shrink-0 cursor-pointer text-primary-theme"
+            className="retro-chrome-btn p-1.5 rounded-lg transition-colors shrink-0 cursor-pointer text-primary-theme flex items-center justify-center"
           >
             <FolderOpen className="w-3.5 h-3.5" />
           </button>
@@ -466,10 +466,10 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </div>
 
-          <div className="retro-recessed-divider h-5 mx-0.5 hidden sm:block shrink-0" />
+          <div className="retro-recessed-divider h-5 mx-0.5 shrink-0" />
 
           {/* Zoom Controls */}
-          <div className="hidden sm:flex items-center gap-1 retro-inset-well rounded-lg p-0.5 shrink-0">
+          <div className="flex items-center gap-1 retro-inset-well rounded-lg p-0.5 shrink-0">
             <button
               onClick={() => onZoomChange(Math.max(4, zoom - 2))}
               title="Zoom out"
@@ -534,10 +534,10 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </div>
 
-          <div className="retro-recessed-divider h-5 mx-0.5 shrink-0 hidden sm:block" />
+          <div className="retro-recessed-divider h-5 mx-0.5 shrink-0" />
 
           {/* Retro Dev Wiki Anatomy Quick Dimension Pills */}
-          <div className="hidden sm:flex items-center gap-1 retro-inset-well p-0.5 rounded-lg shrink-0" title="Retro Dev Official Anatomy Dimensions (Click to view guide)">
+          <div className="flex items-center gap-1 retro-inset-well p-0.5 rounded-lg shrink-0" title="Retro Dev Official Anatomy Dimensions (Click to view guide)">
             <button
               type="button"
               onClick={handleAnatomyClick}
@@ -576,10 +576,10 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           </div>
 
-          <div className="retro-recessed-divider h-5 mx-0.5 shrink-0 hidden md:block" />
+          <div className="retro-recessed-divider h-5 mx-0.5 shrink-0" />
 
           {/* Quick Canvas Transform Actions (Flip, Center, Clear) */}
-          <div className="hidden md:flex items-center gap-0.5 retro-inset-well p-0.5 rounded-lg shrink-0">
+          <div className="flex items-center gap-0.5 retro-inset-well p-0.5 rounded-lg shrink-0">
             {onFlipActiveLayerH && (
               <button
                 type="button"
@@ -626,10 +626,10 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </div>
 
-          <div className="retro-recessed-divider h-5 mx-0.5 shrink-0 hidden lg:block" />
+          <div className="retro-recessed-divider h-5 mx-0.5 shrink-0" />
 
           {/* HUD Telemetry: Active Layer & Current Drawing Color */}
-          <div className="hidden lg:flex items-center gap-1.5 retro-inset-well px-2 py-0.5 rounded-lg shrink-0 text-xs">
+          <div className="flex items-center gap-1.5 retro-inset-well px-2 py-0.5 rounded-lg shrink-0 text-xs">
             {activeLayerName && (
               <div className="flex items-center gap-1 text-[11px] font-medium text-secondary-theme" title="Current Active Drawing Layer">
                 <Layers className="w-3 h-3 shrink-0" style={{ color: 'var(--text-accent)' }} />
