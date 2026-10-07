@@ -1250,7 +1250,7 @@ export default function App() {
       } else if (e.key === '[') {
         setBrushSize(b => Math.max(1, b - 1));
       } else if (e.key === ']') {
-        setBrushSize(b => Math.min(4, b + 1));
+        setBrushSize(b => Math.min(32, b + 1));
       } else if (e.key === '?' || (e.key === '/' && e.shiftKey) || e.key === 'F1') {
         e.preventDefault();
         setHelpInitialTab('overview');

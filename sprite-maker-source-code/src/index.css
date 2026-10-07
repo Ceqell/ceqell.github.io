@@ -263,6 +263,79 @@
   --scrollbar-thumb-hover: #50546b;
 }
 
+[data-theme="oled-dark"] {
+  --bg-app: #000000;
+  --bg-surface: #000000;
+  --bg-surface-raised: #0a0a0d;
+  --bg-input: #000000;
+  --border-ui: #1c1d22;
+  --border-highlight: #282a33;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --text-accent: #38bdf8;
+  --accent-color: #38bdf8;
+
+  /* True Black Chrome Plated Buttons with subtle rim lighting */
+  --chrome-button-bg: linear-gradient(
+    180deg,
+    #1b1c22 0%,
+    #111216 48%,
+    #08090c 50%,
+    #000000 100%
+  );
+  --chrome-button-border: #23252d;
+  --chrome-button-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.8),
+    0 1px 2px rgba(0, 0, 0, 0.9);
+  
+  --chrome-button-hover: linear-gradient(
+    180deg,
+    #26272f 0%,
+    #17181f 48%,
+    #0d0e12 50%,
+    #040406 100%
+  );
+
+  --chrome-button-active: linear-gradient(
+    180deg,
+    #000000 0%,
+    #0a0b0e 49%,
+    #050608 50%,
+    #000000 100%
+  );
+  --chrome-button-active-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.95),
+    0 1px 0 rgba(255, 255, 255, 0.05);
+
+  /* Recessed / Groove Divider */
+  --groove-shadow: #000000;
+  --groove-highlight: #1a1b22;
+
+  /* High-Contrast Vibrant CTA Gradients */
+  --btn-gold: linear-gradient(180deg, #fbbf24 0%, #f59e0b 48%, #d97706 50%, #b45309 100%);
+  --btn-gold-border: #92400e;
+  --btn-gold-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 3px rgba(0, 0, 0, 0.9);
+  
+  --btn-red: linear-gradient(180deg, #f87171 0%, #ef4444 48%, #dc2626 50%, #b91c1c 100%);
+  --btn-red-border: #7f1d1d;
+  --btn-red-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 3px rgba(0, 0, 0, 0.9);
+  
+  --btn-blue: linear-gradient(180deg, #38bdf8 0%, #0284c7 48%, #0369a1 50%, #075985 100%);
+  --btn-blue-border: #0369a1;
+
+  --checker-bg1: #050507;
+  --checker-bg2: #0f1014;
+  --checker-border: #1a1b22;
+  --canvas-desk-bg: #000000;
+  --grid-line-color: rgba(255, 255, 255, 0.12);
+
+  --scrollbar-track: #000000;
+  --scrollbar-thumb: #1c1d24;
+  --scrollbar-thumb-hover: #333540;
+}
+
 /* -------------------------------------------------------------------------- */
 /* UTILITIES & SKEUOMORPHIC UI CLASSES                                        */
 /* -------------------------------------------------------------------------- */

@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Pencil, 
   Eraser, 
   PaintBucket, 
   Pipette, 
   Minus, 
+  Plus,
   Square, 
   Circle, 
   SunMedium, 
@@ -69,6 +70,32 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   const isWide = width >= 125;
   const isMedium = width >= 90 && width < 125;
   const isSingleColumn = width < 80;
+
+  const [inputValue, setInputValue] = useState<string>(String(brushSize));
+
+  useEffect(() => {
+    setInputValue(String(brushSize));
+  }, [brushSize]);
+
+  const commitValue = (val: string) => {
+    const parsed = parseInt(val, 10);
+    if (!isNaN(parsed)) {
+      const clamped = Math.max(1, Math.min(32, parsed));
+      onBrushSizeChange(clamped);
+      setInputValue(String(clamped));
+    } else {
+      setInputValue(String(brushSize));
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    setInputValue(raw);
+    const parsed = parseInt(raw, 10);
+    if (!isNaN(parsed) && parsed >= 1 && parsed <= 32) {
+      onBrushSizeChange(parsed);
+    }
+  };
 
   const tools = [
     { id: 'pencil' as ToolType, label: 'Pencil (P)', icon: Pencil },
@@ -176,28 +203,81 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
       <div className="retro-recessed-divider-h my-0.5 shrink-0" />
 
-      {/* Brush Size: Stacked vertically when sidebar is narrow so buttons never squish into unclickable slits */}
-      <div className="flex flex-col items-center gap-1 w-full">
+      {/* Brush Size Controls: Editable px textbox and non-squished Minus / Plus buttons */}
+      <div className="flex flex-col items-center gap-1.5 w-full">
         {width >= 60 && (
           <span className="text-[10px] uppercase font-bold tracking-wider text-secondary-theme">Size</span>
         )}
-        <div className={`retro-inset-well p-1 rounded-lg ${
-          isSingleColumn ? 'flex flex-col' : isWide ? 'grid grid-cols-4' : 'grid grid-cols-2'
-        } gap-1 w-full`}>
-          {[1, 2, 3, 4].map(size => (
-            <button
-              key={size}
-              onClick={() => onBrushSizeChange(size)}
-              className={`${isSingleColumn ? 'h-7 w-full' : 'h-6'} text-xs font-mono rounded flex items-center justify-center transition-colors cursor-pointer retro-chrome-btn ${
-                brushSize === size ? 'active font-bold' : 'text-secondary-theme'
-              }`}
-              style={brushSize === size ? { color: 'var(--text-accent)' } : undefined}
-              title={`Brush size: ${size}px ([ or ])`}
-            >
-              {size}
-            </button>
-          ))}
+
+        {/* Editable px Textbox */}
+        <div 
+          className="retro-inset-well flex items-center justify-center px-1.5 py-1 rounded-lg w-full bg-surface-theme focus-within:ring-1 focus-within:ring-amber-500 transition-all cursor-text"
+          title="Brush size: Click to type (1 - 32 px)"
+        >
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={inputValue}
+            onChange={handleInputChange}
+            onBlur={() => commitValue(inputValue)}
+            onKeyDown={(e) => {
+              e.stopPropagation();
+              if (e.key === 'Enter') {
+                commitValue(inputValue);
+                (e.target as HTMLInputElement).blur();
+              } else if (e.key === 'Escape') {
+                setInputValue(String(brushSize));
+                (e.target as HTMLInputElement).blur();
+              }
+            }}
+            className="w-7 text-right text-xs font-mono font-bold bg-transparent outline-none select-text text-center"
+            style={{ color: 'var(--text-accent)' }}
+            aria-label="Brush size in pixels"
+          />
+          <span className="text-[10px] font-mono font-semibold text-secondary-theme select-none ml-0.5">px</span>
         </div>
+
+        {/* Stepper buttons (- / +): Stacked vertically in narrow mode so they never share crowded space */}
+        <div className={`flex ${isSingleColumn ? 'flex-col' : 'flex-row'} items-center gap-1 w-full justify-center`}>
+          <button
+            type="button"
+            onClick={() => onBrushSizeChange(Math.max(1, brushSize - 1))}
+            disabled={brushSize <= 1}
+            title="Decrease brush size ([)"
+            className={`retro-chrome-btn rounded disabled:opacity-25 disabled:pointer-events-none transition-colors flex items-center justify-center cursor-pointer text-primary-theme ${
+              isSingleColumn ? 'w-full h-7' : 'flex-1 h-6'
+            }`}
+          >
+            <Minus className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => onBrushSizeChange(Math.min(32, brushSize + 1))}
+            disabled={brushSize >= 32}
+            title="Increase brush size (])"
+            className={`retro-chrome-btn rounded disabled:opacity-25 disabled:pointer-events-none transition-colors flex items-center justify-center cursor-pointer text-primary-theme ${
+              isSingleColumn ? 'w-full h-7' : 'flex-1 h-6'
+            }`}
+          >
+            <Plus className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {/* Custom Range Slider (1 to 32px) when space allows */}
+        {width >= 80 && (
+          <div className="w-full flex items-center gap-1.5 px-0.5 mt-0.5">
+            <input
+              type="range"
+              min={1}
+              max={32}
+              value={brushSize}
+              onChange={(e) => onBrushSizeChange(Math.max(1, Math.min(32, Number(e.target.value))))}
+              className="w-full h-1.5 rounded-lg appearance-none cursor-pointer bg-[var(--border-ui)] accent-amber-500"
+              title={`Custom size slider: ${brushSize}px (1-32px)`}
+            />
+          </div>
+        )}
       </div>
 
       <div className="retro-recessed-divider-h my-0.5 shrink-0" />

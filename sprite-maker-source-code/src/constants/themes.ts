@@ -26,6 +26,14 @@ export const AVAILABLE_THEMES: ThemeConfig[] = [
     description: 'Authentic 2008 skeuomorphic dark UI with dual-tone gunmetal chrome buttons, beveled insets, and metallic highlights.',
   },
   {
+    id: 'oled-dark',
+    name: '2008 OLED Dark',
+    mode: 'dark',
+    accent: '#38bdf8',
+    badge: 'OLED',
+    description: 'Pure pitch-black (#000000) display theme engineered for OLED monitors to maximize contrast and conserve energy.',
+  },
+  {
     id: 'dark-modern',
     name: 'Dark Studio',
     mode: 'dark',

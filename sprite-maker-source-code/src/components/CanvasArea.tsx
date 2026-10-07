@@ -385,6 +385,9 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       } else if (theme === 'retro-dark') {
         // 2008 Dark Retro (metallic gunmetal dark)
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.13)';
+      } else if (theme === 'oled-dark') {
+        // OLED Dark (pure black background, clean subtle grid lines)
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
       } else {
         // Dark theme fallback
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.09)';
@@ -684,21 +687,16 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       ctx.restore();
     }
 
-    // 6. Hover Pixel Box
+    // 6. Hover Pixel Box (High-performance outer bounding box outline)
     if (hoverPixel && hoverPixel.x >= 0 && hoverPixel.x < canvasWidth && hoverPixel.y >= 0 && hoverPixel.y < canvasHeight) {
       ctx.save();
       ctx.strokeStyle = '#FFCC00';
       ctx.lineWidth = 1.5;
-      const radius = Math.floor((brushSize - 1) / 2);
-      for (let dy = -radius; dy <= radius; dy++) {
-        for (let dx = -radius; dx <= radius; dx++) {
-          const px = hoverPixel.x + dx;
-          const py = hoverPixel.y + dy;
-          if (px >= 0 && px < canvasWidth && py >= 0 && py < canvasHeight) {
-            ctx.strokeRect(px * zoom, py * zoom, zoom, zoom);
-          }
-        }
-      }
+      const minOffset = -Math.floor((brushSize - 1) / 2);
+      const startX = (hoverPixel.x + minOffset) * zoom;
+      const startY = (hoverPixel.y + minOffset) * zoom;
+      const boxSize = brushSize * zoom;
+      ctx.strokeRect(startX, startY, boxSize, boxSize);
       ctx.restore();
     }
   }, [
@@ -730,13 +728,14 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     let newPixels = [...activeLayer.pixels];
     let anyChanged = false;
 
-    // Expand points by brushSize
+    // Expand points by brushSize using deterministic pixel bounding kernel
     const expandedPoints: { x: number; y: number }[] = [];
-    const radius = Math.floor((brushSize - 1) / 2);
+    const minOffset = -Math.floor((brushSize - 1) / 2);
+    const maxOffset = Math.floor(brushSize / 2);
 
     points.forEach(p => {
-      for (let dy = -radius; dy <= radius; dy++) {
-        for (let dx = -radius; dx <= radius; dx++) {
+      for (let dy = minOffset; dy <= maxOffset; dy++) {
+        for (let dx = minOffset; dx <= maxOffset; dx++) {
           expandedPoints.push({ x: p.x + dx, y: p.y + dy });
           // If symmetry active, mirror along symmetryAxisX
           if (symmetryActive) {

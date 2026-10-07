@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { 
   Image as ImageIcon, 
   Upload, 
@@ -290,42 +290,124 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
   onColorPick,
 }) => {
   const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
   const [position, setPosition] = useState({ x: 80, y: 120 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Window drag state
+  const [isWindowDragging, setIsWindowDragging] = useState(false);
+  const windowDragStartRef = useRef({ x: 0, y: 0 });
+
+  // Viewport image pan state
+  const [isPanning, setIsPanning] = useState(false);
+  const panStartRef = useRef({ x: 0, y: 0 });
+  const panOriginMouseRef = useRef({ x: 0, y: 0 });
+  const panMovedDistRef = useRef(0);
+
   const imgRef = useRef<HTMLImageElement>(null);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
-  };
+  // Global mouse handlers for window dragging and viewport panning
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (isWindowDragging) {
+        setPosition({
+          x: Math.max(10, Math.min(window.innerWidth - 100, e.clientX - windowDragStartRef.current.x)),
+          y: Math.max(10, Math.min(window.innerHeight - 80, e.clientY - windowDragStartRef.current.y)),
+        });
+      }
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (isDragging) {
-      setPosition({
-        x: Math.max(10, Math.min(window.innerWidth - 200, e.clientX - dragStart.x)),
-        y: Math.max(10, Math.min(window.innerHeight - 200, e.clientY - dragStart.y)),
-      });
+      if (isPanning) {
+        const dx = e.clientX - panOriginMouseRef.current.x;
+        const dy = e.clientY - panOriginMouseRef.current.y;
+        panMovedDistRef.current = Math.hypot(dx, dy);
+
+        setPan({
+          x: e.clientX - panStartRef.current.x,
+          y: e.clientY - panStartRef.current.y,
+        });
+      }
+    };
+
+    const handleGlobalMouseUp = (e: MouseEvent) => {
+      if (isWindowDragging) {
+        setIsWindowDragging(false);
+      }
+      if (isPanning) {
+        setIsPanning(false);
+        // If mouse didn't drag (moved < 4px), treat as a deliberate click to sample color
+        if (panMovedDistRef.current < 4) {
+          sampleColorAt(e.clientX, e.clientY);
+        }
+      }
+    };
+
+    if (isWindowDragging || isPanning) {
+      window.addEventListener('mousemove', handleGlobalMouseMove);
+      window.addEventListener('mouseup', handleGlobalMouseUp);
     }
+
+    return () => {
+      window.removeEventListener('mousemove', handleGlobalMouseMove);
+      window.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+  }, [isWindowDragging, isPanning]);
+
+  // Window header drag start
+  const handleTitleMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+    setIsWindowDragging(true);
+    windowDragStartRef.current = { x: e.clientX - position.x, y: e.clientY - position.y };
   };
 
-  const handleMouseUp = () => setIsDragging(false);
+  // Viewport pan start
+  const handleViewportMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0 && e.button !== 1) return;
+    e.preventDefault();
+    setIsPanning(true);
+    panMovedDistRef.current = 0;
+    panOriginMouseRef.current = { x: e.clientX, y: e.clientY };
+    panStartRef.current = { x: e.clientX - pan.x, y: e.clientY - pan.y };
+  };
 
-  // Eyedrop directly from reference image
-  const handleSampleColor = (e: React.MouseEvent<HTMLImageElement>) => {
+  // Wheel zoom in viewport
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 0.25 : -0.25;
+    setZoom(z => Math.max(0.25, Math.min(8, Math.round((z + delta) * 100) / 100)));
+  };
+
+  // Reset zoom & pan
+  const handleResetView = () => {
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  };
+
+  // Eyedrop directly from reference image at screen coordinates
+  const sampleColorAt = (clientX: number, clientY: number) => {
     const img = imgRef.current;
     if (!img) return;
 
     const rect = img.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const clickY = e.clientY - rect.top;
+    if (
+      clientX < rect.left || 
+      clientX > rect.right || 
+      clientY < rect.top || 
+      clientY > rect.bottom
+    ) {
+      return; // outside image bounds
+    }
+
+    const clickX = clientX - rect.left;
+    const clickY = clientY - rect.top;
 
     const scaleX = img.naturalWidth / rect.width;
     const scaleY = img.naturalHeight / rect.height;
 
     const naturalX = Math.floor(clickX * scaleX);
     const naturalY = Math.floor(clickY * scaleY);
+
+    if (naturalX < 0 || naturalX >= img.naturalWidth || naturalY < 0 || naturalY >= img.naturalHeight) {
+      return;
+    }
 
     // Draw on hidden canvas to sample pixel
     const hiddenCanvas = document.createElement('canvas');
@@ -342,16 +424,47 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
     }
   };
 
+  // Touch handlers for mobile/tablet panning
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const touchDistRef = useRef(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      const t = e.touches[0];
+      touchStartRef.current = { x: t.clientX, y: t.clientY };
+      panStartRef.current = { x: t.clientX - pan.x, y: t.clientY - pan.y };
+      touchDistRef.current = 0;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 1 && touchStartRef.current) {
+      const t = e.touches[0];
+      const dist = Math.hypot(t.clientX - touchStartRef.current.x, t.clientY - touchStartRef.current.y);
+      touchDistRef.current = dist;
+      setPan({
+        x: t.clientX - panStartRef.current.x,
+        y: t.clientY - panStartRef.current.y,
+      });
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartRef.current && touchDistRef.current < 6 && e.changedTouches.length > 0) {
+      const t = e.changedTouches[0];
+      sampleColorAt(t.clientX, t.clientY);
+    }
+    touchStartRef.current = null;
+  };
+
   return (
     <div
       style={{ left: `${position.x}px`, top: `${position.y}px` }}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      className="fixed z-40 bg-surface-theme border border-ui-theme rounded-xl shadow-2xl overflow-hidden flex flex-col w-72 max-w-[90vw] text-primary-theme"
+      className="fixed z-40 bg-surface-theme border border-ui-theme rounded-xl shadow-2xl overflow-hidden flex flex-col w-80 max-w-[90vw] text-primary-theme"
     >
       {/* Title bar (draggable) */}
       <div
-        onMouseDown={handleMouseDown}
+        onMouseDown={handleTitleMouseDown}
         className="flex items-center justify-between px-3 py-2 bg-surface-raised-theme border-b border-ui-theme cursor-move select-none"
       >
         <div className="flex items-center gap-1.5 text-xs font-medium text-primary-theme truncate">
@@ -361,46 +474,77 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
 
         <div className="flex items-center gap-1">
           <button
-            onClick={() => setZoom(z => Math.max(0.5, z - 0.25))}
+            onClick={() => setZoom(z => Math.max(0.25, Math.round((z - 0.25) * 100) / 100))}
             className="retro-chrome-btn p-1 rounded text-primary-theme cursor-pointer"
             title="Zoom out"
           >
             <ZoomOut className="w-3 h-3" />
           </button>
-          <span className="text-[10px] font-mono text-secondary-theme">{Math.round(zoom * 100)}%</span>
           <button
-            onClick={() => setZoom(z => Math.min(4, z + 0.25))}
+            onClick={handleResetView}
+            className="retro-chrome-btn px-1.5 py-0.5 rounded text-[10px] font-mono text-secondary-theme hover:text-primary-theme cursor-pointer"
+            title="Reset Zoom & Pan (100% centered)"
+          >
+            {Math.round(zoom * 100)}%
+          </button>
+          <button
+            onClick={() => setZoom(z => Math.min(8, Math.round((z + 0.25) * 100) / 100))}
             className="retro-chrome-btn p-1 rounded text-primary-theme cursor-pointer"
             title="Zoom in"
           >
             <ZoomIn className="w-3 h-3" />
           </button>
           <button
+            onClick={handleResetView}
+            className="retro-chrome-btn p-1 rounded text-secondary-theme hover:text-primary-theme cursor-pointer"
+            title="Recenter & Reset View"
+          >
+            <RefreshCw className="w-3 h-3" />
+          </button>
+          <button
             onClick={onClose}
             className="retro-chrome-btn p-1 rounded text-red-500 hover:text-red-600 transition-colors ml-1 cursor-pointer"
+            title="Close reference"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
-      {/* Image Preview & Eyedropper area */}
-      <div className="relative p-2 bg-surface-raised-theme overflow-auto max-h-72 flex items-center justify-center canvas-checkerboard">
-        <img
-          ref={imgRef}
-          src={reference.url}
-          alt={reference.name}
-          onClick={handleSampleColor}
-          style={{ transform: `scale(${zoom})`, transformOrigin: 'center center' }}
-          className="max-w-full max-h-64 object-contain pixelated cursor-crosshair transition-transform"
-          title="Click anywhere to eyedrop & sample color!"
-        />
+      {/* Image Preview & Eyedropper area with virtual panning & zoom */}
+      <div 
+        onMouseDown={handleViewportMouseDown}
+        onWheel={handleWheel}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        className={`relative p-0 bg-surface-raised-theme overflow-hidden h-72 max-h-72 w-full flex items-center justify-center canvas-checkerboard select-none ${
+          isPanning ? 'cursor-grabbing' : 'cursor-crosshair'
+        }`}
+        title="Click to sample color • Drag to pan • Scroll wheel to zoom"
+      >
+        <div
+          style={{ 
+            transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, 
+            transformOrigin: 'center center',
+            transition: isPanning ? 'none' : 'transform 75ms ease-out',
+          }}
+          className="relative shrink-0 flex items-center justify-center pointer-events-none"
+        >
+          <img
+            ref={imgRef}
+            src={reference.url}
+            alt={reference.name}
+            className="max-w-[240px] max-h-[240px] w-auto h-auto object-contain pixelated pointer-events-auto"
+            draggable={false}
+          />
+        </div>
       </div>
 
       <div className="px-3 py-1.5 bg-surface-raised-theme text-[10px] text-secondary-theme flex items-center justify-between border-t border-ui-theme">
         <span className="flex items-center gap-1">
           <Pipette className="w-3 h-3" style={{ color: 'var(--text-accent)' }} />
-          Click image to sample color
+          Click to sample • Drag to pan
         </span>
         <span className="font-mono text-secondary-theme">{reference.width}×{reference.height}px</span>
       </div>
