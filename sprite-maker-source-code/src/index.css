@@ -29,6 +29,10 @@
   --btn-red: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
   --btn-red-border: #991b1b;
   --btn-red-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+
+  --btn-blue: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+  --btn-blue-border: #0369a1;
+  --btn-blue-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
   
   --checker-bg1: #1e1e24;
   --checker-bg2: #2b2b36;
@@ -427,6 +431,22 @@
     filter: brightness(1.05);
   }
   .retro-red-btn:active {
+    filter: brightness(0.92);
+    transform: translateY(1px);
+  }
+
+  /* Blue Web 2.0 CTA Button */
+  .retro-blue-btn {
+    background: var(--btn-blue);
+    border: 1px solid var(--btn-blue-border);
+    box-shadow: var(--shadow-raised);
+    color: #ffffff;
+    font-weight: 600;
+  }
+  .retro-blue-btn:hover {
+    filter: brightness(1.05);
+  }
+  .retro-blue-btn:active {
     filter: brightness(0.92);
     transform: translateY(1px);
   }

@@ -23,6 +23,8 @@ interface ExportModalProps {
   bodyOffsetX?: number;
   bodyOffsetY?: number;
   defaultFilename?: string;
+  onExportSuccess?: (filename: string, width: number, height: number) => void;
+  onCopySuccess?: () => void;
 }
 
 export const ExportModal: React.FC<ExportModalProps> = ({
@@ -34,6 +36,8 @@ export const ExportModal: React.FC<ExportModalProps> = ({
   bodyOffsetX = 0,
   bodyOffsetY = 0,
   defaultFilename,
+  onExportSuccess,
+  onCopySuccess,
 }) => {
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -120,6 +124,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
   const currentExportHeight = settings.useCustomSize ? settings.customHeight : canvasHeight * settings.scale;
 
   const handleDownload = () => {
+    const filename = `${settings.filename || 'figuraymaker-sprite'}.png`;
     downloadPng({
       width: canvasWidth,
       height: canvasHeight,
@@ -128,6 +133,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
       bodyOffsetX,
       bodyOffsetY,
     });
+    onExportSuccess?.(filename, currentExportWidth, currentExportHeight);
   };
 
   const handleCopy = async () => {
@@ -142,6 +148,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
     if (success) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      onCopySuccess?.();
     }
   };
 

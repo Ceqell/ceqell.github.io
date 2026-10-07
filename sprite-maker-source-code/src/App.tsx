@@ -40,9 +40,30 @@ import { GuideModal } from './components/GuideModal';
 import { HelpModal, HelpTabId } from './components/HelpModal';
 import { AboutModal } from './components/AboutModal';
 import { CustomCanvasModal } from './components/CustomCanvasModal';
+import { ProjectManagerModal } from './components/ProjectManagerModal';
+import { ToastContainer, ToastItem } from './components/Toast';
+import { 
+  StoredProject, 
+  saveProjectToDB, 
+  getAllProjectsFromDB, 
+  generateProjectThumbnail, 
+  generateProjectId 
+} from './utils/storageDB';
 import { DEFAULT_THEME_ID } from './constants/themes';
 
 export default function App() {
+  // Toast notifications
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
+
+  const addToast = useCallback((toast: Omit<ToastItem, 'id'>) => {
+    const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    setToasts(prev => [...prev.slice(-3), { ...toast, id }]);
+  }, []);
+
+  const dismissToast = useCallback((id: string) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  }, []);
+
   // Canvas Size Preset
   const [activePreset, setActivePreset] = useState<CanvasDimensions>(CANVAS_PRESETS[0]);
   const [guideOffset, setGuideOffset] = useState<{ x: number; y: number }>({
@@ -95,6 +116,22 @@ export default function App() {
   const [showNumbers, setShowNumbers] = useState<boolean>(true);
   const [zoom, setZoom] = useState<number>(18); // Default generous zoom for pixel work
 
+  // Auto switch tool back to pencil after eyedropper color pick (off by default)
+  const [autoSwitchPencil, setAutoSwitchPencil] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('figuray_auto_pencil') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const handleToggleAutoSwitchPencil = (val: boolean) => {
+    setAutoSwitchPencil(val);
+    try {
+      localStorage.setItem('figuray_auto_pencil', String(val));
+    } catch {}
+  };
+
   // Selection
   const [selection, setSelection] = useState<SelectionState>({
     active: false,
@@ -119,7 +156,14 @@ export default function App() {
   const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
   const [isHelpOpen, setIsHelpOpen] = useState<boolean>(false);
   const [isAboutOpen, setIsAboutOpen] = useState<boolean>(false);
+  const [isProjectManagerOpen, setIsProjectManagerOpen] = useState<boolean>(true);
   const [helpInitialTab, setHelpInitialTab] = useState<HelpTabId>('overview');
+
+  // Active Project ID for local IndexedDB tracking
+  const [currentProjectId, setCurrentProjectId] = useState<string>(() => generateProjectId());
+  const autoSaveTimerRef = useRef<number | null>(null);
+  const hasChosenProjectRef = useRef<boolean>(false);
+  const isInitialLoadRef = useRef<boolean>(true);
 
   // Right sidebar tab state for smaller screens
   const [rightTab, setRightTab] = useState<'layers' | 'palette' | 'references'>('layers');
@@ -426,13 +470,21 @@ export default function App() {
   }, [activeLayerId, pushHistory]);
 
   // Color selection
-  const handleColorSelect = (color: string) => {
+  const handleColorSelect = useCallback((color: string) => {
     setCurrentColor(color);
     setColorHistory(prev => {
       const filtered = prev.filter(c => c.toUpperCase() !== color.toUpperCase());
       return [color, ...filtered].slice(0, 16);
     });
-  };
+  }, []);
+
+  // Eyedropper pick handler (auto switches back to pencil if option is enabled)
+  const handleEyedropPick = useCallback((color: string) => {
+    handleColorSelect(color);
+    if (autoSwitchPencil) {
+      setCurrentTool('pencil');
+    }
+  }, [autoSwitchPencil, handleColorSelect]);
 
   // Add custom color
   const handleAddCustomColor = (color: string) => {
@@ -452,7 +504,7 @@ export default function App() {
         const eyeDropper = new (window as any).EyeDropper();
         const result = await eyeDropper.open();
         if (result && result.sRGBHex) {
-          handleColorSelect(result.sRGBHex.toUpperCase());
+          handleEyedropPick(result.sRGBHex.toUpperCase());
         }
       } catch {
         // Canceled or unsupported
@@ -1153,6 +1205,15 @@ export default function App() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    addToast({
+      title: 'Project File Saved',
+      message: `${safeName}.json downloaded successfully`,
+      type: 'success',
+      icon: 'json',
+      duration: 3500,
+    });
   };
 
   // Load Project JSON
@@ -1186,6 +1247,31 @@ export default function App() {
           setActiveLayerId(project.activeLayerId || normalizedLayers[0].id);
           if (project.selectedColor) setCurrentColor(project.selectedColor);
           if (project.references) setReferences(project.references);
+          const projectTitle = (project as any).name || file.name.replace(/\.json$/i, '') || 'Imported Sprite';
+          setProjectName(projectTitle);
+          const newLoadedId = generateProjectId();
+          setCurrentProjectId(newLoadedId);
+          hasChosenProjectRef.current = true;
+
+          // Generate thumbnail & save into IndexedDB immediately
+          const thumbnail = generateProjectThumbnail(normalizedLayers, project.canvasWidth, project.canvasHeight);
+          saveProjectToDB({
+            id: newLoadedId,
+            name: projectTitle,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+            thumbnailUrl: thumbnail,
+            canvasWidth: project.canvasWidth,
+            canvasHeight: project.canvasHeight,
+            canvasPresetName: matchedPreset.name,
+            layers: normalizedLayers,
+            activeLayerId: project.activeLayerId || normalizedLayers[0].id,
+            references: project.references,
+            selectedColor: project.selectedColor,
+            bodyOffsetX: loadedOx,
+            bodyOffsetY: loadedOy,
+          }).catch(err => console.error('Failed to save imported project to IndexedDB:', err));
+
           pushHistory(normalizedLayers, project.activeLayerId || normalizedLayers[0].id, matchedPreset, { x: loadedOx, y: loadedOy });
         }
       } catch {
@@ -1194,6 +1280,170 @@ export default function App() {
     };
     reader.readAsText(file);
   };
+
+  // Select existing project from Project Manager
+  const handleSelectStoredProject = useCallback((stored: StoredProject) => {
+    hasChosenProjectRef.current = true;
+    setCurrentProjectId(stored.id);
+    setProjectName(stored.name || 'Untitled Sprite');
+
+    const matchedPreset = CANVAS_PRESETS.find(p => p.name === stored.canvasPresetName) || {
+      name: `Custom (${stored.canvasWidth} × ${stored.canvasHeight})`,
+      width: stored.canvasWidth,
+      height: stored.canvasHeight,
+      description: 'Custom canvas dimensions',
+      bodyOffsetX: stored.bodyOffsetX !== undefined ? stored.bodyOffsetX : Math.floor((stored.canvasWidth - 21) / 2),
+      bodyOffsetY: stored.bodyOffsetY !== undefined ? stored.bodyOffsetY : Math.floor((stored.canvasHeight - 28) / 2),
+    };
+    setActivePreset(matchedPreset);
+
+    const newGuideOffset = {
+      x: stored.bodyOffsetX !== undefined ? stored.bodyOffsetX : matchedPreset.bodyOffsetX,
+      y: stored.bodyOffsetY !== undefined ? stored.bodyOffsetY : matchedPreset.bodyOffsetY,
+    };
+    setGuideOffset(newGuideOffset);
+
+    const normalizedLayers: Layer[] = stored.layers.map(l => ({
+      ...l,
+      width: stored.canvasWidth,
+      height: stored.canvasHeight,
+    }));
+    setLayers(normalizedLayers);
+    setActiveLayerId(stored.activeLayerId || normalizedLayers[0]?.id || 'layer-body');
+    if (stored.selectedColor) setCurrentColor(stored.selectedColor);
+    if (stored.references) setReferences(stored.references);
+
+    pushHistory(normalizedLayers, stored.activeLayerId || normalizedLayers[0]?.id, matchedPreset, newGuideOffset);
+    setIsProjectManagerOpen(false);
+  }, [pushHistory]);
+
+  // Create new project from Project Manager
+  const handleCreateNewProject = useCallback((name: string, presetName: string, customW?: number, customH?: number) => {
+    hasChosenProjectRef.current = true;
+    const newId = generateProjectId();
+    setCurrentProjectId(newId);
+    setProjectName(name);
+
+    let targetPreset: CanvasDimensions;
+    if (presetName === 'custom' && customW && customH) {
+      targetPreset = {
+        name: `Custom (${customW} × ${customH})`,
+        width: customW,
+        height: customH,
+        description: `Custom ${customW}x${customH} canvas dimensions`,
+        bodyOffsetX: Math.floor((customW - 21) / 2),
+        bodyOffsetY: Math.floor((customH - 28) / 2),
+      };
+    } else {
+      targetPreset = CANVAS_PRESETS.find(p => p.name === presetName) || CANVAS_PRESETS[1];
+    }
+
+    setActivePreset(targetPreset);
+    const newGuideOffset = { x: targetPreset.bodyOffsetX, y: targetPreset.bodyOffsetY };
+    setGuideOffset(newGuideOffset);
+
+    const initialLayers: Layer[] = [
+      {
+        id: 'layer-body',
+        name: 'Layer 1',
+        visible: true,
+        opacity: 1,
+        locked: false,
+        pixels: new Array(targetPreset.width * targetPreset.height).fill(''),
+        width: targetPreset.width,
+        height: targetPreset.height,
+      }
+    ];
+    setLayers(initialLayers);
+    setActiveLayerId('layer-body');
+    setReferences([]);
+    pushHistory(initialLayers, 'layer-body', targetPreset, newGuideOffset);
+
+    // Initial save in storageDB
+    const thumbnail = generateProjectThumbnail(initialLayers, targetPreset.width, targetPreset.height);
+    saveProjectToDB({
+      id: newId,
+      name,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      thumbnailUrl: thumbnail,
+      canvasWidth: targetPreset.width,
+      canvasHeight: targetPreset.height,
+      canvasPresetName: targetPreset.name,
+      layers: initialLayers,
+      activeLayerId: 'layer-body',
+      selectedColor: currentColor,
+      bodyOffsetX: newGuideOffset.x,
+      bodyOffsetY: newGuideOffset.y,
+    }).catch(err => console.error('Failed to save newly created project to IndexedDB:', err));
+
+    setIsProjectManagerOpen(false);
+  }, [currentColor, pushHistory]);
+
+  // Dismiss / close Project Manager modal
+  const handleCloseProjectManager = useCallback(async () => {
+    setIsProjectManagerOpen(false);
+    if (!hasChosenProjectRef.current) {
+      hasChosenProjectRef.current = true;
+      try {
+        const storedList = await getAllProjectsFromDB();
+        if (storedList.length > 0) {
+          handleSelectStoredProject(storedList[0]);
+        }
+      } catch (err) {
+        console.error('Failed to load recent project on dismiss:', err);
+      }
+    }
+  }, [handleSelectStoredProject]);
+
+  // Import JSON from modal file picker
+  const handleImportJsonFileFromModal = useCallback((file: File) => {
+    handleLoadProject(file);
+    setIsProjectManagerOpen(false);
+  }, []);
+
+  // Debounced Auto-Save Engine
+  useEffect(() => {
+    if (isInitialLoadRef.current) {
+      isInitialLoadRef.current = false;
+      return;
+    }
+
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current);
+    }
+
+    autoSaveTimerRef.current = window.setTimeout(async () => {
+      try {
+        const thumbnail = generateProjectThumbnail(layers, canvasWidth, canvasHeight);
+        const projectData: StoredProject = {
+          id: currentProjectId,
+          name: projectName || 'Untitled Sprite',
+          updatedAt: Date.now(),
+          createdAt: Date.now(),
+          thumbnailUrl: thumbnail,
+          canvasWidth,
+          canvasHeight,
+          canvasPresetName: activePreset.name,
+          layers,
+          activeLayerId,
+          references,
+          selectedColor: currentColor,
+          bodyOffsetX: guideOffset.x,
+          bodyOffsetY: guideOffset.y,
+        };
+        await saveProjectToDB(projectData);
+      } catch (err) {
+        console.error('Auto-save error:', err);
+      }
+    }, 1500);
+
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+      }
+    };
+  }, [layers, canvasWidth, canvasHeight, projectName, activePreset, references, currentColor, guideOffset, currentProjectId, activeLayerId]);
 
   // Keyboard Shortcuts
   useEffect(() => {
@@ -1302,6 +1552,7 @@ export default function App() {
           setIsHelpOpen(true);
         }}
         onOpenAboutModal={() => setIsAboutOpen(true)}
+        onOpenProjectManager={() => setIsProjectManagerOpen(true)}
         onSaveProject={handleSaveProject}
         onLoadProject={handleLoadProject}
         leftCollapsed={leftCollapsed}
@@ -1359,6 +1610,8 @@ export default function App() {
               onRedo={handleRedo}
               width={leftSidebarWidth}
               onCollapse={() => setLeftCollapsed(true)}
+              autoSwitchPencil={autoSwitchPencil}
+              onToggleAutoSwitchPencil={handleToggleAutoSwitchPencil}
             />
             {/* Draggable Splitter on right edge of Left Toolbar */}
             <div
@@ -1394,6 +1647,7 @@ export default function App() {
           currentTool={currentTool}
           currentColor={currentColor}
           onColorPick={handleColorSelect}
+          onEyedropPick={handleEyedropPick}
           brushSize={brushSize}
           showGrid={showGrid}
           showGuides={showGuides}
@@ -1497,7 +1751,7 @@ export default function App() {
                 onDeleteReference={handleDeleteReference}
                 activeRefId={activeRefId}
                 onSelectRef={setActiveRefId}
-                onColorPick={handleColorSelect}
+                onColorPick={handleEyedropPick}
               />
             </aside>
           </div>
@@ -1522,7 +1776,7 @@ export default function App() {
             key={ref.id}
             reference={ref}
             onClose={() => handleUpdateReference(ref.id, { windowOpen: false })}
-            onColorPick={handleColorSelect}
+            onColorPick={handleEyedropPick}
             onUpdateReference={handleUpdateReference}
           />
         );
@@ -1538,6 +1792,24 @@ export default function App() {
         bodyOffsetX={bodyOffsetX}
         bodyOffsetY={bodyOffsetY}
         defaultFilename={projectName}
+        onExportSuccess={(filename, width, height) => {
+          addToast({
+            title: 'PNG Exported Successfully',
+            message: `${filename} (${width}×${height}px) downloaded`,
+            type: 'success',
+            icon: 'png',
+            duration: 3500,
+          });
+        }}
+        onCopySuccess={() => {
+          addToast({
+            title: 'PNG Copied to Clipboard',
+            message: 'Sprite copied to system clipboard',
+            type: 'success',
+            icon: 'copy',
+            duration: 3000,
+          });
+        }}
       />
 
       {/* Retro Dev Wiki Dimensions & Tutorial Modal */}
@@ -1568,6 +1840,27 @@ export default function App() {
         currentHeight={canvasHeight}
         onApply={handleApplyCustomCanvasSize}
       />
+
+      {/* Pixlr-Style Project Manager & Local Saves Modal */}
+      <ProjectManagerModal
+        isOpen={isProjectManagerOpen}
+        onClose={handleCloseProjectManager}
+        onSelectProject={handleSelectStoredProject}
+        onCreateNewProject={handleCreateNewProject}
+        onImportJsonFile={handleImportJsonFileFromModal}
+        onExportJsonSuccess={(filename) => {
+          addToast({
+            title: 'Project File Exported',
+            message: `${filename} downloaded successfully`,
+            type: 'success',
+            icon: 'json',
+            duration: 3500,
+          });
+        }}
+      />
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
     </div>
   );
 }

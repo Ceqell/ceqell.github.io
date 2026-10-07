@@ -16,7 +16,6 @@ import {
   LayoutGrid, 
   Hash, 
   SplitSquareVertical, 
-  ChevronDown, 
   Info, 
   Move, 
   Sliders, 
@@ -63,6 +62,7 @@ interface HeaderProps {
   onOpenGuideModal: () => void;
   onOpenHelpModal?: () => void;
   onOpenAboutModal?: () => void;
+  onOpenProjectManager?: () => void;
   onSaveProject: () => void;
   onLoadProject: (file: File) => void;
   leftCollapsed?: boolean;
@@ -112,6 +112,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenGuideModal,
   onOpenHelpModal,
   onOpenAboutModal,
+  onOpenProjectManager,
   onSaveProject,
   onLoadProject,
   leftCollapsed = false,
@@ -297,16 +298,6 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           )}
 
-          {/* Dimensions Wiki Guide Modal */}
-          <button
-            onClick={onOpenGuideModal}
-            className="retro-chrome-btn flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 cursor-pointer text-primary-theme"
-            title="Open Sprite Dimensions Wiki Guide"
-          >
-            <HelpCircle className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />
-            <span className="hidden xl:inline">Dimensions</span>
-          </button>
-
           {/* Help & Documentation Modal */}
           {onOpenHelpModal && (
             <button
@@ -318,6 +309,36 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="hidden xl:inline">Help & Docs</span>
             </button>
           )}
+
+          {/* Dimensions Wiki Guide Modal */}
+          <button
+            onClick={onOpenGuideModal}
+            className="retro-chrome-btn flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 cursor-pointer text-primary-theme"
+            title="Open Sprite Dimensions Wiki Guide"
+          >
+            <HelpCircle className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />
+            <span className="hidden xl:inline">Dimensions</span>
+          </button>
+
+          {/* Open Project Manager Modal */}
+          <button
+            onClick={() => {
+              if (onOpenProjectManager) onOpenProjectManager();
+              else fileInputRef.current?.click();
+            }}
+            title="Open Project Manager & Local Saves"
+            className="retro-chrome-btn flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 cursor-pointer text-primary-theme"
+          >
+            <FolderOpen className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />
+            <span className="hidden xl:inline">Projects</span>
+          </button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept=".json"
+            className="hidden"
+          />
 
           {/* About FigurayMaker Modal */}
           {onOpenAboutModal && (
@@ -331,37 +352,26 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
-          {/* Save / Load JSON Project */}
+          {/* Standalone Export PNG Button (Gold) */}
           <button
-            onClick={onSaveProject}
-            title="Save Sprite Project (JSON)"
-            className="retro-chrome-btn p-1.5 rounded-lg transition-colors shrink-0 cursor-pointer text-primary-theme flex items-center justify-center"
-          >
-            <Save className="w-3.5 h-3.5" />
-          </button>
-
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            title="Load Sprite Project (JSON)"
-            className="retro-chrome-btn p-1.5 rounded-lg transition-colors shrink-0 cursor-pointer text-primary-theme flex items-center justify-center"
-          >
-            <FolderOpen className="w-3.5 h-3.5" />
-          </button>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            accept=".json"
-            className="hidden"
-          />
-
-          {/* Primary Export PNG Button */}
-          <button
+            type="button"
             onClick={onOpenExportModal}
-            className="retro-gold-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold shadow-md transition-all cursor-pointer shrink-0"
+            title="Export Sprite as PNG (1x to 64x, background options)"
+            className="retro-gold-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-md shrink-0"
           >
             <Download className="w-4 h-4" />
             <span className="hidden sm:inline">Export PNG</span>
+          </button>
+
+          {/* Standalone Save Project JSON Button (Blue) */}
+          <button
+            type="button"
+            onClick={onSaveProject}
+            title="Save Project File (.JSON) to computer"
+            className="retro-blue-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-md shrink-0"
+          >
+            <FileText className="w-4 h-4" />
+            <span className="hidden sm:inline">Save (.JSON)</span>
           </button>
 
           {onToggleRightSidebar && (

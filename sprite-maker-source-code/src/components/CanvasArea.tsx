@@ -33,6 +33,7 @@ interface CanvasAreaProps {
   currentTool: ToolType;
   currentColor: string;
   onColorPick: (color: string) => void;
+  onEyedropPick?: (color: string) => void;
   brushSize: number;
   showGrid: boolean;
   showGuides: boolean;
@@ -68,6 +69,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
   currentTool,
   currentColor,
   onColorPick,
+  onEyedropPick,
   brushSize,
   showGrid,
   showGuides,
@@ -925,7 +927,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
         if (l.visible) {
           const c = l.pixels[pixel.y * canvasWidth + pixel.x];
           if (c && c !== '') {
-            onColorPick(c);
+            (onEyedropPick || onColorPick)(c);
             break;
           }
         }
@@ -1211,7 +1213,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
           if (l.visible) {
             const c = l.pixels[pixel.y * canvasWidth + pixel.x];
             if (c && c !== '') {
-              onColorPick(c);
+              (onEyedropPick || onColorPick)(c);
               break;
             }
           }

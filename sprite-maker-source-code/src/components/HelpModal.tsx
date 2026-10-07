@@ -360,6 +360,24 @@ export const HelpModal: React.FC<HelpModalProps> = ({
                   </div>
                 </div>
               </div>
+
+              {/* Toolbar Option: Auto Switch to Pencil after Eyedropper */}
+              <div className="p-3.5 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well flex items-start gap-3">
+                <div className="p-2 rounded-lg shrink-0 mt-0.5 retro-chrome-btn" style={{ color: 'var(--text-accent)' }}>
+                  <Pipette className="w-4 h-4" />
+                </div>
+                <div className="space-y-1">
+                  <div className="font-bold text-primary-theme text-xs flex items-center gap-2">
+                    <span>Auto Switch to Pencil after Eyedropper</span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded retro-inset-well font-semibold" style={{ color: 'var(--text-accent)' }}>
+                      Toolbar Checkbox (Off by default)
+                    </span>
+                  </div>
+                  <p className="text-secondary-theme text-[11px] leading-relaxed">
+                    Located as a toggle checkbox at the very bottom of the tools sidebar in the left panel (<span className="font-mono text-primary-theme font-medium">Auto P</span> / <span className="font-mono text-primary-theme font-medium">Auto Pencil</span>). When enabled, whenever you sample a color with the Eyedropper—whether clicking pixels on the canvas, sampling from an open Floating Reference Window, or using the browser picker—your active tool automatically resets back to the <strong className="text-primary-theme font-semibold">Pencil</strong> pen. This lets you pick colors and immediately continue drawing in a single fluid gesture.
+                  </p>
+                </div>
+              </div>
             </div>
           )}
 

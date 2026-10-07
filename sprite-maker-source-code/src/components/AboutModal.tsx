@@ -229,7 +229,7 @@ limitations under the License.`;
       {/* macOS Style Window Dialog */}
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="w-[430px] max-w-[95vw] bg-surface-theme border border-ui-theme rounded-xl shadow-2xl overflow-hidden flex flex-col text-primary-theme transition-all duration-200"
+        className="w-[500px] max-w-[95vw] bg-surface-theme border border-ui-theme rounded-xl shadow-2xl overflow-hidden flex flex-col text-primary-theme transition-all duration-200"
         style={{
           boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--border-ui)'
         }}
@@ -284,7 +284,7 @@ limitations under the License.`;
             FigurayMaker
           </h1>
           <p className="text-xs text-secondary-theme font-mono mt-0.5">
-            Version 1.2.0 (Build 2026.10)
+            Version 2.1 (Build 2026.10.7)
           </p>
 
           {/* Tab Selector & Retro-Inset Content Container */}
@@ -420,8 +420,8 @@ limitations under the License.`;
                         <ExternalLink className="w-2.5 h-2.5" />
                       </a>
                     </div>
-                    <div className="p-2 rounded bg-surface-theme border border-ui-theme text-[9px] font-mono text-secondary-theme max-h-36 overflow-y-auto whitespace-pre-wrap leading-relaxed overscroll-contain">
-                      {apacheLicenseText.trim()}
+                    <div className="p-3 rounded bg-surface-theme border border-ui-theme text-[9.5px] font-mono text-secondary-theme max-h-52 overflow-y-auto whitespace-pre-wrap leading-relaxed overscroll-contain">
+                      {apacheLicenseText.replace(/^\n+/, '').trimEnd()}
                     </div>
                   </div>
                 </div>

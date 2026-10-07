@@ -5,7 +5,7 @@ import {
   PaintBucket, 
   Pipette, 
   Minus, 
-  Plus,
+  Plus, 
   Square, 
   Circle, 
   SunMedium, 
@@ -44,6 +44,8 @@ interface ToolbarProps {
   onRedo?: () => void;
   width?: number;
   onCollapse?: () => void;
+  autoSwitchPencil?: boolean;
+  onToggleAutoSwitchPencil?: (val: boolean) => void;
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
@@ -66,6 +68,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onRedo,
   width = 64,
   onCollapse,
+  autoSwitchPencil = false,
+  onToggleAutoSwitchPencil,
 }) => {
   const isWide = width >= 125;
   const isMedium = width >= 90 && width < 125;
@@ -117,7 +121,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   return (
     <div 
       style={{ width: `${width}px` }}
-      className={`flex flex-col gap-2 bg-surface-theme border-r border-ui-theme ${
+      className={`flex flex-col gap-2 h-full bg-surface-theme border-r border-ui-theme ${
         width < 60 ? 'px-1 py-1.5' : 'p-2'
       } items-center shrink-0 z-20 select-none overflow-x-hidden overflow-y-auto shadow-sm transition-colors`}
     >
@@ -350,6 +354,34 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           </button>
         </div>
       )}
+
+      {/* Auto Switch to Pencil after Eyedropper Option */}
+      <div className="mt-auto pt-2 flex flex-col items-center w-full shrink-0">
+        <div className="retro-recessed-divider-h my-1 shrink-0 w-full" />
+        <label 
+          className="flex flex-col items-center justify-center cursor-pointer select-none py-1 px-0.5 rounded-lg hover:bg-surface-raised-theme transition-colors text-secondary-theme hover:text-primary-theme w-full group"
+          title="Auto switch tool back to pencil after eyedropper color pick"
+        >
+          <div className="flex items-center gap-1.5 justify-center">
+            <input
+              type="checkbox"
+              checked={autoSwitchPencil}
+              onChange={(e) => onToggleAutoSwitchPencil?.(e.target.checked)}
+              className="w-3.5 h-3.5 rounded-xs accent-[var(--text-accent)] cursor-pointer shrink-0"
+            />
+            {width >= 80 && (
+              <span className="text-[10px] font-mono leading-tight truncate">
+                {isWide ? 'Auto Pencil on Pick' : 'Auto Pencil'}
+              </span>
+            )}
+          </div>
+          {width < 80 && (
+            <span className="text-[8px] font-mono leading-none text-secondary-theme group-hover:text-primary-theme mt-0.5 tracking-tighter truncate text-center font-medium">
+              Auto P
+            </span>
+          )}
+        </label>
+      </div>
     </div>
   );
 };

@@ -36,6 +36,7 @@ Features exact anatomical dimensions (Head 9×8, Torso 11×10, Arms 5×10, Legs 
   - **Lighten / Dodge**: Brighten existing pixel shades.
   - **Darken / Burn**: Deepen shadows and create shading.
   - **Color Replace**: Swap all matching color occurrences on the active layer in a single click.
+- **Auto Switch to Pencil after Eyedropper**: Toggle checkbox located at the bottom of the tools sidebar in the left panel (off by default, with hover tooltip). When enabled, sampling any color with the Eyedropper (from the canvas, floating reference image window, or browser color sampler) immediately restores the Pencil drawing tool so you can pick and draw continuously.
 - **Vertical Symmetry / Mirror Mode (`S`)**: Automatically mirrors strokes along the character's torso centerline for rapid front-facing sprite design.
 
 ### Selection & Transformation engine
