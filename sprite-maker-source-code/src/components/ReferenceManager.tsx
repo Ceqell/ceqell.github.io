@@ -14,7 +14,8 @@ import {
   ZoomIn,
   ZoomOut,
   RefreshCw,
-  Info
+  Info,
+  AlertTriangle
 } from 'lucide-react';
 import { ReferenceImage } from '../types/sprite';
 import { CollapsibleSection } from './CollapsibleSection';
@@ -41,36 +42,52 @@ export const ReferenceManager: React.FC<ReferenceManagerProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState<'list' | 'trace'>('list');
 
-  // Handle file uploads (multiple allowed)
+  // Handle file uploads (multiple allowed, stored as permanent cross-origin Base64 Data URLs)
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
+    const fileList = Array.from(files);
+    let loadedCount = 0;
     const newRefs: ReferenceImage[] = [];
-    Array.from(files).forEach((file) => {
-      const url = URL.createObjectURL(file);
-      const img = new Image();
-      img.onload = () => {
-        newRefs.push({
-          id: `ref-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-          name: file.name.replace(/\.[^/.]+$/, ''),
-          url,
-          width: img.naturalWidth,
-          height: img.naturalHeight,
-          traceMode: false,
-          traceOpacity: 0.45,
-          traceX: 0,
-          traceY: 0,
-          traceScale: 1,
-          windowOpen: true,
-          windowZoom: 1,
-        });
 
-        if (newRefs.length === files.length) {
-          onAddReferences(newRefs);
-        }
+    fileList.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target?.result as string;
+        if (!dataUrl) return;
+
+        const img = new Image();
+        img.onload = () => {
+          newRefs.push({
+            id: `ref-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+            name: file.name.replace(/\.[^/.]+$/, ''),
+            url: dataUrl,
+            width: img.naturalWidth,
+            height: img.naturalHeight,
+            traceMode: false,
+            traceOpacity: 0.45,
+            traceX: 0,
+            traceY: 0,
+            traceScale: 1,
+            windowOpen: true,
+            windowZoom: 1,
+          });
+
+          loadedCount++;
+          if (loadedCount === fileList.length) {
+            onAddReferences(newRefs);
+          }
+        };
+        img.onerror = () => {
+          loadedCount++;
+          if (loadedCount === fileList.length && newRefs.length > 0) {
+            onAddReferences(newRefs);
+          }
+        };
+        img.src = dataUrl;
       };
-      img.src = url;
+      reader.readAsDataURL(file);
     });
 
     // Reset input
@@ -282,16 +299,24 @@ interface FloatingReferenceProps {
   reference: ReferenceImage;
   onClose: () => void;
   onColorPick: (color: string) => void;
+  onUpdateReference?: (id: string, updates: Partial<ReferenceImage>) => void;
 }
 
 export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
   reference,
   onClose,
   onColorPick,
+  onUpdateReference,
 }) => {
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [position, setPosition] = useState({ x: 80, y: 120 });
+  const [imgError, setImgError] = useState(false);
+  const replaceFileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [reference.url]);
 
   // Window drag state
   const [isWindowDragging, setIsWindowDragging] = useState(false);
@@ -360,6 +385,7 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
 
   // Viewport pan start
   const handleViewportMouseDown = (e: React.MouseEvent) => {
+    if (imgError) return;
     if (e.button !== 0 && e.button !== 1) return;
     e.preventDefault();
     setIsPanning(true);
@@ -370,6 +396,7 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
 
   // Wheel zoom in viewport
   const handleWheel = (e: React.WheelEvent) => {
+    if (imgError) return;
     e.preventDefault();
     const delta = e.deltaY < 0 ? 0.25 : -0.25;
     setZoom(z => Math.max(0.25, Math.min(8, Math.round((z + delta) * 100) / 100)));
@@ -384,7 +411,7 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
   // Eyedrop directly from reference image at screen coordinates
   const sampleColorAt = (clientX: number, clientY: number) => {
     const img = imgRef.current;
-    if (!img) return;
+    if (!img || imgError || !img.complete || img.naturalWidth === 0) return;
 
     const rect = img.getBoundingClientRect();
     if (
@@ -409,18 +436,22 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
       return;
     }
 
-    // Draw on hidden canvas to sample pixel
-    const hiddenCanvas = document.createElement('canvas');
-    hiddenCanvas.width = img.naturalWidth;
-    hiddenCanvas.height = img.naturalHeight;
-    const ctx = hiddenCanvas.getContext('2d');
-    if (!ctx) return;
+    try {
+      // Draw on hidden canvas to sample pixel
+      const hiddenCanvas = document.createElement('canvas');
+      hiddenCanvas.width = img.naturalWidth;
+      hiddenCanvas.height = img.naturalHeight;
+      const ctx = hiddenCanvas.getContext('2d');
+      if (!ctx) return;
 
-    ctx.drawImage(img, 0, 0);
-    const pixel = ctx.getImageData(naturalX, naturalY, 1, 1).data;
-    if (pixel[3] > 0) {
-      const hex = `#${((1 << 24) + (pixel[0] << 16) + (pixel[1] << 8) + pixel[2]).toString(16).slice(1).toUpperCase()}`;
-      onColorPick(hex);
+      ctx.drawImage(img, 0, 0);
+      const pixel = ctx.getImageData(naturalX, naturalY, 1, 1).data;
+      if (pixel[3] > 0) {
+        const hex = `#${((1 << 24) + (pixel[0] << 16) + (pixel[1] << 8) + pixel[2]).toString(16).slice(1).toUpperCase()}`;
+        onColorPick(hex);
+      }
+    } catch {
+      // Silently ignore if image is broken or cross-origin tainted
     }
   };
 
@@ -429,6 +460,7 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
   const touchDistRef = useRef(0);
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    if (imgError) return;
     if (e.touches.length === 1) {
       const t = e.touches[0];
       touchStartRef.current = { x: t.clientX, y: t.clientY };
@@ -438,6 +470,7 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
+    if (imgError) return;
     if (e.touches.length === 1 && touchStartRef.current) {
       const t = e.touches[0];
       const dist = Math.hypot(t.clientX - touchStartRef.current.x, t.clientY - touchStartRef.current.y);
@@ -450,11 +483,37 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
+    if (imgError) return;
     if (touchStartRef.current && touchDistRef.current < 6 && e.changedTouches.length > 0) {
       const t = e.changedTouches[0];
       sampleColorAt(t.clientX, t.clientY);
     }
     touchStartRef.current = null;
+  };
+
+  // Replace image handler for legacy / broken / cross-origin links
+  const handleReplaceImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !onUpdateReference) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      if (!dataUrl) return;
+      const testImg = new Image();
+      testImg.onload = () => {
+        onUpdateReference(reference.id, {
+          url: dataUrl,
+          width: testImg.naturalWidth,
+          height: testImg.naturalHeight,
+        });
+        setImgError(false);
+      };
+      testImg.src = dataUrl;
+    };
+    reader.readAsDataURL(file);
+
+    if (replaceFileInputRef.current) replaceFileInputRef.current.value = '';
   };
 
   return (
@@ -519,32 +578,62 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         className={`relative p-0 bg-surface-raised-theme overflow-hidden h-72 max-h-72 w-full flex items-center justify-center canvas-checkerboard select-none ${
-          isPanning ? 'cursor-grabbing' : 'cursor-crosshair'
+          imgError ? 'cursor-default' : isPanning ? 'cursor-grabbing' : 'cursor-crosshair'
         }`}
-        title="Click to sample color • Drag to pan • Scroll wheel to zoom"
+        title={imgError ? undefined : "Click to sample color • Drag to pan • Scroll wheel to zoom"}
       >
-        <div
-          style={{ 
-            transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, 
-            transformOrigin: 'center center',
-            transition: isPanning ? 'none' : 'transform 75ms ease-out',
-          }}
-          className="relative shrink-0 flex items-center justify-center pointer-events-none"
-        >
-          <img
-            ref={imgRef}
-            src={reference.url}
-            alt={reference.name}
-            className="max-w-[240px] max-h-[240px] w-auto h-auto object-contain pixelated pointer-events-auto"
-            draggable={false}
-          />
-        </div>
+        {imgError ? (
+          <div className="flex flex-col items-center justify-center p-4 text-center gap-2 z-10">
+            <AlertTriangle className="w-7 h-7 text-amber-500 shrink-0" />
+            <span className="text-xs font-bold text-primary-theme">Image Link Unavailable</span>
+            <span className="text-[10px] text-secondary-theme max-w-[210px] leading-relaxed">
+              This reference was saved with an expired session or cross-origin restricted URL.
+            </span>
+            {onUpdateReference && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => replaceFileInputRef.current?.click()}
+                  className="retro-gold-btn px-2.5 py-1 text-xs font-semibold rounded mt-1 flex items-center gap-1.5 cursor-pointer shadow-sm"
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>Re-upload Image</span>
+                </button>
+                <input
+                  type="file"
+                  ref={replaceFileInputRef}
+                  accept="image/*"
+                  onChange={handleReplaceImage}
+                  className="hidden"
+                />
+              </>
+            )}
+          </div>
+        ) : (
+          <div
+            style={{ 
+              transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, 
+              transformOrigin: 'center center',
+              transition: isPanning ? 'none' : 'transform 75ms ease-out',
+            }}
+            className="relative shrink-0 flex items-center justify-center pointer-events-none"
+          >
+            <img
+              ref={imgRef}
+              src={reference.url}
+              alt={reference.name}
+              onError={() => setImgError(true)}
+              className="max-w-[240px] max-h-[240px] w-auto h-auto object-contain pixelated pointer-events-auto"
+              draggable={false}
+            />
+          </div>
+        )}
       </div>
 
       <div className="px-3 py-1.5 bg-surface-raised-theme text-[10px] text-secondary-theme flex items-center justify-between border-t border-ui-theme">
         <span className="flex items-center gap-1">
           <Pipette className="w-3 h-3" style={{ color: 'var(--text-accent)' }} />
-          Click to sample • Drag to pan
+          {imgError ? 'Image unavailable' : 'Click to sample • Drag to pan'}
         </span>
         <span className="font-mono text-secondary-theme">{reference.width}×{reference.height}px</span>
       </div>

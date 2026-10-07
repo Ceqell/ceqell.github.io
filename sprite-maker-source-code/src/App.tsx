@@ -1514,6 +1514,7 @@ export default function App() {
             reference={ref}
             onClose={() => handleUpdateReference(ref.id, { windowOpen: false })}
             onColorPick={handleColorSelect}
+            onUpdateReference={handleUpdateReference}
           />
         );
       })}

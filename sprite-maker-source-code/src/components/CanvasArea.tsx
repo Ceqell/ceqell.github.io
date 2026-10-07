@@ -304,16 +304,20 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
     // 1. Draw Trace Reference Overlays (if enabled)
     references.forEach(ref => {
-      if (ref.traceMode && ref.traceOpacity > 0) {
-        const img = new Image();
-        img.src = ref.url;
-        if (img.complete) {
-          ctx.save();
-          ctx.globalAlpha = ref.traceOpacity;
-          const targetW = canvasWidth * ref.traceScale;
-          const targetH = (ref.height / ref.width) * targetW;
-          ctx.drawImage(img, ref.traceX, ref.traceY, targetW, targetH);
-          ctx.restore();
+      if (ref.traceMode && ref.traceOpacity > 0 && ref.url) {
+        try {
+          const img = new Image();
+          img.src = ref.url;
+          if (img.complete && img.naturalWidth > 0 && img.naturalHeight > 0) {
+            ctx.save();
+            ctx.globalAlpha = ref.traceOpacity;
+            const targetW = canvasWidth * ref.traceScale;
+            const targetH = (ref.height / ref.width) * targetW;
+            ctx.drawImage(img, ref.traceX, ref.traceY, targetW, targetH);
+            ctx.restore();
+          }
+        } catch {
+          // Gracefully ignore broken, cross-origin, or expired image references to prevent crashing canvas
         }
       }
     });
