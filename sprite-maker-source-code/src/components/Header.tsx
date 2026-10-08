@@ -36,6 +36,7 @@ import {
 import { CANVAS_PRESETS, STARTER_TEMPLATES } from '../constants/retroDev';
 import { AVAILABLE_THEMES } from '../constants/themes';
 import { CanvasBgStyle } from '../types/sprite';
+import { getAssetUrl } from '../utils/assetUrl';
 
 interface HeaderProps {
   canvasPresetName: string;
@@ -220,7 +221,7 @@ export const Header: React.FC<HeaderProps> = ({
               className="p-0 border-0 bg-transparent cursor-pointer hover:opacity-90 active:scale-95 transition-transform flex items-center"
             >
               <img 
-                src="FigurayMakerBanner4.png" 
+                src={getAssetUrl('FigurayMakerBanner4.png')} 
                 alt="FigurayMaker" 
                 className="h-8 md:h-9 object-contain select-none shrink-0" 
               />

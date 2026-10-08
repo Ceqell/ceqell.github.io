@@ -1,5 +1,6 @@
 import { Layer } from '../types/sprite';
 import atlasData from '../constants/spriteAtlas.json';
+import { getAssetUrl } from './assetUrl';
 
 export type ScaleMode = '1x' | '2x';
 
@@ -82,6 +83,7 @@ export function getEnhancedSpriteList(): SpriteAtlasEntry[] {
 
     return {
       ...item,
+      file: getAssetUrl(item.file),
       category,
       package: pkg,
       wikiDimensions: {
@@ -102,10 +104,9 @@ export function loadTemplateImage(): Promise<HTMLImageElement> {
   if (!cachedImagePromise) {
     cachedImagePromise = new Promise((resolve, reject) => {
       const img = new Image();
-      img.crossOrigin = 'anonymous';
       img.onload = () => resolve(img);
       img.onerror = (e) => reject(new Error('Failed to load DavidBlxTemplate.png: ' + e));
-      img.src = '/DavidBlxTemplate.png';
+      img.src = getAssetUrl('DavidBlxTemplate.png');
     });
   }
   return cachedImagePromise;

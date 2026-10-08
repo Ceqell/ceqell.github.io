@@ -6,6 +6,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { REVAMPED_STARTER_TEMPLATES, RevampedStarter, ScaleMode } from '../utils/spriteAtlas';
+import { getAssetUrl } from '../utils/assetUrl';
 
 interface StarterModalProps {
   isOpen: boolean;
@@ -154,7 +155,7 @@ export const StarterModal: React.FC<StarterModalProps> = ({
               {filteredStarters.map(starter => {
                 const isSelected = starter.id === selectedStarterId;
                 const spriteFile = starter.spriteIndex > 0 
-                  ? `/sprites/${String(starter.spriteIndex).padStart(2, '0')}_${
+                  ? getAssetUrl(`sprites/${String(starter.spriteIndex).padStart(2, '0')}_${
                       starter.id === 'starter-noob-1' ? 'noob1_0' :
                       starter.id === 'starter-noob-2' ? 'noobrobloxian2_0' :
                       starter.id === 'starter-ibot' ? 'ibot' :
@@ -163,7 +164,7 @@ export const StarterModal: React.FC<StarterModalProps> = ({
                       starter.id === 'starter-skelly-white' ? 'skeletonwhite' :
                       starter.id === 'starter-wireframe-r6' ? 'R6wireframe' :
                       starter.id === 'starter-wireframe-r15' ? 'R15Robloxian2_0PackageWireframe' : ''
-                    }.png`
+                    }.png`)
                   : null;
 
                 const displayW = scaleMode === '1x' ? starter.recommendedWidth1x : starter.recommendedWidth2x;
@@ -225,7 +226,7 @@ export const StarterModal: React.FC<StarterModalProps> = ({
               <div className="w-full h-44 rounded-xl canvas-checkerboard flex flex-col items-center justify-center p-3 mb-3 border border-ui-theme relative overflow-hidden shadow-inner">
                 {activeStarter.spriteIndex > 0 ? (
                   <img
-                    src={`/sprites/${String(activeStarter.spriteIndex).padStart(2, '0')}_${
+                    src={getAssetUrl(`sprites/${String(activeStarter.spriteIndex).padStart(2, '0')}_${
                       activeStarter.id === 'starter-noob-1' ? 'noob1_0' :
                       activeStarter.id === 'starter-noob-2' ? 'noobrobloxian2_0' :
                       activeStarter.id === 'starter-ibot' ? 'ibot' :
@@ -234,7 +235,7 @@ export const StarterModal: React.FC<StarterModalProps> = ({
                       activeStarter.id === 'starter-skelly-white' ? 'skeletonwhite' :
                       activeStarter.id === 'starter-wireframe-r6' ? 'R6wireframe' :
                       activeStarter.id === 'starter-wireframe-r15' ? 'R15Robloxian2_0PackageWireframe' : ''
-                    }.png`}
+                    }.png`)}
                     alt={activeStarter.name}
                     className="max-h-full max-w-full object-contain [image-rendering:pixelated] drop-shadow-md"
                   />

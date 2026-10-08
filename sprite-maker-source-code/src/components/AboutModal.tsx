@@ -6,6 +6,7 @@ import {
   Github,
   Palette
 } from 'lucide-react';
+import { getAssetUrl } from '../utils/assetUrl';
 
 interface AboutModalProps {
   isOpen: boolean;
@@ -274,7 +275,7 @@ limitations under the License.`;
           {/* App Logo / Emblem */}
           <div className="relative mb-2 flex items-center justify-center">
             <img 
-              src="FigurayMakerBanner4.png" 
+              src={getAssetUrl('FigurayMakerBanner4.png')} 
               alt="FigurayMaker Banner" 
               className="h-12 object-contain select-none filter drop-shadow-md"
             />
