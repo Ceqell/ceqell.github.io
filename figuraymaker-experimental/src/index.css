@@ -1,0 +1,631 @@
+@import "tailwindcss";
+
+/* -------------------------------------------------------------------------- */
+/* THEME TOKENS: MODERN DARK STUDIO & 2008 SKEUOMORPHIC CHROME RETRO           */
+/* -------------------------------------------------------------------------- */
+
+:root,
+[data-theme="dark-modern"] {
+  --bg-app: #0d0e12;
+  --bg-surface: #17181f;
+  --bg-surface-raised: #21222c;
+  --bg-input: #101116;
+  --border-ui: #2b2d38;
+  --border-highlight: #3d404f;
+  --text-primary: #ededed;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --text-accent: #f59e0b;
+  --accent-color: #f59e0b;
+
+  --button-gradient: linear-gradient(180deg, #262732 0%, #1c1d25 100%);
+  --button-border: #3d404f;
+  --shadow-raised: 0 1px 3px rgba(0, 0, 0, 0.4);
+  
+  --btn-gold: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+  --btn-gold-border: #b45309;
+  --btn-gold-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+
+  --btn-red: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+  --btn-red-border: #991b1b;
+  --btn-red-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+
+  --btn-blue: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+  --btn-blue-border: #0369a1;
+  --btn-blue-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  
+  --checker-bg1: #1e1e24;
+  --checker-bg2: #2b2b36;
+  --checker-border: #33333e;
+  --canvas-desk-bg: #121318;
+  --grid-line-color: rgba(255, 255, 255, 0.09);
+  
+  --groove-shadow: #1e1f29;
+  --groove-highlight: #2f3242;
+
+  --scrollbar-track: rgba(15, 15, 20, 0.6);
+  --scrollbar-thumb: rgba(80, 80, 100, 0.4);
+  --scrollbar-thumb-hover: rgba(120, 120, 150, 0.7);
+}
+
+[data-theme="retro-skeuomorphic"] {
+  --bg-app: #d8dde3;
+  --bg-surface: #e9ecef;
+  --bg-surface-raised: #f8f9fa;
+  --bg-input: #ffffff;
+  --border-ui: #b0b7c0;
+  --border-highlight: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-accent: #0284c7;
+  --accent-color: #0284c7;
+
+  /* 50/50 Dual-Tone Chrome Plated Gradients (Vintage 2006-2008 Web 2.0 / OS X Tiger) */
+  --chrome-button-bg: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #f2f4f7 48%,
+    #e2e6ea 50%,
+    #dbe0e5 100%
+  );
+  --chrome-button-border: #94a3b8;
+  --chrome-button-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.12);
+  
+  --chrome-button-hover: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #f8fafc 48%,
+    #e8edf2 50%,
+    #e2e7ec 100%
+  );
+
+  --chrome-button-active: linear-gradient(
+    180deg,
+    #cfd5dc 0%,
+    #d9dfe5 49%,
+    #c4cbd3 50%,
+    #b8c0c8 100%
+  );
+  --chrome-button-active-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.28),
+    0 1px 0 rgba(255, 255, 255, 0.8);
+
+  /* Recessed / Groove Divider (Split 50/50: dark shadow on left/top, crisp white highlight on right/bottom) */
+  --groove-shadow: #b8c0cc;
+  --groove-highlight: #ffffff;
+
+  /* Classic YouTube / Web 2.0 Golden Yellow & Cyan Accent Gradients */
+  --btn-gold: linear-gradient(180deg, #fff3a8 0%, #fcd34d 48%, #f59e0b 50%, #d97706 100%);
+  --btn-gold-border: #b45309;
+  --btn-gold-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 1px 2px rgba(0, 0, 0, 0.18);
+  
+  --btn-red: linear-gradient(180deg, #fca5a5 0%, #ef4444 48%, #dc2626 50%, #b91c1c 100%);
+  --btn-red-border: #991b1b;
+  --btn-red-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 1px 2px rgba(0, 0, 0, 0.22);
+  
+  --btn-blue: linear-gradient(180deg, #e0f2fe 0%, #7dd3fc 48%, #0284c7 50%, #0369a1 100%);
+  --btn-blue-border: #0369a1;
+
+  --checker-bg1: #e2e8f0;
+  --checker-bg2: #ffffff;
+  --checker-border: #94a3b8;
+  --canvas-desk-bg: #cbd5e1;
+  --grid-line-color: rgba(0, 0, 0, 0.16);
+
+  --scrollbar-track: #d8dde3;
+  --scrollbar-thumb: #94a3b8;
+  --scrollbar-thumb-hover: #64748b;
+}
+
+[data-theme="retro-beige"] {
+  --bg-app: #E6D7C3;
+  --bg-surface: #f4eada;
+  --bg-surface-raised: #FFF1DD;
+  --bg-input: #fffdf9;
+  --border-ui: #c8b8a2;
+  --border-highlight: #fff8ed;
+  --text-primary: #2d261e;
+  --text-secondary: #635748;
+  --text-muted: #8a7b68;
+  --text-accent: #0284c7;
+  --accent-color: #0284c7;
+
+  /* 50/50 Dual-Tone Chrome Plated Gradients with warm banner beige tones (#FFF1DD and #E6D7C3) */
+  --chrome-button-bg: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #FFF1DD 48%,
+    #E6D7C3 50%,
+    #dacbb5 100%
+  );
+  --chrome-button-border: #b8a690;
+  --chrome-button-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(90, 70, 50, 0.12);
+  
+  --chrome-button-hover: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #fff7eb 48%,
+    #ede0cf 50%,
+    #E6D7C3 100%
+  );
+
+  --chrome-button-active: linear-gradient(
+    180deg,
+    #d4c3ac 0%,
+    #e0d1bb 49%,
+    #c9b8a1 50%,
+    #bfad94 100%
+  );
+  --chrome-button-active-shadow:
+    inset 0 2px 4px rgba(70, 50, 30, 0.28),
+    0 1px 0 rgba(255, 255, 255, 0.8);
+
+  /* Recessed / Groove Divider (Split 50/50: warm shadow on left/top, crisp highlight on right/bottom) */
+  --groove-shadow: #baa993;
+  --groove-highlight: #fff6e8;
+
+  /* Classic YouTube / Web 2.0 Golden Yellow & Red CTA Gradients */
+  --btn-gold: linear-gradient(180deg, #fff3a8 0%, #fcd34d 48%, #f59e0b 50%, #d97706 100%);
+  --btn-gold-border: #b45309;
+  --btn-gold-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 1px 2px rgba(0, 0, 0, 0.18);
+  
+  --btn-red: linear-gradient(180deg, #fca5a5 0%, #ef4444 48%, #dc2626 50%, #b91c1c 100%);
+  --btn-red-border: #991b1b;
+  --btn-red-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 1px 2px rgba(0, 0, 0, 0.22);
+  
+  --btn-blue: linear-gradient(180deg, #e0f2fe 0%, #7dd3fc 48%, #0284c7 50%, #0369a1 100%);
+  --btn-blue-border: #0369a1;
+
+  --checker-bg1: #e8dccb;
+  --checker-bg2: #FFF1DD;
+  --checker-border: #c8b8a2;
+  --canvas-desk-bg: #d9caba;
+  --grid-line-color: rgba(45, 34, 20, 0.22);
+
+  --scrollbar-track: #E6D7C3;
+  --scrollbar-thumb: #baa993;
+  --scrollbar-thumb-hover: #8a7b68;
+}
+
+[data-theme="retro-dark"] {
+  --bg-app: #121318;
+  --bg-surface: #1e2028;
+  --bg-surface-raised: #282a36;
+  --bg-input: #15161d;
+  --border-ui: #383a48;
+  --border-highlight: #4c4f62;
+  --text-primary: #f0f2f8;
+  --text-secondary: #9ea5ba;
+  --text-muted: #676d82;
+  --text-accent: #38bdf8;
+  --accent-color: #38bdf8;
+
+  /* 50/50 Dual-Tone Gunmetal Chrome Plated Gradients (2008 Vintage Dark HUD / Pro App Aesthetic) */
+  --chrome-button-bg: linear-gradient(
+    180deg,
+    #4a4d5f 0%,
+    #373a48 48%,
+    #272934 50%,
+    #1f212a 100%
+  );
+  --chrome-button-border: #464a5c;
+  --chrome-button-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.6),
+    0 1px 2px rgba(0, 0, 0, 0.5);
+  
+  --chrome-button-hover: linear-gradient(
+    180deg,
+    #56596e 0%,
+    #424555 48%,
+    #303342 50%,
+    #272935 100%
+  );
+
+  --chrome-button-active: linear-gradient(
+    180deg,
+    #181922 0%,
+    #232531 49%,
+    #171822 50%,
+    #111218 100%
+  );
+  --chrome-button-active-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.65),
+    0 1px 0 rgba(255, 255, 255, 0.12);
+
+  /* Recessed / Groove Divider (Left/top dark trench, Right/bottom metallic highlight) */
+  --groove-shadow: #101116;
+  --groove-highlight: #454859;
+
+  /* Classic YouTube / Web 2.0 Golden Yellow & Red CTA Gradients */
+  --btn-gold: linear-gradient(180deg, #fff3a8 0%, #fcd34d 48%, #f59e0b 50%, #d97706 100%);
+  --btn-gold-border: #b45309;
+  --btn-gold-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 1px 3px rgba(0, 0, 0, 0.6);
+  
+  --btn-red: linear-gradient(180deg, #fca5a5 0%, #ef4444 48%, #dc2626 50%, #b91c1c 100%);
+  --btn-red-border: #991b1b;
+  --btn-red-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 1px 3px rgba(0, 0, 0, 0.6);
+  
+  --btn-blue: linear-gradient(180deg, #bae6fd 0%, #38bdf8 48%, #0284c7 50%, #0369a1 100%);
+  --btn-blue-border: #0369a1;
+
+  --checker-bg1: #1a1b23;
+  --checker-bg2: #252733;
+  --checker-border: #383a4a;
+  --canvas-desk-bg: #101116;
+  --grid-line-color: rgba(255, 255, 255, 0.13);
+
+  --scrollbar-track: #15161d;
+  --scrollbar-thumb: #363847;
+  --scrollbar-thumb-hover: #50546b;
+}
+
+[data-theme="oled-dark"] {
+  --bg-app: #000000;
+  --bg-surface: #000000;
+  --bg-surface-raised: #0a0a0d;
+  --bg-input: #000000;
+  --border-ui: #1c1d22;
+  --border-highlight: #282a33;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --text-accent: #38bdf8;
+  --accent-color: #38bdf8;
+
+  /* True Black Chrome Plated Buttons with subtle rim lighting */
+  --chrome-button-bg: linear-gradient(
+    180deg,
+    #1b1c22 0%,
+    #111216 48%,
+    #08090c 50%,
+    #000000 100%
+  );
+  --chrome-button-border: #23252d;
+  --chrome-button-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.8),
+    0 1px 2px rgba(0, 0, 0, 0.9);
+  
+  --chrome-button-hover: linear-gradient(
+    180deg,
+    #26272f 0%,
+    #17181f 48%,
+    #0d0e12 50%,
+    #040406 100%
+  );
+
+  --chrome-button-active: linear-gradient(
+    180deg,
+    #000000 0%,
+    #0a0b0e 49%,
+    #050608 50%,
+    #000000 100%
+  );
+  --chrome-button-active-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.95),
+    0 1px 0 rgba(255, 255, 255, 0.05);
+
+  /* Recessed / Groove Divider */
+  --groove-shadow: #000000;
+  --groove-highlight: #1a1b22;
+
+  /* High-Contrast Vibrant CTA Gradients */
+  --btn-gold: linear-gradient(180deg, #fbbf24 0%, #f59e0b 48%, #d97706 50%, #b45309 100%);
+  --btn-gold-border: #92400e;
+  --btn-gold-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 3px rgba(0, 0, 0, 0.9);
+  
+  --btn-red: linear-gradient(180deg, #f87171 0%, #ef4444 48%, #dc2626 50%, #b91c1c 100%);
+  --btn-red-border: #7f1d1d;
+  --btn-red-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 3px rgba(0, 0, 0, 0.9);
+  
+  --btn-blue: linear-gradient(180deg, #38bdf8 0%, #0284c7 48%, #0369a1 50%, #075985 100%);
+  --btn-blue-border: #0369a1;
+
+  --checker-bg1: #050507;
+  --checker-bg2: #0f1014;
+  --checker-border: #1a1b22;
+  --canvas-desk-bg: #000000;
+  --grid-line-color: rgba(255, 255, 255, 0.12);
+
+  --scrollbar-track: #000000;
+  --scrollbar-thumb: #1c1d24;
+  --scrollbar-thumb-hover: #333540;
+}
+
+/* -------------------------------------------------------------------------- */
+/* UTILITIES & SKEUOMORPHIC UI CLASSES                                        */
+/* -------------------------------------------------------------------------- */
+
+@layer utilities {
+  .pixelated {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+  }
+
+  .font-retro {
+    font-family: 'Press Start 2P', monospace;
+  }
+
+  .font-mono-code {
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Semantic Theme Classes */
+  .bg-app-theme {
+    background-color: var(--bg-app);
+  }
+  .bg-surface-theme {
+    background-color: var(--bg-surface);
+  }
+  .bg-surface-raised-theme {
+    background-color: var(--bg-surface-raised);
+  }
+  .border-ui-theme {
+    border-color: var(--border-ui);
+  }
+  .border-highlight-theme {
+    border-color: var(--border-highlight);
+  }
+  .text-primary-theme {
+    color: var(--text-primary);
+  }
+  .text-secondary-theme {
+    color: var(--text-secondary);
+  }
+  .text-muted-theme {
+    color: var(--text-muted);
+  }
+  .text-accent-theme {
+    color: var(--text-accent);
+  }
+  .bg-accent-theme {
+    background-color: var(--accent-color, var(--text-accent, #0284c7));
+  }
+  .border-ui-theme,
+  .border-divider-theme {
+    border-color: var(--border-ui);
+  }
+  .border-accent-theme {
+    border-color: var(--accent-color, var(--text-accent, #0284c7));
+  }
+
+  .retro-window {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-ui);
+    color: var(--text-primary);
+  }
+  .retro-titlebar {
+    background-color: var(--bg-surface-raised);
+    border-bottom: 1px solid var(--border-ui);
+  }
+
+  /* Authentic 2008 Chrome Button */
+  .retro-chrome-btn {
+    background: var(--chrome-button-bg, var(--button-gradient));
+    border: 1px solid var(--chrome-button-border, var(--button-border));
+    box-shadow: var(--chrome-button-shadow, var(--shadow-raised));
+    color: var(--text-primary);
+    transition: filter 0.08s ease, transform 0.08s ease;
+  }
+  .retro-chrome-btn:hover {
+    filter: brightness(1.03);
+  }
+  .retro-chrome-btn:active,
+  .retro-chrome-btn.active {
+    background: var(--chrome-button-active, var(--button-gradient));
+    box-shadow: var(--chrome-button-active-shadow, inset 0 2px 4px rgba(0, 0, 0, 0.35));
+    transform: translateY(1px);
+  }
+
+  /* Gold / Yellow Web 2.0 CTA Button */
+  .retro-gold-btn {
+    background: var(--btn-gold);
+    border: 1px solid var(--btn-gold-border);
+    box-shadow: var(--btn-gold-shadow);
+    color: #111827;
+    font-weight: 600;
+  }
+  .retro-gold-btn:hover {
+    filter: brightness(1.05);
+  }
+  .retro-gold-btn:active {
+    filter: brightness(0.95);
+    transform: translateY(1px);
+  }
+
+  /* Red Web 2.0 CTA Button */
+  .retro-red-btn {
+    background: var(--btn-red);
+    border: 1px solid var(--btn-red-border);
+    box-shadow: var(--btn-red-shadow);
+    color: #ffffff;
+    font-weight: 600;
+  }
+  .retro-red-btn:hover {
+    filter: brightness(1.05);
+  }
+  .retro-red-btn:active {
+    filter: brightness(0.92);
+    transform: translateY(1px);
+  }
+
+  /* Blue Web 2.0 CTA Button */
+  .retro-blue-btn {
+    background: var(--btn-blue);
+    border: 1px solid var(--btn-blue-border);
+    box-shadow: var(--shadow-raised);
+    color: #ffffff;
+    font-weight: 600;
+  }
+  .retro-blue-btn:hover {
+    filter: brightness(1.05);
+  }
+  .retro-blue-btn:active {
+    filter: brightness(0.92);
+    transform: translateY(1px);
+  }
+
+  /* Recessed Groove Divider (Vertical 2px split) */
+  .retro-recessed-divider {
+    width: 2px;
+    height: 100%;
+    border-left: 1px solid var(--groove-shadow);
+    border-right: 1px solid var(--groove-highlight);
+  }
+
+  /* Recessed Groove Divider (Horizontal 2px split) */
+  .retro-recessed-divider-h {
+    height: 2px;
+    width: 100%;
+    border-top: 1px solid var(--groove-shadow);
+    border-bottom: 1px solid var(--groove-highlight);
+  }
+
+  /* Recessed Beveled Inset Panel Box */
+  .retro-inset-well {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-ui);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 0 var(--border-highlight);
+  }
+
+  /* Recessed Progress / Track Bar */
+  .retro-inset-track {
+    background-color: var(--bg-surface);
+    box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.22), 0 1px 0 var(--border-highlight);
+    border: 1px solid var(--border-ui);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* ADAPTIVE CANVAS CHECKERBOARD                                               */
+/* -------------------------------------------------------------------------- */
+
+.canvas-checkerboard {
+  background-color: var(--checker-bg1);
+  background-image: 
+    linear-gradient(45deg, var(--checker-bg2) 25%, transparent 25%), 
+    linear-gradient(-45deg, var(--checker-bg2) 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, var(--checker-bg2) 75%), 
+    linear-gradient(-45deg, transparent 75%, var(--checker-bg2) 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+}
+
+.canvas-checkerboard-sm {
+  background-color: var(--checker-bg1);
+  background-image: 
+    linear-gradient(45deg, var(--checker-bg2) 25%, transparent 25%), 
+    linear-gradient(-45deg, var(--checker-bg2) 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, var(--checker-bg2) 75%), 
+    linear-gradient(-45deg, transparent 75%, var(--checker-bg2) 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+}
+
+/* Explicit Light Checkerboard - constant regardless of active theme */
+.canvas-checkerboard-light {
+  background-color: #e2e8f0;
+  background-image: 
+    linear-gradient(45deg, #ffffff 25%, transparent 25%), 
+    linear-gradient(-45deg, #ffffff 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #ffffff 75%), 
+    linear-gradient(-45deg, transparent 75%, #ffffff 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+}
+
+/* Explicit Dark Checkerboard - constant regardless of active theme */
+.canvas-checkerboard-dark {
+  background-color: #12131a;
+  background-image: 
+    linear-gradient(45deg, #1e2029 25%, transparent 25%), 
+    linear-gradient(-45deg, #1e2029 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #1e2029 75%), 
+    linear-gradient(-45deg, transparent 75%, #1e2029 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+}
+
+/* Small 8px tile versions for Mini Preview */
+.canvas-checkerboard-sm-light {
+  background-color: #e2e8f0;
+  background-image: 
+    linear-gradient(45deg, #ffffff 25%, transparent 25%), 
+    linear-gradient(-45deg, #ffffff 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #ffffff 75%), 
+    linear-gradient(-45deg, transparent 75%, #ffffff 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+}
+
+.canvas-checkerboard-sm-dark {
+  background-color: #12131a;
+  background-image: 
+    linear-gradient(45deg, #1e2029 25%, transparent 25%), 
+    linear-gradient(-45deg, #1e2029 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #1e2029 75%), 
+    linear-gradient(-45deg, transparent 75%, #1e2029 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+}
+
+/* Solid Canvas Backgrounds */
+.canvas-bg-retro {
+  background-color: #404044;
+}
+
+.canvas-bg-dark {
+  background-color: #121318;
+}
+
+/* -------------------------------------------------------------------------- */
+/* SCROLLBARS                                                                 */
+/* -------------------------------------------------------------------------- */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+.header-scrollbar::-webkit-scrollbar {
+  height: 3px;
+}
+.header-scrollbar::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+.header-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 9999px;
+}
+.header-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* -------------------------------------------------------------------------- */
+/* SNAPPY MODE                                                                */
+/* -------------------------------------------------------------------------- */
+
+.snappy-mode,
+.snappy-mode * {
+  transition: none !important;
+  animation: none !important;
+}

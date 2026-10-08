@@ -1,0 +1,6 @@
+{
+  "name": "Retro Dev Character Sprite Maker",
+  "description": "Design and export authentic Retro Dev character sprites with accurate dimensions (Head 9x8, Torso 11x10, Arms 5x10, Legs 11x10), layers, multiple reference images, full palette picker, and custom resolution PNG export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

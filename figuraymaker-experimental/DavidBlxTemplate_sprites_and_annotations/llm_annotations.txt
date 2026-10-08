@@ -1,0 +1,453 @@
+=== SPRITE SHEET ANNOTATION DATASET ===
+Image Name: DavidBlxTemplate.png
+Dimensions: 312 x 312 pixels
+Total Sprites: 54
+Exported At: 2026-10-08T12:49:26.949Z
+
+--- INSTRUCTIONS FOR LLM ---
+This document describes individual sprite regions extracted from the sprite sheet.
+- Pixel Coordinates format: [x, y, width, height] from top-left origin (0, 0).
+- Normalized Coordinates format: [ymin, xmin, ymax, xmax] scaled 0 to 1000 (Gemini Vision standard).
+- Use this inventory to analyze character styles, modular body parts, pixel art themes, or generate game engine sprite atlas configs.
+
+--- SPRITE INVENTORY ---
+[Sprite #1]
+Name: colorpalette
+Category: Color Palette
+Pixel Bounding Box: [x: 0, y: 0, width: 28, height: 44]
+Size: 28x44 px
+Normalized Box (0-1000): [ymin: 0, xmin: 0, ymax: 141, xmax: 90]
+Description / Notes: Auto-detected cluster at [0, 0], size 30x46px
+
+[Sprite #2]
+Name: FatR6Head
+Category: Head / Face
+Pixel Bounding Box: [x: 78, y: 4, width: 18, height: 16]
+Size: 18x16 px
+Normalized Box (0-1000): [ymin: 13, xmin: 250, ymax: 64, xmax: 308]
+Description / Notes: Auto-detected cluster at [77, 3], size 20x18px
+
+[Sprite #3]
+Name: blockhead
+Category: Head / Face
+Pixel Bounding Box: [x: 98, y: 2, width: 18, height: 18]
+Size: 18x18 px
+Normalized Box (0-1000): [ymin: 6, xmin: 314, ymax: 64, xmax: 372]
+Description / Notes: Auto-detected cluster at [97, 1], size 20x20px
+
+[Sprite #4]
+Name: roundedHead
+Category: Head / Face
+Pixel Bounding Box: [x: 118, y: 4, width: 18, height: 16]
+Size: 18x16 px
+Normalized Box (0-1000): [ymin: 13, xmin: 378, ymax: 64, xmax: 436]
+Description / Notes: Auto-detected cluster at [117, 3], size 20x18px
+
+[Sprite #5]
+Name: ibotHead
+Category: Head / Face
+Pixel Bounding Box: [x: 138, y: 2, width: 18, height: 20]
+Size: 18x20 px
+Normalized Box (0-1000): [ymin: 6, xmin: 442, ymax: 71, xmax: 500]
+Description / Notes: Auto-detected cluster at [137, 1], size 20x22px
+
+[Sprite #6]
+Name: peterFamilyGuyHead
+Category: Head / Face
+Pixel Bounding Box: [x: 160, y: 4, width: 24, height: 18]
+Size: 24x18 px
+Normalized Box (0-1000): [ymin: 13, xmin: 513, ymax: 71, xmax: 590]
+Description / Notes: Auto-detected cluster at [159, 3], size 26x20px
+
+[Sprite #7]
+Name: shadedFatR6Head
+Category: Auto Detected
+Pixel Bounding Box: [x: 186, y: 4, width: 18, height: 16]
+Size: 18x16 px
+Normalized Box (0-1000): [ymin: 13, xmin: 596, ymax: 64, xmax: 654]
+Description / Notes: Auto-detected cluster at [185, 3], size 20x18px
+
+[Sprite #8]
+Name: shadedRoundHeadForBrownSkeleton
+Category: Head / Face
+Pixel Bounding Box: [x: 206, y: 4, width: 18, height: 16]
+Size: 18x16 px
+Normalized Box (0-1000): [ymin: 13, xmin: 660, ymax: 64, xmax: 718]
+Description / Notes: Auto-detected cluster at [205, 3], size 20x18px
+
+[Sprite #9]
+Name: R6wireframe
+Category: Character
+Pixel Bounding Box: [x: 260, y: 4, width: 42, height: 56]
+Size: 42x56 px
+Normalized Box (0-1000): [ymin: 13, xmin: 833, ymax: 192, xmax: 968]
+Description / Notes: Auto-detected cluster at [259, 3], size 44x58px
+
+[Sprite #10]
+Name: noobrobloxian2.0
+Category: Character
+Pixel Bounding Box: [x: 0, y: 68, width: 38, height: 56]
+Size: 38x56 px
+Normalized Box (0-1000): [ymin: 218, xmin: 0, ymax: 397, xmax: 122]
+Description / Notes: Auto-detected cluster at [0, 67], size 40x58px
+
+[Sprite #11]
+Name: noob1.0
+Category: Character
+Pixel Bounding Box: [x: 40, y: 68, width: 42, height: 56]
+Size: 42x56 px
+Normalized Box (0-1000): [ymin: 218, xmin: 128, ymax: 397, xmax: 263]
+Description / Notes: Auto-detected cluster at [39, 67], size 44x58px
+
+[Sprite #12]
+Name: ibot
+Category: Character
+Pixel Bounding Box: [x: 84, y: 64, width: 42, height: 61]
+Size: 42x61 px
+Normalized Box (0-1000): [ymin: 205, xmin: 269, ymax: 401, xmax: 404]
+Description / Notes: Auto-detected cluster at [83, 63], size 44x62px
+
+[Sprite #13]
+Name: peter
+Category: Character
+Pixel Bounding Box: [x: 128, y: 68, width: 36, height: 56]
+Size: 36x56 px
+Normalized Box (0-1000): [ymin: 218, xmin: 410, ymax: 397, xmax: 526]
+Description / Notes: Auto-detected cluster at [127, 67], size 38x58px
+
+[Sprite #14]
+Name: skeletonbrown
+Category: Character
+Pixel Bounding Box: [x: 166, y: 68, width: 38, height: 56]
+Size: 38x56 px
+Normalized Box (0-1000): [ymin: 218, xmin: 532, ymax: 397, xmax: 654]
+Description / Notes: Auto-detected cluster at [165, 67], size 40x58px
+
+[Sprite #15]
+Name: skeletonwhite
+Category: Character
+Pixel Bounding Box: [x: 206, y: 68, width: 38, height: 56]
+Size: 38x56 px
+Normalized Box (0-1000): [ymin: 218, xmin: 660, ymax: 397, xmax: 782]
+Description / Notes: Auto-detected cluster at [205, 67], size 40x58px
+
+[Sprite #16]
+Name: R15Robloxian2.0PackageWireframe
+Category: Auto Detected
+Pixel Bounding Box: [x: 262, y: 68, width: 38, height: 56]
+Size: 38x56 px
+Normalized Box (0-1000): [ymin: 218, xmin: 840, ymax: 397, xmax: 962]
+Description / Notes: Auto-detected cluster at [261, 67], size 40x58px
+
+[Sprite #17]
+Name: R15LeftArm
+Category: Limb / Part
+Pixel Bounding Box: [x: 16, y: 146, width: 8, height: 22]
+Size: 8x22 px
+Normalized Box (0-1000): [ymin: 468, xmin: 51, ymax: 538, xmax: 77]
+Description / Notes: Auto-detected cluster at [15, 145], size 10x24px
+
+[Sprite #18]
+Name: R15FrontTorso
+Category: Torso
+Pixel Bounding Box: [x: 28, y: 146, width: 22, height: 20]
+Size: 22x20 px
+Normalized Box (0-1000): [ymin: 468, xmin: 90, ymax: 532, xmax: 160]
+Description / Notes: Auto-detected cluster at [27, 145], size 24x22px
+
+[Sprite #19]
+Name: R15RightArm
+Category: Limb / Part
+Pixel Bounding Box: [x: 54, y: 146, width: 8, height: 22]
+Size: 8x22 px
+Normalized Box (0-1000): [ymin: 468, xmin: 173, ymax: 538, xmax: 199]
+Description / Notes: Auto-detected cluster at [53, 145], size 10x24px
+
+[Sprite #20]
+Name: R6LeftArm
+Category: Auto Detected
+Pixel Bounding Box: [x: 82, y: 146, width: 10, height: 20]
+Size: 10x20 px
+Normalized Box (0-1000): [ymin: 468, xmin: 263, ymax: 532, xmax: 295]
+Description / Notes: Auto-detected cluster at [81, 145], size 12x22px
+
+[Sprite #21]
+Name: R6FrontTorso
+Category: Auto Detected
+Pixel Bounding Box: [x: 96, y: 146, width: 22, height: 20]
+Size: 22x20 px
+Normalized Box (0-1000): [ymin: 468, xmin: 308, ymax: 532, xmax: 378]
+Description / Notes: Auto-detected cluster at [95, 145], size 24x22px
+
+[Sprite #22]
+Name: R6RightArm
+Category: Auto Detected
+Pixel Bounding Box: [x: 122, y: 146, width: 10, height: 20]
+Size: 10x20 px
+Normalized Box (0-1000): [ymin: 468, xmin: 391, ymax: 532, xmax: 423]
+Description / Notes: Auto-detected cluster at [121, 145], size 12x22px
+
+[Sprite #23]
+Name: R15LeftLeg
+Category: Limb / Part
+Pixel Bounding Box: [x: 28, y: 168, width: 8, height: 20]
+Size: 8x20 px
+Normalized Box (0-1000): [ymin: 538, xmin: 90, ymax: 603, xmax: 115]
+Description / Notes: Auto-detected cluster at [27, 167], size 10x22px
+
+[Sprite #24]
+Name: R15RightLeg
+Category: Auto Detected
+Pixel Bounding Box: [x: 42, y: 168, width: 8, height: 20]
+Size: 8x20 px
+Normalized Box (0-1000): [ymin: 538, xmin: 135, ymax: 603, xmax: 160]
+Description / Notes: Auto-detected cluster at [41, 167], size 10x22px
+
+[Sprite #25]
+Name: R6LeftLeg
+Category: Auto Detected
+Pixel Bounding Box: [x: 96, y: 168, width: 11, height: 20]
+Size: 11x20 px
+Normalized Box (0-1000): [ymin: 538, xmin: 308, ymax: 603, xmax: 343]
+Description / Notes: Auto-detected cluster at [95, 167], size 24x22px
+
+[Sprite #26]
+Name: FrontTorsoAlt2
+Category: Variant / Alt
+Pixel Bounding Box: [x: 156, y: 154, width: 22, height: 20]
+Size: 22x20 px
+Normalized Box (0-1000): [ymin: 494, xmin: 500, ymax: 558, xmax: 571]
+Description / Notes: Auto-detected cluster at [155, 153], size 24x22px
+
+WithRobloxLogo
+
+[Sprite #27]
+Name: R15LeftLegAlt
+Category: Limb / Part
+Pixel Bounding Box: [x: 26, y: 202, width: 10, height: 20]
+Size: 10x20 px
+Normalized Box (0-1000): [ymin: 647, xmin: 83, ymax: 712, xmax: 115]
+Description / Notes: Auto-detected cluster at [25, 201], size 12x22px
+
+[Sprite #28]
+Name: R15RightLegAlt
+Category: Limb / Part
+Pixel Bounding Box: [x: 42, y: 202, width: 10, height: 20]
+Size: 10x20 px
+Normalized Box (0-1000): [ymin: 647, xmin: 135, ymax: 712, xmax: 167]
+Description / Notes: Auto-detected cluster at [41, 201], size 12x22px
+
+[Sprite #29]
+Name: R6FrontTorsoAlt
+Category: Variant / Alt
+Pixel Bounding Box: [x: 96, y: 202, width: 22, height: 20]
+Size: 22x20 px
+Normalized Box (0-1000): [ymin: 647, xmin: 308, ymax: 712, xmax: 378]
+Description / Notes: Auto-detected cluster at [95, 201], size 24x22px
+
+[Sprite #30]
+Name: iBotLeftArm
+Category: Limb / Part
+Pixel Bounding Box: [x: 142, y: 192, width: 10, height: 22]
+Size: 10x22 px
+Normalized Box (0-1000): [ymin: 615, xmin: 455, ymax: 686, xmax: 487]
+Description / Notes: Auto-detected cluster at [141, 191], size 12x24px
+
+[Sprite #31]
+Name: iBotFrontTorso
+Category: Torso
+Pixel Bounding Box: [x: 156, y: 192, width: 26, height: 24]
+Size: 26x24 px
+Normalized Box (0-1000): [ymin: 615, xmin: 500, ymax: 692, xmax: 583]
+Description / Notes: Auto-detected cluster at [155, 191], size 28x26px
+
+[Sprite #32]
+Name: iBotRightArm
+Category: Limb / Part
+Pixel Bounding Box: [x: 186, y: 192, width: 10, height: 22]
+Size: 10x22 px
+Normalized Box (0-1000): [ymin: 615, xmin: 596, ymax: 686, xmax: 628]
+Description / Notes: Auto-detected cluster at [185, 191], size 12x24px
+
+[Sprite #33]
+Name: peterRightArm
+Category: Limb / Part
+Pixel Bounding Box: [x: 208, y: 192, width: 8, height: 20]
+Size: 8x20 px
+Normalized Box (0-1000): [ymin: 615, xmin: 667, ymax: 679, xmax: 692]
+Description / Notes: Auto-detected cluster at [207, 191], size 10x22px
+
+[Sprite #34]
+Name: peterFrontTorso
+Category: Torso
+Pixel Bounding Box: [x: 218, y: 192, width: 28, height: 26]
+Size: 28x26 px
+Normalized Box (0-1000): [ymin: 615, xmin: 699, ymax: 699, xmax: 788]
+Description / Notes: Auto-detected cluster at [217, 191], size 30x28px
+
+[Sprite #35]
+Name: peterLeftArm
+Category: Auto Detected
+Pixel Bounding Box: [x: 248, y: 192, width: 8, height: 20]
+Size: 8x20 px
+Normalized Box (0-1000): [ymin: 615, xmin: 795, ymax: 679, xmax: 821]
+Description / Notes: Auto-detected cluster at [247, 191], size 10x22px
+
+[Sprite #36]
+Name: R6LeftLegAlt
+Category: Limb / Part
+Pixel Bounding Box: [x: 96, y: 224, width: 10, height: 20]
+Size: 10x20 px
+Normalized Box (0-1000): [ymin: 718, xmin: 308, ymax: 782, xmax: 340]
+Description / Notes: Auto-detected cluster at [95, 223], size 12x22px
+
+[Sprite #37]
+Name: R6RightLegAlt
+Category: Limb / Part
+Pixel Bounding Box: [x: 108, y: 224, width: 10, height: 20]
+Size: 10x20 px
+Normalized Box (0-1000): [ymin: 718, xmin: 346, ymax: 782, xmax: 378]
+Description / Notes: Auto-detected cluster at [107, 223], size 12x22px
+
+[Sprite #38]
+Name: iBotLeftLeg
+Category: Limb / Part
+Pixel Bounding Box: [x: 152, y: 210, width: 10, height: 22]
+Size: 10x22 px
+Normalized Box (0-1000): [ymin: 673, xmin: 487, ymax: 744, xmax: 519]
+Description / Notes: Auto-detected cluster at [151, 209], size 12x24px
+
+[Sprite #39]
+Name: iBotRightLeg
+Category: Limb / Part
+Pixel Bounding Box: [x: 176, y: 210, width: 10, height: 22]
+Size: 10x22 px
+Normalized Box (0-1000): [ymin: 673, xmin: 564, ymax: 744, xmax: 596]
+Description / Notes: Auto-detected cluster at [175, 209], size 12x24px
+
+[Sprite #40]
+Name: peterLeftLeg
+Category: Limb / Part
+Pixel Bounding Box: [x: 222, y: 220, width: 10, height: 12]
+Size: 10x12 px
+Normalized Box (0-1000): [ymin: 705, xmin: 712, ymax: 744, xmax: 744]
+Description / Notes: Auto-detected cluster at [221, 219], size 22x14px
+
+[Sprite #41]
+Name: ClassicSkellyHead
+Category: Head / Face
+Pixel Bounding Box: [x: 22, y: 248, width: 18, height: 16]
+Size: 18x16 px
+Normalized Box (0-1000): [ymin: 795, xmin: 71, ymax: 846, xmax: 128]
+Description / Notes: Auto-detected cluster at [21, 247], size 20x18px
+
+[Sprite #42]
+Name: WhiteSkellyHead
+Category: Head / Face
+Pixel Bounding Box: [x: 78, y: 248, width: 18, height: 16]
+Size: 18x16 px
+Normalized Box (0-1000): [ymin: 795, xmin: 250, ymax: 846, xmax: 308]
+Description / Notes: Auto-detected cluster at [77, 247], size 20x18px
+
+[Sprite #43]
+Name: ClassicSkellyLeftArm
+Category: Limb / Part
+Pixel Bounding Box: [x: 6, y: 272, width: 10, height: 20]
+Size: 10x20 px
+Normalized Box (0-1000): [ymin: 872, xmin: 19, ymax: 936, xmax: 51]
+Description / Notes: Auto-detected cluster at [5, 271], size 12x22px
+
+[Sprite #44]
+Name: ClassicSkellyLeftLeg
+Category: Limb / Part
+Pixel Bounding Box: [x: 14, y: 290, width: 8, height: 20]
+Size: 8x20 px
+Normalized Box (0-1000): [ymin: 929, xmin: 45, ymax: 994, xmax: 71]
+Description / Notes: Auto-detected cluster at [13, 289], size 10x22px
+
+[Sprite #45]
+Name: ClassicSkellyFrontTorso
+Category: Torso
+Pixel Bounding Box: [x: 20, y: 270, width: 22, height: 22]
+Size: 22x22 px
+Normalized Box (0-1000): [ymin: 865, xmin: 64, ymax: 936, xmax: 135]
+Description / Notes: Auto-detected cluster at [19, 269], size 24x24px
+
+[Sprite #46]
+Name: ClassicSkellyRightLeg
+Category: Limb / Part
+Pixel Bounding Box: [x: 40, y: 290, width: 8, height: 20]
+Size: 8x20 px
+Normalized Box (0-1000): [ymin: 929, xmin: 128, ymax: 994, xmax: 154]
+Description / Notes: Auto-detected cluster at [39, 289], size 10x22px
+
+[Sprite #47]
+Name: ClassicSkellyRightArm
+Category: Limb / Part
+Pixel Bounding Box: [x: 46, y: 272, width: 10, height: 20]
+Size: 10x20 px
+Normalized Box (0-1000): [ymin: 872, xmin: 147, ymax: 936, xmax: 179]
+Description / Notes: Auto-detected cluster at [45, 271], size 12x22px
+
+[Sprite #48]
+Name: WhiteSkellyLeftArm
+Category: Limb / Part
+Pixel Bounding Box: [x: 62, y: 272, width: 10, height: 20]
+Size: 10x20 px
+Normalized Box (0-1000): [ymin: 872, xmin: 199, ymax: 936, xmax: 231]
+Description / Notes: Auto-detected cluster at [61, 271], size 12x22px
+
+[Sprite #49]
+Name: WhiteSkellyLeftLeg
+Category: Auto Detected
+Pixel Bounding Box: [x: 70, y: 290, width: 8, height: 20]
+Size: 8x20 px
+Normalized Box (0-1000): [ymin: 929, xmin: 224, ymax: 994, xmax: 250]
+Description / Notes: Auto-detected cluster at [69, 289], size 10x22px
+
+[Sprite #50]
+Name: WhiteSkellyFrontTorso
+Category: Torso
+Pixel Bounding Box: [x: 76, y: 270, width: 22, height: 22]
+Size: 22x22 px
+Normalized Box (0-1000): [ymin: 865, xmin: 244, ymax: 936, xmax: 314]
+Description / Notes: Auto-detected cluster at [75, 269], size 24x24px
+
+[Sprite #51]
+Name: WhiteSkellyRightLeg
+Category: Auto Detected
+Pixel Bounding Box: [x: 96, y: 290, width: 8, height: 20]
+Size: 8x20 px
+Normalized Box (0-1000): [ymin: 929, xmin: 308, ymax: 994, xmax: 333]
+Description / Notes: Auto-detected cluster at [95, 289], size 10x22px
+
+[Sprite #52]
+Name: WhiteSkellyRightArm
+Category: Limb / Part
+Pixel Bounding Box: [x: 102, y: 272, width: 10, height: 20]
+Size: 10x20 px
+Normalized Box (0-1000): [ymin: 872, xmin: 327, ymax: 936, xmax: 359]
+Description / Notes: Auto-detected cluster at [101, 271], size 12x22px
+
+[Sprite #53]
+Name: R6RightLeg
+Category: Character
+Pixel Bounding Box: [x: 107, y: 168, width: 11, height: 20]
+Size: 11x20 px
+Normalized Box (0-1000): [ymin: 538, xmin: 343, ymax: 603, xmax: 378]
+
+[Sprite #54]
+Name: PeterRightLeg
+Category: Character
+Pixel Bounding Box: [x: 232, y: 220, width: 10, height: 12]
+Size: 10x12 px
+Normalized Box (0-1000): [ymin: 705, xmin: 744, ymax: 744, xmax: 776]
+
+=== SUMMARY BY CATEGORY ===
+- Color Palette: 1 sprite
+- Head / Face: 8 sprites
+- Auto Detected: 10 sprites
+- Character: 9 sprites
+- Limb / Part: 19 sprites
+- Torso: 5 sprites
+- Variant / Alt: 2 sprites

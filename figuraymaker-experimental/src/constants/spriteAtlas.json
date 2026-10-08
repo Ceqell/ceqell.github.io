@@ -1,0 +1,758 @@
+[
+  {
+    "id": "detected-1791462440373-0",
+    "index": 1,
+    "name": "colorpalette",
+    "originalCategory": "Color Palette",
+    "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 28,
+      "height": 44
+    },
+    "file": "/sprites/01_colorpalette.png",
+    "notes": "Auto-detected cluster at [0, 0], size 30x46px"
+  },
+  {
+    "id": "detected-1791462440373-16",
+    "index": 2,
+    "name": "FatR6Head",
+    "originalCategory": "Head / Face",
+    "bounds": {
+      "x": 78,
+      "y": 4,
+      "width": 18,
+      "height": 16
+    },
+    "file": "/sprites/02_FatR6Head.png",
+    "notes": "Auto-detected cluster at [77, 3], size 20x18px"
+  },
+  {
+    "id": "detected-1791462440373-17",
+    "index": 3,
+    "name": "blockhead",
+    "originalCategory": "Head / Face",
+    "bounds": {
+      "x": 98,
+      "y": 2,
+      "width": 18,
+      "height": 18
+    },
+    "file": "/sprites/03_blockhead.png",
+    "notes": "Auto-detected cluster at [97, 1], size 20x20px"
+  },
+  {
+    "id": "detected-1791462440373-18",
+    "index": 4,
+    "name": "roundedHead",
+    "originalCategory": "Head / Face",
+    "bounds": {
+      "x": 118,
+      "y": 4,
+      "width": 18,
+      "height": 16
+    },
+    "file": "/sprites/04_roundedHead.png",
+    "notes": "Auto-detected cluster at [117, 3], size 20x18px"
+  },
+  {
+    "id": "detected-1791462440373-19",
+    "index": 5,
+    "name": "ibotHead",
+    "originalCategory": "Head / Face",
+    "bounds": {
+      "x": 138,
+      "y": 2,
+      "width": 18,
+      "height": 20
+    },
+    "file": "/sprites/05_ibotHead.png",
+    "notes": "Auto-detected cluster at [137, 1], size 20x22px"
+  },
+  {
+    "id": "detected-1791462440373-20",
+    "index": 6,
+    "name": "peterFamilyGuyHead",
+    "originalCategory": "Head / Face",
+    "bounds": {
+      "x": 160,
+      "y": 4,
+      "width": 24,
+      "height": 18
+    },
+    "file": "/sprites/06_peterFamilyGuyHead.png",
+    "notes": "Auto-detected cluster at [159, 3], size 26x20px"
+  },
+  {
+    "id": "detected-1791462440373-21",
+    "index": 7,
+    "name": "shadedFatR6Head",
+    "originalCategory": "Auto Detected",
+    "bounds": {
+      "x": 186,
+      "y": 4,
+      "width": 18,
+      "height": 16
+    },
+    "file": "/sprites/07_shadedFatR6Head.png",
+    "notes": "Auto-detected cluster at [185, 3], size 20x18px"
+  },
+  {
+    "id": "detected-1791462440373-22",
+    "index": 8,
+    "name": "shadedRoundHeadForBrownSkeleton",
+    "originalCategory": "Head / Face",
+    "bounds": {
+      "x": 206,
+      "y": 4,
+      "width": 18,
+      "height": 16
+    },
+    "file": "/sprites/08_shadedRoundHeadForBrownSkeleton.png",
+    "notes": "Auto-detected cluster at [205, 3], size 20x18px"
+  },
+  {
+    "id": "detected-1791462440373-23",
+    "index": 9,
+    "name": "R6wireframe",
+    "originalCategory": "Character",
+    "bounds": {
+      "x": 260,
+      "y": 4,
+      "width": 42,
+      "height": 56
+    },
+    "file": "/sprites/09_R6wireframe.png",
+    "notes": "Auto-detected cluster at [259, 3], size 44x58px"
+  },
+  {
+    "id": "detected-1791462440373-37",
+    "index": 10,
+    "name": "noobrobloxian2.0",
+    "originalCategory": "Character",
+    "bounds": {
+      "x": 0,
+      "y": 68,
+      "width": 38,
+      "height": 56
+    },
+    "file": "/sprites/10_noobrobloxian2_0.png",
+    "notes": "Auto-detected cluster at [0, 67], size 40x58px"
+  },
+  {
+    "id": "detected-1791462440373-38",
+    "index": 11,
+    "name": "noob1.0",
+    "originalCategory": "Character",
+    "bounds": {
+      "x": 40,
+      "y": 68,
+      "width": 42,
+      "height": 56
+    },
+    "file": "/sprites/11_noob1_0.png",
+    "notes": "Auto-detected cluster at [39, 67], size 44x58px"
+  },
+  {
+    "id": "detected-1791462440373-39",
+    "index": 12,
+    "name": "ibot",
+    "originalCategory": "Character",
+    "bounds": {
+      "x": 84,
+      "y": 64,
+      "width": 42,
+      "height": 61
+    },
+    "file": "/sprites/12_ibot.png",
+    "notes": "Auto-detected cluster at [83, 63], size 44x62px"
+  },
+  {
+    "id": "detected-1791462440373-40",
+    "index": 13,
+    "name": "peter",
+    "originalCategory": "Character",
+    "bounds": {
+      "x": 128,
+      "y": 68,
+      "width": 36,
+      "height": 56
+    },
+    "file": "/sprites/13_peter.png",
+    "notes": "Auto-detected cluster at [127, 67], size 38x58px"
+  },
+  {
+    "id": "detected-1791462440373-41",
+    "index": 14,
+    "name": "skeletonbrown",
+    "originalCategory": "Character",
+    "bounds": {
+      "x": 166,
+      "y": 68,
+      "width": 38,
+      "height": 56
+    },
+    "file": "/sprites/14_skeletonbrown.png",
+    "notes": "Auto-detected cluster at [165, 67], size 40x58px"
+  },
+  {
+    "id": "detected-1791462440373-42",
+    "index": 15,
+    "name": "skeletonwhite",
+    "originalCategory": "Character",
+    "bounds": {
+      "x": 206,
+      "y": 68,
+      "width": 38,
+      "height": 56
+    },
+    "file": "/sprites/15_skeletonwhite.png",
+    "notes": "Auto-detected cluster at [205, 67], size 40x58px"
+  },
+  {
+    "id": "detected-1791462440373-43",
+    "index": 16,
+    "name": "R15Robloxian2.0PackageWireframe",
+    "originalCategory": "Auto Detected",
+    "bounds": {
+      "x": 262,
+      "y": 68,
+      "width": 38,
+      "height": 56
+    },
+    "file": "/sprites/16_R15Robloxian2_0PackageWireframe.png",
+    "notes": "Auto-detected cluster at [261, 67], size 40x58px"
+  },
+  {
+    "id": "detected-1791462440373-44",
+    "index": 17,
+    "name": "R15LeftArm",
+    "originalCategory": "Limb / Part",
+    "bounds": {
+      "x": 16,
+      "y": 146,
+      "width": 8,
+      "height": 22
+    },
+    "file": "/sprites/17_R15LeftArm.png",
+    "notes": "Auto-detected cluster at [15, 145], size 10x24px"
+  },
+  {
+    "id": "detected-1791462440373-45",
+    "index": 18,
+    "name": "R15FrontTorso",
+    "originalCategory": "Torso",
+    "bounds": {
+      "x": 28,
+      "y": 146,
+      "width": 22,
+      "height": 20
+    },
+    "file": "/sprites/18_R15FrontTorso.png",
+    "notes": "Auto-detected cluster at [27, 145], size 24x22px"
+  },
+  {
+    "id": "detected-1791462440373-46",
+    "index": 19,
+    "name": "R15RightArm",
+    "originalCategory": "Limb / Part",
+    "bounds": {
+      "x": 54,
+      "y": 146,
+      "width": 8,
+      "height": 22
+    },
+    "file": "/sprites/19_R15RightArm.png",
+    "notes": "Auto-detected cluster at [53, 145], size 10x24px"
+  },
+  {
+    "id": "detected-1791462440373-47",
+    "index": 20,
+    "name": "R6LeftArm",
+    "originalCategory": "Auto Detected",
+    "bounds": {
+      "x": 82,
+      "y": 146,
+      "width": 10,
+      "height": 20
+    },
+    "file": "/sprites/20_R6LeftArm.png",
+    "notes": "Auto-detected cluster at [81, 145], size 12x22px"
+  },
+  {
+    "id": "detected-1791462440373-48",
+    "index": 21,
+    "name": "R6FrontTorso",
+    "originalCategory": "Auto Detected",
+    "bounds": {
+      "x": 96,
+      "y": 146,
+      "width": 22,
+      "height": 20
+    },
+    "file": "/sprites/21_R6FrontTorso.png",
+    "notes": "Auto-detected cluster at [95, 145], size 24x22px"
+  },
+  {
+    "id": "detected-1791462440373-49",
+    "index": 22,
+    "name": "R6RightArm",
+    "originalCategory": "Auto Detected",
+    "bounds": {
+      "x": 122,
+      "y": 146,
+      "width": 10,
+      "height": 20
+    },
+    "file": "/sprites/22_R6RightArm.png",
+    "notes": "Auto-detected cluster at [121, 145], size 12x22px"
+  },
+  {
+    "id": "detected-1791462440373-56",
+    "index": 23,
+    "name": "R15LeftLeg",
+    "originalCategory": "Limb / Part",
+    "bounds": {
+      "x": 28,
+      "y": 168,
+      "width": 8,
+      "height": 20
+    },
+    "file": "/sprites/23_R15LeftLeg.png",
+    "notes": "Auto-detected cluster at [27, 167], size 10x22px"
+  },
+  {
+    "id": "detected-1791462440373-57",
+    "index": 24,
+    "name": "R15RightLeg",
+    "originalCategory": "Auto Detected",
+    "bounds": {
+      "x": 42,
+      "y": 168,
+      "width": 8,
+      "height": 20
+    },
+    "file": "/sprites/24_R15RightLeg.png",
+    "notes": "Auto-detected cluster at [41, 167], size 10x22px"
+  },
+  {
+    "id": "detected-1791462440373-58",
+    "index": 25,
+    "name": "R6LeftLeg",
+    "originalCategory": "Auto Detected",
+    "bounds": {
+      "x": 96,
+      "y": 168,
+      "width": 11,
+      "height": 20
+    },
+    "file": "/sprites/25_R6LeftLeg.png",
+    "notes": "Auto-detected cluster at [95, 167], size 24x22px"
+  },
+  {
+    "id": "detected-1791462440373-59",
+    "index": 26,
+    "name": "FrontTorsoAlt2",
+    "originalCategory": "Variant / Alt",
+    "bounds": {
+      "x": 156,
+      "y": 154,
+      "width": 22,
+      "height": 20
+    },
+    "file": "/sprites/26_FrontTorsoAlt2.png",
+    "notes": "Auto-detected cluster at [155, 153], size 24x22px\n\nWithRobloxLogo"
+  },
+  {
+    "id": "detected-1791462440373-60",
+    "index": 27,
+    "name": "R15LeftLegAlt",
+    "originalCategory": "Limb / Part",
+    "bounds": {
+      "x": 26,
+      "y": 202,
+      "width": 10,
+      "height": 20
+    },
+    "file": "/sprites/27_R15LeftLegAlt.png",
+    "notes": "Auto-detected cluster at [25, 201], size 12x22px"
+  },
+  {
+    "id": "detected-1791462440373-62",
+    "index": 28,
+    "name": "R15RightLegAlt",
+    "originalCategory": "Limb / Part",
+    "bounds": {
+      "x": 42,
+      "y": 202,
+      "width": 10,
+      "height": 20
+    },
+    "file": "/sprites/28_R15RightLegAlt.png",
+    "notes": "Auto-detected cluster at [41, 201], size 12x22px"
+  },
+  {
+    "id": "detected-1791462440373-64",
+    "index": 29,
+    "name": "R6FrontTorsoAlt",
+    "originalCategory": "Variant / Alt",
+    "bounds": {
+      "x": 96,
+      "y": 202,
+      "width": 22,
+      "height": 20
+    },
+    "file": "/sprites/29_R6FrontTorsoAlt.png",
+    "notes": "Auto-detected cluster at [95, 201], size 24x22px"
+  },
+  {
+    "id": "detected-1791462440373-67",
+    "index": 30,
+    "name": "iBotLeftArm",
+    "originalCategory": "Limb / Part",
+    "bounds": {
+      "x": 142,
+      "y": 192,
+      "width": 10,
+      "height": 22
+    },
+    "file": "/sprites/30_iBotLeftArm.png",
+    "notes": "Auto-detected cluster at [141, 191], size 12x24px"
+  },
+  {
+    "id": "detected-1791462440373-68",
+    "index": 31,
+    "name": "iBotFrontTorso",
+    "originalCategory": "Torso",
+    "bounds": {
+      "x": 156,
+      "y": 192,
+      "width": 26,
+      "height": 24
+    },
+    "file": "/sprites/31_iBotFrontTorso.png",
+    "notes": "Auto-detected cluster at [155, 191], size 28x26px"
+  },
+  {
+    "id": "detected-1791462440373-69",
+    "index": 32,
+    "name": "iBotRightArm",
+    "originalCategory": "Limb / Part",
+    "bounds": {
+      "x": 186,
+      "y": 192,
+      "width": 10,
+      "height": 22
+    },
+    "file": "/sprites/32_iBotRightArm.png",
+    "notes": "Auto-detected cluster at [185, 191], size 12x24px"
+  },
+  {
+    "id": "detected-1791462440373-70",
+    "index": 33,
+    "name": "peterRightArm",
+    "originalCategory": "Limb / Part",
+    "bounds": {
+      "x": 208,
+      "y": 192,
+      "width": 8,
+      "height": 20
+    },
+    "file": "/sprites/33_peterRightArm.png",
+    "notes": "Auto-detected cluster at [207, 191], size 10x22px"
+  },
+  {
+    "id": "detected-1791462440373-71",
+    "index": 34,
+    "name": "peterFrontTorso",
+    "originalCategory": "Torso",
+    "bounds": {
+      "x": 218,
+      "y": 192,
+      "width": 28,
+      "height": 26
+    },
+    "file": "/sprites/34_peterFrontTorso.png",
+    "notes": "Auto-detected cluster at [217, 191], size 30x28px"
+  },
+  {
+    "id": "detected-1791462440373-72",
+    "index": 35,
+    "name": "peterLeftArm",
+    "originalCategory": "Auto Detected",
+    "bounds": {
+      "x": 248,
+      "y": 192,
+      "width": 8,
+      "height": 20
+    },
+    "file": "/sprites/35_peterLeftArm.png",
+    "notes": "Auto-detected cluster at [247, 191], size 10x22px"
+  },
+  {
+    "id": "detected-1791462440373-73",
+    "index": 36,
+    "name": "R6LeftLegAlt",
+    "originalCategory": "Limb / Part",
+    "bounds": {
+      "x": 96,
+      "y": 224,
+      "width": 10,
+      "height": 20
+    },
+    "file": "/sprites/36_R6LeftLegAlt.png",
+    "notes": "Auto-detected cluster at [95, 223], size 12x22px"
+  },
+  {
+    "id": "detected-1791462440373-74",
+    "index": 37,
+    "name": "R6RightLegAlt",
+    "originalCategory": "Limb / Part",
+    "bounds": {
+      "x": 108,
+      "y": 224,
+      "width": 10,
+      "height": 20
+    },
+    "file": "/sprites/37_R6RightLegAlt.png",
+    "notes": "Auto-detected cluster at [107, 223], size 12x22px"
+  },
+  {
+    "id": "detected-1791462440373-75",
+    "index": 38,
+    "name": "iBotLeftLeg",
+    "originalCategory": "Limb / Part",
+    "bounds": {
+      "x": 152,
+      "y": 210,
+      "width": 10,
+      "height": 22
+    },
+    "file": "/sprites/38_iBotLeftLeg.png",
+    "notes": "Auto-detected cluster at [151, 209], size 12x24px"
+  },
+  {
+    "id": "detected-1791462440373-76",
+    "index": 39,
+    "name": "iBotRightLeg",
+    "originalCategory": "Limb / Part",
+    "bounds": {
+      "x": 176,
+      "y": 210,
+      "width": 10,
+      "height": 22
+    },
+    "file": "/sprites/39_iBotRightLeg.png",
+    "notes": "Auto-detected cluster at [175, 209], size 12x24px"
+  },
+  {
+    "id": "detected-1791462440373-77",
+    "index": 40,
+    "name": "peterLeftLeg",
+    "originalCategory": "Limb / Part",
+    "bounds": {
+      "x": 222,
+      "y": 220,
+      "width": 10,
+      "height": 12
+    },
+    "file": "/sprites/40_peterLeftLeg.png",
+    "notes": "Auto-detected cluster at [221, 219], size 22x14px"
+  },
+  {
+    "id": "detected-1791462440373-78",
+    "index": 41,
+    "name": "ClassicSkellyHead",
+    "originalCategory": "Head / Face",
+    "bounds": {
+      "x": 22,
+      "y": 248,
+      "width": 18,
+      "height": 16
+    },
+    "file": "/sprites/41_ClassicSkellyHead.png",
+    "notes": "Auto-detected cluster at [21, 247], size 20x18px"
+  },
+  {
+    "id": "detected-1791462440373-79",
+    "index": 42,
+    "name": "WhiteSkellyHead",
+    "originalCategory": "Head / Face",
+    "bounds": {
+      "x": 78,
+      "y": 248,
+      "width": 18,
+      "height": 16
+    },
+    "file": "/sprites/42_WhiteSkellyHead.png",
+    "notes": "Auto-detected cluster at [77, 247], size 20x18px"
+  },
+  {
+    "id": "detected-1791462440373-82",
+    "index": 43,
+    "name": "ClassicSkellyLeftArm",
+    "originalCategory": "Limb / Part",
+    "bounds": {
+      "x": 6,
+      "y": 272,
+      "width": 10,
+      "height": 20
+    },
+    "file": "/sprites/43_ClassicSkellyLeftArm.png",
+    "notes": "Auto-detected cluster at [5, 271], size 12x22px"
+  },
+  {
+    "id": "detected-1791462440373-83",
+    "index": 44,
+    "name": "ClassicSkellyLeftLeg",
+    "originalCategory": "Limb / Part",
+    "bounds": {
+      "x": 14,
+      "y": 290,
+      "width": 8,
+      "height": 20
+    },
+    "file": "/sprites/44_ClassicSkellyLeftLeg.png",
+    "notes": "Auto-detected cluster at [13, 289], size 10x22px"
+  },
+  {
+    "id": "detected-1791462440373-84",
+    "index": 45,
+    "name": "ClassicSkellyFrontTorso",
+    "originalCategory": "Torso",
+    "bounds": {
+      "x": 20,
+      "y": 270,
+      "width": 22,
+      "height": 22
+    },
+    "file": "/sprites/45_ClassicSkellyFrontTorso.png",
+    "notes": "Auto-detected cluster at [19, 269], size 24x24px"
+  },
+  {
+    "id": "detected-1791462440373-85",
+    "index": 46,
+    "name": "ClassicSkellyRightLeg",
+    "originalCategory": "Limb / Part",
+    "bounds": {
+      "x": 40,
+      "y": 290,
+      "width": 8,
+      "height": 20
+    },
+    "file": "/sprites/46_ClassicSkellyRightLeg.png",
+    "notes": "Auto-detected cluster at [39, 289], size 10x22px"
+  },
+  {
+    "id": "detected-1791462440373-86",
+    "index": 47,
+    "name": "ClassicSkellyRightArm",
+    "originalCategory": "Limb / Part",
+    "bounds": {
+      "x": 46,
+      "y": 272,
+      "width": 10,
+      "height": 20
+    },
+    "file": "/sprites/47_ClassicSkellyRightArm.png",
+    "notes": "Auto-detected cluster at [45, 271], size 12x22px"
+  },
+  {
+    "id": "detected-1791462440373-87",
+    "index": 48,
+    "name": "WhiteSkellyLeftArm",
+    "originalCategory": "Limb / Part",
+    "bounds": {
+      "x": 62,
+      "y": 272,
+      "width": 10,
+      "height": 20
+    },
+    "file": "/sprites/48_WhiteSkellyLeftArm.png",
+    "notes": "Auto-detected cluster at [61, 271], size 12x22px"
+  },
+  {
+    "id": "detected-1791462440373-88",
+    "index": 49,
+    "name": "WhiteSkellyLeftLeg",
+    "originalCategory": "Auto Detected",
+    "bounds": {
+      "x": 70,
+      "y": 290,
+      "width": 8,
+      "height": 20
+    },
+    "file": "/sprites/49_WhiteSkellyLeftLeg.png",
+    "notes": "Auto-detected cluster at [69, 289], size 10x22px"
+  },
+  {
+    "id": "detected-1791462440373-89",
+    "index": 50,
+    "name": "WhiteSkellyFrontTorso",
+    "originalCategory": "Torso",
+    "bounds": {
+      "x": 76,
+      "y": 270,
+      "width": 22,
+      "height": 22
+    },
+    "file": "/sprites/50_WhiteSkellyFrontTorso.png",
+    "notes": "Auto-detected cluster at [75, 269], size 24x24px"
+  },
+  {
+    "id": "detected-1791462440373-90",
+    "index": 51,
+    "name": "WhiteSkellyRightLeg",
+    "originalCategory": "Auto Detected",
+    "bounds": {
+      "x": 96,
+      "y": 290,
+      "width": 8,
+      "height": 20
+    },
+    "file": "/sprites/51_WhiteSkellyRightLeg.png",
+    "notes": "Auto-detected cluster at [95, 289], size 10x22px"
+  },
+  {
+    "id": "detected-1791462440373-91",
+    "index": 52,
+    "name": "WhiteSkellyRightArm",
+    "originalCategory": "Limb / Part",
+    "bounds": {
+      "x": 102,
+      "y": 272,
+      "width": 10,
+      "height": 20
+    },
+    "file": "/sprites/52_WhiteSkellyRightArm.png",
+    "notes": "Auto-detected cluster at [101, 271], size 12x22px"
+  },
+  {
+    "id": "box-1791463107374",
+    "index": 53,
+    "name": "R6RightLeg",
+    "originalCategory": "Character",
+    "bounds": {
+      "x": 107,
+      "y": 168,
+      "width": 11,
+      "height": 20
+    },
+    "file": "/sprites/53_R6RightLeg.png",
+    "notes": ""
+  },
+  {
+    "id": "box-1791463520306",
+    "index": 54,
+    "name": "PeterRightLeg",
+    "originalCategory": "Character",
+    "bounds": {
+      "x": 232,
+      "y": 220,
+      "width": 10,
+      "height": 12
+    },
+    "file": "/sprites/54_PeterRightLeg.png",
+    "notes": ""
+  }
+]
