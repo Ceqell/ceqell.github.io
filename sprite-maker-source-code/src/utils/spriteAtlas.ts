@@ -316,7 +316,7 @@ export const REVAMPED_STARTER_TEMPLATES: RevampedStarter[] = [
     id: 'starter-peter',
     name: 'Peter Character',
     package: 'Peter',
-    desc: 'Famous animated character sprite featuring round torso, green pants & glasses (18x28 in 1x)',
+    desc: 'Famous animated character sprite featuring round torso, green pants & (a lack of) glasses (to avoid trademark infringement o_O)',
     spriteIndex: 13, // peter (36x56 in 2x -> 18x28 in 1x)
     badge: 'Stylized',
     recommendedWidth1x: 25,
