@@ -317,7 +317,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
           img.src = ref.url;
           if (img.complete && img.naturalWidth > 0 && img.naturalHeight > 0) {
             ctx.save();
-            ctx.globalAlpha = ref.traceOpacity;
+            ctx.globalAlpha = Math.min(1, Math.max(0, ref.traceOpacity));
             const targetW = canvasWidth * ref.traceScale;
             const targetH = (ref.height / ref.width) * targetW;
             ctx.drawImage(img, ref.traceX, ref.traceY, targetW, targetH);

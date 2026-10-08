@@ -27,7 +27,7 @@ interface ProjectManagerModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectProject: (project: StoredProject) => void;
-  onCreateNewProject: (name: string, presetName: string, customWidth?: number, customHeight?: number) => void;
+  onCreateNewProject: (name: string, presetName: string, customWidth?: number, customHeight?: number, includeDefaultRef?: boolean) => void;
   onImportJsonFile: (file: File) => void;
   onExportJsonSuccess?: (filename: string) => void;
 }
@@ -50,6 +50,21 @@ export const ProjectManagerModal: React.FC<ProjectManagerModalProps> = ({
   const [selectedPresetName, setSelectedPresetName] = useState(CANVAS_PRESETS[1]?.name || 'With Headroom / Hats (25 × 32)');
   const [customWidth, setCustomWidth] = useState(32);
   const [customHeight, setCustomHeight] = useState(32);
+  const [includeDefaultReference, setIncludeDefaultReference] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('figuray_default_reference_enabled');
+      return saved !== null ? saved === 'true' : true;
+    } catch {
+      return true;
+    }
+  });
+
+  const handleToggleDefaultRef = (checked: boolean) => {
+    setIncludeDefaultReference(checked);
+    try {
+      localStorage.setItem('figuray_default_reference_enabled', String(checked));
+    } catch {}
+  };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -107,9 +122,9 @@ export const ProjectManagerModal: React.FC<ProjectManagerModalProps> = ({
     if (selectedPresetName === 'custom') {
       const clampedW = Math.max(8, Math.min(256, Math.round(customWidth)));
       const clampedH = Math.max(8, Math.min(256, Math.round(customHeight)));
-      onCreateNewProject(trimmed, 'custom', clampedW, clampedH);
+      onCreateNewProject(trimmed, 'custom', clampedW, clampedH, includeDefaultReference);
     } else {
-      onCreateNewProject(trimmed, selectedPresetName);
+      onCreateNewProject(trimmed, selectedPresetName, undefined, undefined, includeDefaultReference);
     }
     onClose();
   };
@@ -279,6 +294,26 @@ export const ProjectManagerModal: React.FC<ProjectManagerModalProps> = ({
                   <span className="text-[10px] text-secondary-theme font-mono">(8 to 256px)</span>
                 </div>
               )}
+
+              {/* Show default reference image toggle */}
+              <div className="pt-0.5">
+                <label className="flex items-start gap-2 cursor-pointer select-none group">
+                  <input
+                    type="checkbox"
+                    checked={includeDefaultReference}
+                    onChange={(e) => handleToggleDefaultRef(e.target.checked)}
+                    className="mt-0.5 accent-[var(--text-accent)] rounded cursor-pointer"
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-[11px] text-primary-theme font-medium leading-tight group-hover:underline">
+                      Show default reference image (recommended for new users)
+                    </span>
+                    <span className="text-[10px] text-secondary-theme leading-tight mt-0.5">
+                      Includes character package references (Robloxian 2.0, skeleton, iBot, Peter, color templates)
+                    </span>
+                  </div>
+                </label>
+              </div>
 
               <div className="flex justify-end pt-1">
                 <button

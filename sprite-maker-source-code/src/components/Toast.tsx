@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { CheckCircle2, Download, FileText, X, Copy, AlertTriangle } from 'lucide-react';
+import { CheckCircle2, Download, FileText, X, Copy, AlertTriangle, Sparkles, Layers } from 'lucide-react';
 
 export interface ToastItem {
   id: string;
   type?: 'success' | 'info' | 'warning' | 'error';
   title: string;
   message?: string;
-  icon?: 'png' | 'json' | 'check' | 'copy';
+  icon?: 'png' | 'json' | 'check' | 'copy' | 'sparkles' | 'layer';
   duration?: number;
 }
 
@@ -78,6 +78,20 @@ const ToastCard: React.FC<{ toast: ToastItem; onDismiss: () => void }> = ({ toas
       return (
         <div className="w-8 h-8 rounded-lg retro-inset-well flex items-center justify-center shrink-0 text-emerald-400 shadow-inner">
           <Copy className="w-4 h-4 stroke-[2.5]" />
+        </div>
+      );
+    }
+    if (toast.icon === 'sparkles') {
+      return (
+        <div className="w-8 h-8 rounded-lg retro-inset-well flex items-center justify-center shrink-0 text-amber-400 shadow-inner">
+          <Sparkles className="w-4 h-4 stroke-[2.5]" />
+        </div>
+      );
+    }
+    if (toast.icon === 'layer') {
+      return (
+        <div className="w-8 h-8 rounded-lg retro-inset-well flex items-center justify-center shrink-0 text-indigo-400 shadow-inner">
+          <Layers className="w-4 h-4 stroke-[2.5]" />
         </div>
       );
     }

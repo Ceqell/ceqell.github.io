@@ -1,0 +1,1038 @@
+{
+  "metadata": {
+    "sourceImage": "DavidBlxTemplate.png",
+    "width": 312,
+    "height": 312,
+    "spriteCount": 54,
+    "exportedAt": "2026-10-08T12:49:26.949Z",
+    "tool": "SpriteBox Annotator"
+  },
+  "sprites": [
+    {
+      "id": "detected-1791462440373-0",
+      "index": 1,
+      "name": "colorpalette",
+      "category": "Color Palette",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 28,
+        "height": 44
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 0,
+        "xmin": 0,
+        "ymax": 141,
+        "xmax": 90
+      },
+      "description": "Auto-detected cluster at [0, 0], size 30x46px"
+    },
+    {
+      "id": "detected-1791462440373-16",
+      "index": 2,
+      "name": "FatR6Head",
+      "category": "Head / Face",
+      "bounds": {
+        "x": 78,
+        "y": 4,
+        "width": 18,
+        "height": 16
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 13,
+        "xmin": 250,
+        "ymax": 64,
+        "xmax": 308
+      },
+      "description": "Auto-detected cluster at [77, 3], size 20x18px"
+    },
+    {
+      "id": "detected-1791462440373-17",
+      "index": 3,
+      "name": "blockhead",
+      "category": "Head / Face",
+      "bounds": {
+        "x": 98,
+        "y": 2,
+        "width": 18,
+        "height": 18
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 6,
+        "xmin": 314,
+        "ymax": 64,
+        "xmax": 372
+      },
+      "description": "Auto-detected cluster at [97, 1], size 20x20px"
+    },
+    {
+      "id": "detected-1791462440373-18",
+      "index": 4,
+      "name": "roundedHead",
+      "category": "Head / Face",
+      "bounds": {
+        "x": 118,
+        "y": 4,
+        "width": 18,
+        "height": 16
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 13,
+        "xmin": 378,
+        "ymax": 64,
+        "xmax": 436
+      },
+      "description": "Auto-detected cluster at [117, 3], size 20x18px"
+    },
+    {
+      "id": "detected-1791462440373-19",
+      "index": 5,
+      "name": "ibotHead",
+      "category": "Head / Face",
+      "bounds": {
+        "x": 138,
+        "y": 2,
+        "width": 18,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 6,
+        "xmin": 442,
+        "ymax": 71,
+        "xmax": 500
+      },
+      "description": "Auto-detected cluster at [137, 1], size 20x22px"
+    },
+    {
+      "id": "detected-1791462440373-20",
+      "index": 6,
+      "name": "peterFamilyGuyHead",
+      "category": "Head / Face",
+      "bounds": {
+        "x": 160,
+        "y": 4,
+        "width": 24,
+        "height": 18
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 13,
+        "xmin": 513,
+        "ymax": 71,
+        "xmax": 590
+      },
+      "description": "Auto-detected cluster at [159, 3], size 26x20px"
+    },
+    {
+      "id": "detected-1791462440373-21",
+      "index": 7,
+      "name": "shadedFatR6Head",
+      "category": "Auto Detected",
+      "bounds": {
+        "x": 186,
+        "y": 4,
+        "width": 18,
+        "height": 16
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 13,
+        "xmin": 596,
+        "ymax": 64,
+        "xmax": 654
+      },
+      "description": "Auto-detected cluster at [185, 3], size 20x18px"
+    },
+    {
+      "id": "detected-1791462440373-22",
+      "index": 8,
+      "name": "shadedRoundHeadForBrownSkeleton",
+      "category": "Head / Face",
+      "bounds": {
+        "x": 206,
+        "y": 4,
+        "width": 18,
+        "height": 16
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 13,
+        "xmin": 660,
+        "ymax": 64,
+        "xmax": 718
+      },
+      "description": "Auto-detected cluster at [205, 3], size 20x18px"
+    },
+    {
+      "id": "detected-1791462440373-23",
+      "index": 9,
+      "name": "R6wireframe",
+      "category": "Character",
+      "bounds": {
+        "x": 260,
+        "y": 4,
+        "width": 42,
+        "height": 56
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 13,
+        "xmin": 833,
+        "ymax": 192,
+        "xmax": 968
+      },
+      "description": "Auto-detected cluster at [259, 3], size 44x58px"
+    },
+    {
+      "id": "detected-1791462440373-37",
+      "index": 10,
+      "name": "noobrobloxian2.0",
+      "category": "Character",
+      "bounds": {
+        "x": 0,
+        "y": 68,
+        "width": 38,
+        "height": 56
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 218,
+        "xmin": 0,
+        "ymax": 397,
+        "xmax": 122
+      },
+      "description": "Auto-detected cluster at [0, 67], size 40x58px"
+    },
+    {
+      "id": "detected-1791462440373-38",
+      "index": 11,
+      "name": "noob1.0",
+      "category": "Character",
+      "bounds": {
+        "x": 40,
+        "y": 68,
+        "width": 42,
+        "height": 56
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 218,
+        "xmin": 128,
+        "ymax": 397,
+        "xmax": 263
+      },
+      "description": "Auto-detected cluster at [39, 67], size 44x58px"
+    },
+    {
+      "id": "detected-1791462440373-39",
+      "index": 12,
+      "name": "ibot",
+      "category": "Character",
+      "bounds": {
+        "x": 84,
+        "y": 64,
+        "width": 42,
+        "height": 61
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 205,
+        "xmin": 269,
+        "ymax": 401,
+        "xmax": 404
+      },
+      "description": "Auto-detected cluster at [83, 63], size 44x62px"
+    },
+    {
+      "id": "detected-1791462440373-40",
+      "index": 13,
+      "name": "peter",
+      "category": "Character",
+      "bounds": {
+        "x": 128,
+        "y": 68,
+        "width": 36,
+        "height": 56
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 218,
+        "xmin": 410,
+        "ymax": 397,
+        "xmax": 526
+      },
+      "description": "Auto-detected cluster at [127, 67], size 38x58px"
+    },
+    {
+      "id": "detected-1791462440373-41",
+      "index": 14,
+      "name": "skeletonbrown",
+      "category": "Character",
+      "bounds": {
+        "x": 166,
+        "y": 68,
+        "width": 38,
+        "height": 56
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 218,
+        "xmin": 532,
+        "ymax": 397,
+        "xmax": 654
+      },
+      "description": "Auto-detected cluster at [165, 67], size 40x58px"
+    },
+    {
+      "id": "detected-1791462440373-42",
+      "index": 15,
+      "name": "skeletonwhite",
+      "category": "Character",
+      "bounds": {
+        "x": 206,
+        "y": 68,
+        "width": 38,
+        "height": 56
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 218,
+        "xmin": 660,
+        "ymax": 397,
+        "xmax": 782
+      },
+      "description": "Auto-detected cluster at [205, 67], size 40x58px"
+    },
+    {
+      "id": "detected-1791462440373-43",
+      "index": 16,
+      "name": "R15Robloxian2.0PackageWireframe",
+      "category": "Auto Detected",
+      "bounds": {
+        "x": 262,
+        "y": 68,
+        "width": 38,
+        "height": 56
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 218,
+        "xmin": 840,
+        "ymax": 397,
+        "xmax": 962
+      },
+      "description": "Auto-detected cluster at [261, 67], size 40x58px"
+    },
+    {
+      "id": "detected-1791462440373-44",
+      "index": 17,
+      "name": "R15LeftArm",
+      "category": "Limb / Part",
+      "bounds": {
+        "x": 16,
+        "y": 146,
+        "width": 8,
+        "height": 22
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 468,
+        "xmin": 51,
+        "ymax": 538,
+        "xmax": 77
+      },
+      "description": "Auto-detected cluster at [15, 145], size 10x24px"
+    },
+    {
+      "id": "detected-1791462440373-45",
+      "index": 18,
+      "name": "R15FrontTorso",
+      "category": "Torso",
+      "bounds": {
+        "x": 28,
+        "y": 146,
+        "width": 22,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 468,
+        "xmin": 90,
+        "ymax": 532,
+        "xmax": 160
+      },
+      "description": "Auto-detected cluster at [27, 145], size 24x22px"
+    },
+    {
+      "id": "detected-1791462440373-46",
+      "index": 19,
+      "name": "R15RightArm",
+      "category": "Limb / Part",
+      "bounds": {
+        "x": 54,
+        "y": 146,
+        "width": 8,
+        "height": 22
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 468,
+        "xmin": 173,
+        "ymax": 538,
+        "xmax": 199
+      },
+      "description": "Auto-detected cluster at [53, 145], size 10x24px"
+    },
+    {
+      "id": "detected-1791462440373-47",
+      "index": 20,
+      "name": "R6LeftArm",
+      "category": "Auto Detected",
+      "bounds": {
+        "x": 82,
+        "y": 146,
+        "width": 10,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 468,
+        "xmin": 263,
+        "ymax": 532,
+        "xmax": 295
+      },
+      "description": "Auto-detected cluster at [81, 145], size 12x22px"
+    },
+    {
+      "id": "detected-1791462440373-48",
+      "index": 21,
+      "name": "R6FrontTorso",
+      "category": "Auto Detected",
+      "bounds": {
+        "x": 96,
+        "y": 146,
+        "width": 22,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 468,
+        "xmin": 308,
+        "ymax": 532,
+        "xmax": 378
+      },
+      "description": "Auto-detected cluster at [95, 145], size 24x22px"
+    },
+    {
+      "id": "detected-1791462440373-49",
+      "index": 22,
+      "name": "R6RightArm",
+      "category": "Auto Detected",
+      "bounds": {
+        "x": 122,
+        "y": 146,
+        "width": 10,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 468,
+        "xmin": 391,
+        "ymax": 532,
+        "xmax": 423
+      },
+      "description": "Auto-detected cluster at [121, 145], size 12x22px"
+    },
+    {
+      "id": "detected-1791462440373-56",
+      "index": 23,
+      "name": "R15LeftLeg",
+      "category": "Limb / Part",
+      "bounds": {
+        "x": 28,
+        "y": 168,
+        "width": 8,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 538,
+        "xmin": 90,
+        "ymax": 603,
+        "xmax": 115
+      },
+      "description": "Auto-detected cluster at [27, 167], size 10x22px"
+    },
+    {
+      "id": "detected-1791462440373-57",
+      "index": 24,
+      "name": "R15RightLeg",
+      "category": "Auto Detected",
+      "bounds": {
+        "x": 42,
+        "y": 168,
+        "width": 8,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 538,
+        "xmin": 135,
+        "ymax": 603,
+        "xmax": 160
+      },
+      "description": "Auto-detected cluster at [41, 167], size 10x22px"
+    },
+    {
+      "id": "detected-1791462440373-58",
+      "index": 25,
+      "name": "R6LeftLeg",
+      "category": "Auto Detected",
+      "bounds": {
+        "x": 96,
+        "y": 168,
+        "width": 11,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 538,
+        "xmin": 308,
+        "ymax": 603,
+        "xmax": 343
+      },
+      "description": "Auto-detected cluster at [95, 167], size 24x22px"
+    },
+    {
+      "id": "detected-1791462440373-59",
+      "index": 26,
+      "name": "FrontTorsoAlt2",
+      "category": "Variant / Alt",
+      "bounds": {
+        "x": 156,
+        "y": 154,
+        "width": 22,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 494,
+        "xmin": 500,
+        "ymax": 558,
+        "xmax": 571
+      },
+      "description": "Auto-detected cluster at [155, 153], size 24x22px\n\nWithRobloxLogo"
+    },
+    {
+      "id": "detected-1791462440373-60",
+      "index": 27,
+      "name": "R15LeftLegAlt",
+      "category": "Limb / Part",
+      "bounds": {
+        "x": 26,
+        "y": 202,
+        "width": 10,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 647,
+        "xmin": 83,
+        "ymax": 712,
+        "xmax": 115
+      },
+      "description": "Auto-detected cluster at [25, 201], size 12x22px"
+    },
+    {
+      "id": "detected-1791462440373-62",
+      "index": 28,
+      "name": "R15RightLegAlt",
+      "category": "Limb / Part",
+      "bounds": {
+        "x": 42,
+        "y": 202,
+        "width": 10,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 647,
+        "xmin": 135,
+        "ymax": 712,
+        "xmax": 167
+      },
+      "description": "Auto-detected cluster at [41, 201], size 12x22px"
+    },
+    {
+      "id": "detected-1791462440373-64",
+      "index": 29,
+      "name": "R6FrontTorsoAlt",
+      "category": "Variant / Alt",
+      "bounds": {
+        "x": 96,
+        "y": 202,
+        "width": 22,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 647,
+        "xmin": 308,
+        "ymax": 712,
+        "xmax": 378
+      },
+      "description": "Auto-detected cluster at [95, 201], size 24x22px"
+    },
+    {
+      "id": "detected-1791462440373-67",
+      "index": 30,
+      "name": "iBotLeftArm",
+      "category": "Limb / Part",
+      "bounds": {
+        "x": 142,
+        "y": 192,
+        "width": 10,
+        "height": 22
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 615,
+        "xmin": 455,
+        "ymax": 686,
+        "xmax": 487
+      },
+      "description": "Auto-detected cluster at [141, 191], size 12x24px"
+    },
+    {
+      "id": "detected-1791462440373-68",
+      "index": 31,
+      "name": "iBotFrontTorso",
+      "category": "Torso",
+      "bounds": {
+        "x": 156,
+        "y": 192,
+        "width": 26,
+        "height": 24
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 615,
+        "xmin": 500,
+        "ymax": 692,
+        "xmax": 583
+      },
+      "description": "Auto-detected cluster at [155, 191], size 28x26px"
+    },
+    {
+      "id": "detected-1791462440373-69",
+      "index": 32,
+      "name": "iBotRightArm",
+      "category": "Limb / Part",
+      "bounds": {
+        "x": 186,
+        "y": 192,
+        "width": 10,
+        "height": 22
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 615,
+        "xmin": 596,
+        "ymax": 686,
+        "xmax": 628
+      },
+      "description": "Auto-detected cluster at [185, 191], size 12x24px"
+    },
+    {
+      "id": "detected-1791462440373-70",
+      "index": 33,
+      "name": "peterRightArm",
+      "category": "Limb / Part",
+      "bounds": {
+        "x": 208,
+        "y": 192,
+        "width": 8,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 615,
+        "xmin": 667,
+        "ymax": 679,
+        "xmax": 692
+      },
+      "description": "Auto-detected cluster at [207, 191], size 10x22px"
+    },
+    {
+      "id": "detected-1791462440373-71",
+      "index": 34,
+      "name": "peterFrontTorso",
+      "category": "Torso",
+      "bounds": {
+        "x": 218,
+        "y": 192,
+        "width": 28,
+        "height": 26
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 615,
+        "xmin": 699,
+        "ymax": 699,
+        "xmax": 788
+      },
+      "description": "Auto-detected cluster at [217, 191], size 30x28px"
+    },
+    {
+      "id": "detected-1791462440373-72",
+      "index": 35,
+      "name": "peterLeftArm",
+      "category": "Auto Detected",
+      "bounds": {
+        "x": 248,
+        "y": 192,
+        "width": 8,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 615,
+        "xmin": 795,
+        "ymax": 679,
+        "xmax": 821
+      },
+      "description": "Auto-detected cluster at [247, 191], size 10x22px"
+    },
+    {
+      "id": "detected-1791462440373-73",
+      "index": 36,
+      "name": "R6LeftLegAlt",
+      "category": "Limb / Part",
+      "bounds": {
+        "x": 96,
+        "y": 224,
+        "width": 10,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 718,
+        "xmin": 308,
+        "ymax": 782,
+        "xmax": 340
+      },
+      "description": "Auto-detected cluster at [95, 223], size 12x22px"
+    },
+    {
+      "id": "detected-1791462440373-74",
+      "index": 37,
+      "name": "R6RightLegAlt",
+      "category": "Limb / Part",
+      "bounds": {
+        "x": 108,
+        "y": 224,
+        "width": 10,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 718,
+        "xmin": 346,
+        "ymax": 782,
+        "xmax": 378
+      },
+      "description": "Auto-detected cluster at [107, 223], size 12x22px"
+    },
+    {
+      "id": "detected-1791462440373-75",
+      "index": 38,
+      "name": "iBotLeftLeg",
+      "category": "Limb / Part",
+      "bounds": {
+        "x": 152,
+        "y": 210,
+        "width": 10,
+        "height": 22
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 673,
+        "xmin": 487,
+        "ymax": 744,
+        "xmax": 519
+      },
+      "description": "Auto-detected cluster at [151, 209], size 12x24px"
+    },
+    {
+      "id": "detected-1791462440373-76",
+      "index": 39,
+      "name": "iBotRightLeg",
+      "category": "Limb / Part",
+      "bounds": {
+        "x": 176,
+        "y": 210,
+        "width": 10,
+        "height": 22
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 673,
+        "xmin": 564,
+        "ymax": 744,
+        "xmax": 596
+      },
+      "description": "Auto-detected cluster at [175, 209], size 12x24px"
+    },
+    {
+      "id": "detected-1791462440373-77",
+      "index": 40,
+      "name": "peterLeftLeg",
+      "category": "Limb / Part",
+      "bounds": {
+        "x": 222,
+        "y": 220,
+        "width": 10,
+        "height": 12
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 705,
+        "xmin": 712,
+        "ymax": 744,
+        "xmax": 744
+      },
+      "description": "Auto-detected cluster at [221, 219], size 22x14px"
+    },
+    {
+      "id": "detected-1791462440373-78",
+      "index": 41,
+      "name": "ClassicSkellyHead",
+      "category": "Head / Face",
+      "bounds": {
+        "x": 22,
+        "y": 248,
+        "width": 18,
+        "height": 16
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 795,
+        "xmin": 71,
+        "ymax": 846,
+        "xmax": 128
+      },
+      "description": "Auto-detected cluster at [21, 247], size 20x18px"
+    },
+    {
+      "id": "detected-1791462440373-79",
+      "index": 42,
+      "name": "WhiteSkellyHead",
+      "category": "Head / Face",
+      "bounds": {
+        "x": 78,
+        "y": 248,
+        "width": 18,
+        "height": 16
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 795,
+        "xmin": 250,
+        "ymax": 846,
+        "xmax": 308
+      },
+      "description": "Auto-detected cluster at [77, 247], size 20x18px"
+    },
+    {
+      "id": "detected-1791462440373-82",
+      "index": 43,
+      "name": "ClassicSkellyLeftArm",
+      "category": "Limb / Part",
+      "bounds": {
+        "x": 6,
+        "y": 272,
+        "width": 10,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 872,
+        "xmin": 19,
+        "ymax": 936,
+        "xmax": 51
+      },
+      "description": "Auto-detected cluster at [5, 271], size 12x22px"
+    },
+    {
+      "id": "detected-1791462440373-83",
+      "index": 44,
+      "name": "ClassicSkellyLeftLeg",
+      "category": "Limb / Part",
+      "bounds": {
+        "x": 14,
+        "y": 290,
+        "width": 8,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 929,
+        "xmin": 45,
+        "ymax": 994,
+        "xmax": 71
+      },
+      "description": "Auto-detected cluster at [13, 289], size 10x22px"
+    },
+    {
+      "id": "detected-1791462440373-84",
+      "index": 45,
+      "name": "ClassicSkellyFrontTorso",
+      "category": "Torso",
+      "bounds": {
+        "x": 20,
+        "y": 270,
+        "width": 22,
+        "height": 22
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 865,
+        "xmin": 64,
+        "ymax": 936,
+        "xmax": 135
+      },
+      "description": "Auto-detected cluster at [19, 269], size 24x24px"
+    },
+    {
+      "id": "detected-1791462440373-85",
+      "index": 46,
+      "name": "ClassicSkellyRightLeg",
+      "category": "Limb / Part",
+      "bounds": {
+        "x": 40,
+        "y": 290,
+        "width": 8,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 929,
+        "xmin": 128,
+        "ymax": 994,
+        "xmax": 154
+      },
+      "description": "Auto-detected cluster at [39, 289], size 10x22px"
+    },
+    {
+      "id": "detected-1791462440373-86",
+      "index": 47,
+      "name": "ClassicSkellyRightArm",
+      "category": "Limb / Part",
+      "bounds": {
+        "x": 46,
+        "y": 272,
+        "width": 10,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 872,
+        "xmin": 147,
+        "ymax": 936,
+        "xmax": 179
+      },
+      "description": "Auto-detected cluster at [45, 271], size 12x22px"
+    },
+    {
+      "id": "detected-1791462440373-87",
+      "index": 48,
+      "name": "WhiteSkellyLeftArm",
+      "category": "Limb / Part",
+      "bounds": {
+        "x": 62,
+        "y": 272,
+        "width": 10,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 872,
+        "xmin": 199,
+        "ymax": 936,
+        "xmax": 231
+      },
+      "description": "Auto-detected cluster at [61, 271], size 12x22px"
+    },
+    {
+      "id": "detected-1791462440373-88",
+      "index": 49,
+      "name": "WhiteSkellyLeftLeg",
+      "category": "Auto Detected",
+      "bounds": {
+        "x": 70,
+        "y": 290,
+        "width": 8,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 929,
+        "xmin": 224,
+        "ymax": 994,
+        "xmax": 250
+      },
+      "description": "Auto-detected cluster at [69, 289], size 10x22px"
+    },
+    {
+      "id": "detected-1791462440373-89",
+      "index": 50,
+      "name": "WhiteSkellyFrontTorso",
+      "category": "Torso",
+      "bounds": {
+        "x": 76,
+        "y": 270,
+        "width": 22,
+        "height": 22
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 865,
+        "xmin": 244,
+        "ymax": 936,
+        "xmax": 314
+      },
+      "description": "Auto-detected cluster at [75, 269], size 24x24px"
+    },
+    {
+      "id": "detected-1791462440373-90",
+      "index": 51,
+      "name": "WhiteSkellyRightLeg",
+      "category": "Auto Detected",
+      "bounds": {
+        "x": 96,
+        "y": 290,
+        "width": 8,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 929,
+        "xmin": 308,
+        "ymax": 994,
+        "xmax": 333
+      },
+      "description": "Auto-detected cluster at [95, 289], size 10x22px"
+    },
+    {
+      "id": "detected-1791462440373-91",
+      "index": 52,
+      "name": "WhiteSkellyRightArm",
+      "category": "Limb / Part",
+      "bounds": {
+        "x": 102,
+        "y": 272,
+        "width": 10,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 872,
+        "xmin": 327,
+        "ymax": 936,
+        "xmax": 359
+      },
+      "description": "Auto-detected cluster at [101, 271], size 12x22px"
+    },
+    {
+      "id": "box-1791463107374",
+      "index": 53,
+      "name": "R6RightLeg",
+      "category": "Character",
+      "bounds": {
+        "x": 107,
+        "y": 168,
+        "width": 11,
+        "height": 20
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 538,
+        "xmin": 343,
+        "ymax": 603,
+        "xmax": 378
+      },
+      "description": ""
+    },
+    {
+      "id": "box-1791463520306",
+      "index": 54,
+      "name": "PeterRightLeg",
+      "category": "Character",
+      "bounds": {
+        "x": 232,
+        "y": 220,
+        "width": 10,
+        "height": 12
+      },
+      "normalizedBounds_0_1000": {
+        "ymin": 705,
+        "xmin": 744,
+        "ymax": 744,
+        "xmax": 776
+      },
+      "description": ""
+    }
+  ]
+}

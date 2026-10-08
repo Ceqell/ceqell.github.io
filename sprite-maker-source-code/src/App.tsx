@@ -42,7 +42,19 @@ import { HelpModal, HelpTabId } from './components/HelpModal';
 import { AboutModal } from './components/AboutModal';
 import { CustomCanvasModal } from './components/CustomCanvasModal';
 import { ProjectManagerModal } from './components/ProjectManagerModal';
+import { StarterModal } from './components/StarterModal';
+import { AssetManagerModal } from './components/AssetManagerModal';
 import { ToastContainer, ToastItem } from './components/Toast';
+import { createDefaultReferenceImage } from './constants/defaultReference';
+import { 
+  SPRITE_ATLAS, 
+  SpriteAtlasEntry, 
+  RevampedStarter, 
+  ScaleMode,
+  extractSpritePixels, 
+  placeSpriteOnCanvas, 
+  REVAMPED_STARTER_TEMPLATES 
+} from './utils/spriteAtlas';
 import { 
   StoredProject, 
   saveProjectToDB, 
@@ -171,9 +183,25 @@ export default function App() {
     floatingPixels: [],
   });
 
-  // Multiple Reference Images
-  const [references, setReferences] = useState<ReferenceImage[]>([]);
-  const [activeRefId, setActiveRefId] = useState<string | null>(null);
+  // Multiple Reference Images (initialized with default package reference if enabled)
+  const [references, setReferences] = useState<ReferenceImage[]>(() => {
+    try {
+      const enabled = localStorage.getItem('figuray_default_reference_enabled');
+      if (enabled === 'false') return [];
+      return [createDefaultReferenceImage()];
+    } catch {
+      return [createDefaultReferenceImage()];
+    }
+  });
+  const [activeRefId, setActiveRefId] = useState<string | null>(() => {
+    try {
+      const enabled = localStorage.getItem('figuray_default_reference_enabled');
+      if (enabled === 'false') return null;
+      return 'default-package-templates';
+    } catch {
+      return null;
+    }
+  });
 
   // Modals
   const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
@@ -181,6 +209,8 @@ export default function App() {
   const [isHelpOpen, setIsHelpOpen] = useState<boolean>(false);
   const [isAboutOpen, setIsAboutOpen] = useState<boolean>(false);
   const [isProjectManagerOpen, setIsProjectManagerOpen] = useState<boolean>(true);
+  const [isStarterModalOpen, setIsStarterModalOpen] = useState<boolean>(false);
+  const [isAssetManagerOpen, setIsAssetManagerOpen] = useState<boolean>(false);
   const [helpInitialTab, setHelpInitialTab] = useState<HelpTabId>('overview');
 
   // Active Project ID for local IndexedDB tracking
@@ -791,14 +821,39 @@ export default function App() {
     setGuideOffset({ x: centeredX, y: centeredY });
   };
 
-  // Starter Templates
-  const handleSelectStarterTemplate = (templateId: string) => {
-    if (!window.confirm('Load template? Any unsaved changes in current canvas will be replaced.')) return;
+  // Starter Templates (revamped with authentic hand-drawn sprites from DavidBlxTemplate, scaled to 1x wiki default or 2x HD)
+  const handleLoadRevampedStarter = async (
+    starter: RevampedStarter,
+    autoResizeCanvas: boolean,
+    scaleMode: ScaleMode = '1x'
+  ) => {
+    const recommendedW = scaleMode === '1x' ? starter.recommendedWidth1x : starter.recommendedWidth2x;
+    const recommendedH = scaleMode === '1x' ? starter.recommendedHeight1x : starter.recommendedHeight2x;
 
-    const totalPixels = canvasWidth * canvasHeight;
-    const layout = getBodyLayout(canvasWidth, canvasHeight, bodyOffsetX, bodyOffsetY);
+    let targetWidth = canvasWidth;
+    let targetHeight = canvasHeight;
+    let targetPreset = activePreset;
+    let targetGuideOffset = guideOffset;
 
-    if (templateId === 'empty') {
+    if (autoResizeCanvas && (canvasWidth !== recommendedW || canvasHeight !== recommendedH)) {
+      targetWidth = recommendedW;
+      targetHeight = recommendedH;
+      targetPreset = {
+        width: targetWidth,
+        height: targetHeight,
+        name: `Custom (${targetWidth}×${targetHeight})`,
+        description: `Auto-fitted for ${starter.name} (${scaleMode})`,
+        bodyOffsetX: Math.floor((targetWidth - 21) / 2),
+        bodyOffsetY: Math.floor((targetHeight - 28) / 2),
+      };
+      targetGuideOffset = { x: targetPreset.bodyOffsetX, y: targetPreset.bodyOffsetY };
+      setActivePreset(targetPreset);
+      setGuideOffset(targetGuideOffset);
+    }
+
+    const totalPixels = targetWidth * targetHeight;
+
+    if (starter.id === 'starter-empty' || starter.spriteIndex === 0) {
       const blankLayers: Layer[] = [
         {
           id: 'layer-body',
@@ -807,88 +862,264 @@ export default function App() {
           opacity: 1,
           locked: false,
           pixels: new Array(totalPixels).fill(''),
-          width: canvasWidth,
-          height: canvasHeight,
+          width: targetWidth,
+          height: targetHeight,
         },
       ];
       setLayers(blankLayers);
       setActiveLayerId('layer-body');
-      pushHistory(blankLayers, 'layer-body', activePreset, guideOffset);
+      pushHistory(blankLayers, 'layer-body', targetPreset, targetGuideOffset);
+      addToast({
+        title: 'Empty Canvas Created',
+        message: 'Blank canvas ready for drawing',
+        type: 'info',
+        duration: 2500,
+      });
       return;
     }
 
+    try {
+      const spriteEntry = SPRITE_ATLAS.find(s => s.index === starter.spriteIndex);
+      if (!spriteEntry) {
+        throw new Error('Sprite not found in atlas');
+      }
+
+      const extracted = await extractSpritePixels(spriteEntry, scaleMode);
+      const placedPixels = placeSpriteOnCanvas(
+        extracted.pixels,
+        extracted.width,
+        extracted.height,
+        targetWidth,
+        targetHeight
+      );
+
+      const newLayers: Layer[] = [
+        {
+          id: 'layer-starter-base',
+          name: `${starter.name} Base (${scaleMode})`,
+          visible: true,
+          opacity: 1,
+          locked: false,
+          pixels: placedPixels,
+          width: targetWidth,
+          height: targetHeight,
+        },
+        {
+          id: 'layer-starter-overlay',
+          name: 'Details / Hat Layer',
+          visible: true,
+          opacity: 1,
+          locked: false,
+          pixels: new Array(totalPixels).fill(''),
+          width: targetWidth,
+          height: targetHeight,
+        },
+      ];
+
+      setLayers(newLayers);
+      setActiveLayerId('layer-starter-overlay');
+      pushHistory(newLayers, 'layer-starter-overlay', targetPreset, targetGuideOffset);
+      addToast({
+        title: `Loaded ${starter.name} (${scaleMode})`,
+        message: scaleMode === '1x' ? 'Scaled to 1x canonical wiki proportions (11x10 body)' : 'Loaded at 2x raw template resolution',
+        type: 'success',
+        icon: 'sparkles',
+        duration: 3500,
+      });
+    } catch (err) {
+      console.error('Failed to load starter sprite:', err);
+      addToast({
+        title: 'Failed to Load Starter',
+        message: String(err),
+        type: 'error',
+        duration: 3500,
+      });
+    }
+  };
+
+  const handleSelectStarterTemplate = (templateId: string) => {
+    // If it's a revamped starter id
+    const foundRevamped = REVAMPED_STARTER_TEMPLATES.find(t => t.id === templateId);
+    if (foundRevamped) {
+      handleLoadRevampedStarter(foundRevamped, true, '1x');
+      return;
+    }
+
+    // Map old legacy IDs to revamped human-drawn equivalents at 1x
     if (templateId === 'noob') {
-      const noobLayers = createNoobSprite(canvasWidth, canvasHeight, bodyOffsetX, bodyOffsetY);
-      setLayers(noobLayers);
-      setActiveLayerId(noobLayers[0].id);
-      pushHistory(noobLayers, noobLayers[0].id, activePreset, guideOffset);
+      const s = REVAMPED_STARTER_TEMPLATES.find(t => t.id === 'starter-noob-1');
+      if (s) handleLoadRevampedStarter(s, false, '1x');
+      return;
+    }
+    if (templateId === 'ibot') {
+      const s = REVAMPED_STARTER_TEMPLATES.find(t => t.id === 'starter-ibot');
+      if (s) handleLoadRevampedStarter(s, false, '1x');
+      return;
+    }
+    if (templateId === 'wireframe') {
+      const s = REVAMPED_STARTER_TEMPLATES.find(t => t.id === 'starter-wireframe-r6');
+      if (s) handleLoadRevampedStarter(s, false, '1x');
+      return;
+    }
+    if (templateId === 'empty') {
+      const s = REVAMPED_STARTER_TEMPLATES.find(t => t.id === 'starter-empty');
+      if (s) handleLoadRevampedStarter(s, false, '1x');
       return;
     }
 
-    // Default Noob base + custom outfits for guest / bluudude / ibot / wireframe
-    const baseLayers = createNoobSprite(canvasWidth, canvasHeight, bodyOffsetX, bodyOffsetY);
-    const bodyL = baseLayers[0];
-    const faceL = baseLayers[1];
+    // Fallback for legacy
+    setIsStarterModalOpen(true);
+  };
 
-    if (templateId === 'guest') {
-      // Black shirt, Navy pants, yellow limbs
-      const black = '#1B2A34';
-      const white = '#FFFFFF';
-      const navy = '#002060';
+  // Asset Manager Actions: Spawn as dedicated new layer with interactive floating selection bounding box
+  const handleInsertSpriteAsNewLayer = (
+    sprite: SpriteAtlasEntry,
+    extracted: { pixels: string[]; width: number; height: number },
+    scaleMode: ScaleMode = '1x'
+  ) => {
+    // 1. Create a fresh empty layer for this asset
+    const newLayerId = `layer-${Date.now()}`;
+    const newLayer: Layer = {
+      id: newLayerId,
+      name: `${sprite.name} (${scaleMode})`,
+      visible: true,
+      opacity: 1,
+      locked: false,
+      pixels: new Array(canvasWidth * canvasHeight).fill(''),
+      width: canvasWidth,
+      height: canvasHeight,
+    };
+    const updatedLayers = [...layers, newLayer];
+    setLayers(updatedLayers);
+    setActiveLayerId(newLayerId);
 
-      // Re-color torso black
-      for (let y = 0; y < layout.torso.height; y++) {
-        for (let x = 0; x < layout.torso.width; x++) {
-          bodyL.pixels[(layout.torso.y + y) * canvasWidth + (layout.torso.x + x)] = black;
-        }
-      }
-      // White retro 'R' decal on chest
-      bodyL.pixels[(layout.torso.y + 3) * canvasWidth + (layout.torso.x + 5)] = white;
-      bodyL.pixels[(layout.torso.y + 4) * canvasWidth + (layout.torso.x + 5)] = white;
-      bodyL.pixels[(layout.torso.y + 5) * canvasWidth + (layout.torso.x + 5)] = white;
-      bodyL.pixels[(layout.torso.y + 3) * canvasWidth + (layout.torso.x + 6)] = white;
+    // 2. Calculate centered spawn coordinates
+    const spawnX = Math.floor((canvasWidth - extracted.width) / 2);
+    const spawnY = Math.floor((canvasHeight - extracted.height) / 2);
 
-      // Navy pants
-      for (let y = 0; y < layout.legs.height; y++) {
-        for (let x = 0; x < layout.legs.width; x++) {
-          const px = layout.legs.x + x;
-          const py = layout.legs.y + y;
-          bodyL.pixels[py * canvasWidth + px] = px === layout.legs.seamCol ? '#001030' : navy;
-        }
-      }
-    } else if (templateId === 'bluudude') {
-      // Cyan glitch hacker
-      const cyan = '#00E5FF';
-      const darkCyan = '#005577';
-      const black = '#0A0A0A';
-      bodyL.pixels = bodyL.pixels.map(p => p === '#0D69AC' ? darkCyan : p === '#F5CD2F' ? cyan : p === '#287F46' ? black : p);
-    } else if (templateId === 'ibot') {
-      // iBot Package metallic cybernetic frame
-      const silver = '#A0A5A9';
-      const darkMetal = '#635F61';
-      const cyanLight = '#00E5FF';
-      for (let i = 0; i < bodyL.pixels.length; i++) {
-        if (bodyL.pixels[i] === '#0D69AC') bodyL.pixels[i] = silver;
-        if (bodyL.pixels[i] === '#287F46') bodyL.pixels[i] = darkMetal;
-      }
-      // Cyber visor on face
-      for (let x = 1; x <= 7; x++) {
-        faceL.pixels[(layout.head.y + 3) * canvasWidth + (layout.head.x + x)] = cyanLight;
-      }
-    } else if (templateId === 'wireframe') {
-      // Mannequin neutral grey
-      const grey = '#A0A5A9';
-      const darkGrey = '#635F61';
-      for (let i = 0; i < bodyL.pixels.length; i++) {
-        if (bodyL.pixels[i] !== '') bodyL.pixels[i] = grey;
-      }
-      // Clear face
-      faceL.pixels.fill('');
+    // 3. Create full draggable bounding box mask (entire rectangular area allows dragging without accidental stamping)
+    const floatingMask = new Array(extracted.width * extracted.height).fill(true);
+
+    // 4. Initialize floating selection state
+    setSelection({
+      active: true,
+      type: 'rectangle',
+      startX: spawnX,
+      startY: spawnY,
+      endX: spawnX + extracted.width - 1,
+      endY: spawnY + extracted.height - 1,
+      floating: true,
+      floatingX: spawnX,
+      floatingY: spawnY,
+      floatingWidth: extracted.width,
+      floatingHeight: extracted.height,
+      floatingPixels: extracted.pixels,
+      floatingMask,
+    });
+
+    // 5. Switch active tool to 'select' and ensure modal is closed
+    setCurrentTool('select');
+    setIsAssetManagerOpen(false);
+
+    // 6. Push history snapshot and show guidance toast
+    pushHistory(updatedLayers, newLayerId, activePreset, guideOffset);
+    addToast({
+      title: `Ready to Stamp: ${sprite.name}`,
+      message: 'Drag to position. Use Arrow keys to nudge 1px. Press Enter or click Stamp to place.',
+      type: 'info',
+      icon: 'layer',
+      duration: 5000,
+    });
+  };
+
+  const handleStampSpriteOntoActiveLayer = (
+    sprite: SpriteAtlasEntry,
+    placedPixels: string[],
+    scaleMode: ScaleMode = '1x'
+  ) => {
+    const activeLayer = layers.find(l => l.id === activeLayerId);
+    if (!activeLayer || activeLayer.locked) {
+      addToast({
+        title: 'Cannot Stamp',
+        message: 'Active layer is locked or not found',
+        type: 'warning',
+        duration: 3000,
+      });
+      return;
     }
 
-    setLayers(baseLayers);
-    setActiveLayerId(baseLayers[0].id);
-    pushHistory(baseLayers, baseLayers[0].id, activePreset, guideOffset);
+    const updatedPixels = [...activeLayer.pixels];
+    for (let i = 0; i < placedPixels.length; i++) {
+      if (placedPixels[i]) {
+        updatedPixels[i] = placedPixels[i];
+      }
+    }
+
+    const updatedLayers = layers.map(l => l.id === activeLayerId ? { ...l, pixels: updatedPixels } : l);
+    setLayers(updatedLayers);
+    pushHistory(updatedLayers, activeLayerId, activePreset, guideOffset);
+    addToast({
+      title: 'Stamped onto Layer',
+      message: `"${sprite.name}" (${scaleMode}) merged onto ${activeLayer.name}`,
+      type: 'success',
+      icon: 'sparkles',
+      duration: 3000,
+    });
+  };
+
+  const handleAddSpriteAsFloatingReference = (sprite: SpriteAtlasEntry) => {
+    const refId = `ref-${sprite.id}-${Date.now()}`;
+    const newRef: ReferenceImage = {
+      id: refId,
+      name: `${sprite.name} (${sprite.bounds.width}×${sprite.bounds.height})`,
+      url: sprite.file,
+      width: sprite.bounds.width,
+      height: sprite.bounds.height,
+      traceMode: false,
+      traceOpacity: 0.6,
+      traceX: Math.floor((canvasWidth - sprite.bounds.width) / 2),
+      traceY: Math.floor((canvasHeight - sprite.bounds.height) / 2),
+      traceScale: 1,
+      windowOpen: true,
+      windowX: 80,
+      windowY: 80,
+      windowZoom: 4,
+      windowWidth: 260,
+      windowHeight: 260,
+    };
+    setReferences(prev => [...prev, newRef]);
+    setActiveRefId(refId);
+    addToast({
+      title: 'Added Reference Window',
+      message: `Opened floating reference for ${sprite.name}`,
+      type: 'success',
+      duration: 3000,
+    });
+  };
+
+  const handleSetSpriteAsTraceOverlay = (sprite: SpriteAtlasEntry) => {
+    const refId = `trace-${sprite.id}-${Date.now()}`;
+    const newRef: ReferenceImage = {
+      id: refId,
+      name: `${sprite.name} [Trace Ghost]`,
+      url: sprite.file,
+      width: sprite.bounds.width,
+      height: sprite.bounds.height,
+      traceMode: true,
+      traceOpacity: 0.5,
+      traceX: Math.floor((canvasWidth - sprite.bounds.width) / 2),
+      traceY: Math.floor((canvasHeight - sprite.bounds.height) / 2),
+      traceScale: 1,
+      windowOpen: false,
+    };
+    setReferences(prev => [...prev, newRef]);
+    setActiveRefId(refId);
+    addToast({
+      title: 'Trace Ghost Enabled',
+      message: `Overlaying ${sprite.name} directly on canvas`,
+      type: 'success',
+      duration: 3000,
+    });
   };
 
   // Reference management
@@ -1342,7 +1573,13 @@ export default function App() {
   }, [pushHistory]);
 
   // Create new project from Project Manager
-  const handleCreateNewProject = useCallback((name: string, presetName: string, customW?: number, customH?: number) => {
+  const handleCreateNewProject = useCallback((
+    name: string, 
+    presetName: string, 
+    customW?: number, 
+    customH?: number,
+    includeDefaultRef: boolean = true
+  ) => {
     hasChosenProjectRef.current = true;
     const newId = generateProjectId();
     setCurrentProjectId(newId);
@@ -1380,7 +1617,11 @@ export default function App() {
     ];
     setLayers(initialLayers);
     setActiveLayerId('layer-body');
-    setReferences([]);
+
+    const newReferences = includeDefaultRef ? [createDefaultReferenceImage()] : [];
+    setReferences(newReferences);
+    setActiveRefId(newReferences[0]?.id || null);
+
     pushHistory(initialLayers, 'layer-body', targetPreset, newGuideOffset);
 
     // Initial save in storageDB
@@ -1396,6 +1637,7 @@ export default function App() {
       canvasPresetName: targetPreset.name,
       layers: initialLayers,
       activeLayerId: 'layer-body',
+      references: newReferences,
       selectedColor: currentColor,
       bodyOffsetX: newGuideOffset.x,
       bodyOffsetY: newGuideOffset.y,
@@ -1553,6 +1795,8 @@ export default function App() {
         onSelectCanvasPreset={handleSelectCanvasPreset}
         onOpenCustomCanvasModal={() => setIsCustomCanvasOpen(true)}
         onSelectStarterTemplate={handleSelectStarterTemplate}
+        onOpenStarterModal={() => setIsStarterModalOpen(true)}
+        onOpenAssetManager={() => setIsAssetManagerOpen(true)}
         canUndo={historyIndex > 0}
         canRedo={historyIndex < history.length - 1}
         onUndo={handleUndo}
@@ -1638,6 +1882,7 @@ export default function App() {
               onCollapse={() => setLeftCollapsed(true)}
               autoSwitchPencil={autoSwitchPencil}
               onToggleAutoSwitchPencil={handleToggleAutoSwitchPencil}
+              onOpenAssetManager={() => setIsAssetManagerOpen(true)}
             />
             {/* Draggable Splitter on right edge of Left Toolbar */}
             <div
@@ -1887,6 +2132,27 @@ export default function App() {
             duration: 3500,
           });
         }}
+      />
+
+      {/* Revamped Starter Templates Modal (Human-Crafted 1.0, 2.0, iBot, Peter, Skeletons) */}
+      <StarterModal
+        isOpen={isStarterModalOpen}
+        onClose={() => setIsStarterModalOpen(false)}
+        onSelectStarter={(starter, autoResize, scaleMode) => handleLoadRevampedStarter(starter, autoResize, scaleMode)}
+        currentCanvasWidth={canvasWidth}
+        currentCanvasHeight={canvasHeight}
+      />
+
+      {/* Full Asset Manager & Toolbox Modal */}
+      <AssetManagerModal
+        isOpen={isAssetManagerOpen}
+        onClose={() => setIsAssetManagerOpen(false)}
+        canvasWidth={canvasWidth}
+        canvasHeight={canvasHeight}
+        onInsertAsNewLayer={handleInsertSpriteAsNewLayer}
+        onStampOntoActiveLayer={handleStampSpriteOntoActiveLayer}
+        onAddAsFloatingReference={handleAddSpriteAsFloatingReference}
+        onSetTraceOverlay={handleSetSpriteAsTraceOverlay}
       />
 
       {/* Toast Notifications */}

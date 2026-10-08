@@ -1,0 +1,602 @@
+{
+  "image": {
+    "name": "DavidBlxTemplate.png",
+    "width": 312,
+    "height": 312
+  },
+  "coordinate_format": "[ymin, xmin, ymax, xmax] normalized to 0..1000",
+  "objects": [
+    {
+      "box_2d": [
+        0,
+        0,
+        141,
+        90
+      ],
+      "label": "colorpalette",
+      "category": "Color Palette",
+      "description": "Auto-detected cluster at [0, 0], size 30x46px"
+    },
+    {
+      "box_2d": [
+        13,
+        250,
+        64,
+        308
+      ],
+      "label": "FatR6Head",
+      "category": "Head / Face",
+      "description": "Auto-detected cluster at [77, 3], size 20x18px"
+    },
+    {
+      "box_2d": [
+        6,
+        314,
+        64,
+        372
+      ],
+      "label": "blockhead",
+      "category": "Head / Face",
+      "description": "Auto-detected cluster at [97, 1], size 20x20px"
+    },
+    {
+      "box_2d": [
+        13,
+        378,
+        64,
+        436
+      ],
+      "label": "roundedHead",
+      "category": "Head / Face",
+      "description": "Auto-detected cluster at [117, 3], size 20x18px"
+    },
+    {
+      "box_2d": [
+        6,
+        442,
+        71,
+        500
+      ],
+      "label": "ibotHead",
+      "category": "Head / Face",
+      "description": "Auto-detected cluster at [137, 1], size 20x22px"
+    },
+    {
+      "box_2d": [
+        13,
+        513,
+        71,
+        590
+      ],
+      "label": "peterFamilyGuyHead",
+      "category": "Head / Face",
+      "description": "Auto-detected cluster at [159, 3], size 26x20px"
+    },
+    {
+      "box_2d": [
+        13,
+        596,
+        64,
+        654
+      ],
+      "label": "shadedFatR6Head",
+      "category": "Auto Detected",
+      "description": "Auto-detected cluster at [185, 3], size 20x18px"
+    },
+    {
+      "box_2d": [
+        13,
+        660,
+        64,
+        718
+      ],
+      "label": "shadedRoundHeadForBrownSkeleton",
+      "category": "Head / Face",
+      "description": "Auto-detected cluster at [205, 3], size 20x18px"
+    },
+    {
+      "box_2d": [
+        13,
+        833,
+        192,
+        968
+      ],
+      "label": "R6wireframe",
+      "category": "Character",
+      "description": "Auto-detected cluster at [259, 3], size 44x58px"
+    },
+    {
+      "box_2d": [
+        218,
+        0,
+        397,
+        122
+      ],
+      "label": "noobrobloxian2.0",
+      "category": "Character",
+      "description": "Auto-detected cluster at [0, 67], size 40x58px"
+    },
+    {
+      "box_2d": [
+        218,
+        128,
+        397,
+        263
+      ],
+      "label": "noob1.0",
+      "category": "Character",
+      "description": "Auto-detected cluster at [39, 67], size 44x58px"
+    },
+    {
+      "box_2d": [
+        205,
+        269,
+        401,
+        404
+      ],
+      "label": "ibot",
+      "category": "Character",
+      "description": "Auto-detected cluster at [83, 63], size 44x62px"
+    },
+    {
+      "box_2d": [
+        218,
+        410,
+        397,
+        526
+      ],
+      "label": "peter",
+      "category": "Character",
+      "description": "Auto-detected cluster at [127, 67], size 38x58px"
+    },
+    {
+      "box_2d": [
+        218,
+        532,
+        397,
+        654
+      ],
+      "label": "skeletonbrown",
+      "category": "Character",
+      "description": "Auto-detected cluster at [165, 67], size 40x58px"
+    },
+    {
+      "box_2d": [
+        218,
+        660,
+        397,
+        782
+      ],
+      "label": "skeletonwhite",
+      "category": "Character",
+      "description": "Auto-detected cluster at [205, 67], size 40x58px"
+    },
+    {
+      "box_2d": [
+        218,
+        840,
+        397,
+        962
+      ],
+      "label": "R15Robloxian2.0PackageWireframe",
+      "category": "Auto Detected",
+      "description": "Auto-detected cluster at [261, 67], size 40x58px"
+    },
+    {
+      "box_2d": [
+        468,
+        51,
+        538,
+        77
+      ],
+      "label": "R15LeftArm",
+      "category": "Limb / Part",
+      "description": "Auto-detected cluster at [15, 145], size 10x24px"
+    },
+    {
+      "box_2d": [
+        468,
+        90,
+        532,
+        160
+      ],
+      "label": "R15FrontTorso",
+      "category": "Torso",
+      "description": "Auto-detected cluster at [27, 145], size 24x22px"
+    },
+    {
+      "box_2d": [
+        468,
+        173,
+        538,
+        199
+      ],
+      "label": "R15RightArm",
+      "category": "Limb / Part",
+      "description": "Auto-detected cluster at [53, 145], size 10x24px"
+    },
+    {
+      "box_2d": [
+        468,
+        263,
+        532,
+        295
+      ],
+      "label": "R6LeftArm",
+      "category": "Auto Detected",
+      "description": "Auto-detected cluster at [81, 145], size 12x22px"
+    },
+    {
+      "box_2d": [
+        468,
+        308,
+        532,
+        378
+      ],
+      "label": "R6FrontTorso",
+      "category": "Auto Detected",
+      "description": "Auto-detected cluster at [95, 145], size 24x22px"
+    },
+    {
+      "box_2d": [
+        468,
+        391,
+        532,
+        423
+      ],
+      "label": "R6RightArm",
+      "category": "Auto Detected",
+      "description": "Auto-detected cluster at [121, 145], size 12x22px"
+    },
+    {
+      "box_2d": [
+        538,
+        90,
+        603,
+        115
+      ],
+      "label": "R15LeftLeg",
+      "category": "Limb / Part",
+      "description": "Auto-detected cluster at [27, 167], size 10x22px"
+    },
+    {
+      "box_2d": [
+        538,
+        135,
+        603,
+        160
+      ],
+      "label": "R15RightLeg",
+      "category": "Auto Detected",
+      "description": "Auto-detected cluster at [41, 167], size 10x22px"
+    },
+    {
+      "box_2d": [
+        538,
+        308,
+        603,
+        343
+      ],
+      "label": "R6LeftLeg",
+      "category": "Auto Detected",
+      "description": "Auto-detected cluster at [95, 167], size 24x22px"
+    },
+    {
+      "box_2d": [
+        494,
+        500,
+        558,
+        571
+      ],
+      "label": "FrontTorsoAlt2",
+      "category": "Variant / Alt",
+      "description": "Auto-detected cluster at [155, 153], size 24x22px\n\nWithRobloxLogo"
+    },
+    {
+      "box_2d": [
+        647,
+        83,
+        712,
+        115
+      ],
+      "label": "R15LeftLegAlt",
+      "category": "Limb / Part",
+      "description": "Auto-detected cluster at [25, 201], size 12x22px"
+    },
+    {
+      "box_2d": [
+        647,
+        135,
+        712,
+        167
+      ],
+      "label": "R15RightLegAlt",
+      "category": "Limb / Part",
+      "description": "Auto-detected cluster at [41, 201], size 12x22px"
+    },
+    {
+      "box_2d": [
+        647,
+        308,
+        712,
+        378
+      ],
+      "label": "R6FrontTorsoAlt",
+      "category": "Variant / Alt",
+      "description": "Auto-detected cluster at [95, 201], size 24x22px"
+    },
+    {
+      "box_2d": [
+        615,
+        455,
+        686,
+        487
+      ],
+      "label": "iBotLeftArm",
+      "category": "Limb / Part",
+      "description": "Auto-detected cluster at [141, 191], size 12x24px"
+    },
+    {
+      "box_2d": [
+        615,
+        500,
+        692,
+        583
+      ],
+      "label": "iBotFrontTorso",
+      "category": "Torso",
+      "description": "Auto-detected cluster at [155, 191], size 28x26px"
+    },
+    {
+      "box_2d": [
+        615,
+        596,
+        686,
+        628
+      ],
+      "label": "iBotRightArm",
+      "category": "Limb / Part",
+      "description": "Auto-detected cluster at [185, 191], size 12x24px"
+    },
+    {
+      "box_2d": [
+        615,
+        667,
+        679,
+        692
+      ],
+      "label": "peterRightArm",
+      "category": "Limb / Part",
+      "description": "Auto-detected cluster at [207, 191], size 10x22px"
+    },
+    {
+      "box_2d": [
+        615,
+        699,
+        699,
+        788
+      ],
+      "label": "peterFrontTorso",
+      "category": "Torso",
+      "description": "Auto-detected cluster at [217, 191], size 30x28px"
+    },
+    {
+      "box_2d": [
+        615,
+        795,
+        679,
+        821
+      ],
+      "label": "peterLeftArm",
+      "category": "Auto Detected",
+      "description": "Auto-detected cluster at [247, 191], size 10x22px"
+    },
+    {
+      "box_2d": [
+        718,
+        308,
+        782,
+        340
+      ],
+      "label": "R6LeftLegAlt",
+      "category": "Limb / Part",
+      "description": "Auto-detected cluster at [95, 223], size 12x22px"
+    },
+    {
+      "box_2d": [
+        718,
+        346,
+        782,
+        378
+      ],
+      "label": "R6RightLegAlt",
+      "category": "Limb / Part",
+      "description": "Auto-detected cluster at [107, 223], size 12x22px"
+    },
+    {
+      "box_2d": [
+        673,
+        487,
+        744,
+        519
+      ],
+      "label": "iBotLeftLeg",
+      "category": "Limb / Part",
+      "description": "Auto-detected cluster at [151, 209], size 12x24px"
+    },
+    {
+      "box_2d": [
+        673,
+        564,
+        744,
+        596
+      ],
+      "label": "iBotRightLeg",
+      "category": "Limb / Part",
+      "description": "Auto-detected cluster at [175, 209], size 12x24px"
+    },
+    {
+      "box_2d": [
+        705,
+        712,
+        744,
+        744
+      ],
+      "label": "peterLeftLeg",
+      "category": "Limb / Part",
+      "description": "Auto-detected cluster at [221, 219], size 22x14px"
+    },
+    {
+      "box_2d": [
+        795,
+        71,
+        846,
+        128
+      ],
+      "label": "ClassicSkellyHead",
+      "category": "Head / Face",
+      "description": "Auto-detected cluster at [21, 247], size 20x18px"
+    },
+    {
+      "box_2d": [
+        795,
+        250,
+        846,
+        308
+      ],
+      "label": "WhiteSkellyHead",
+      "category": "Head / Face",
+      "description": "Auto-detected cluster at [77, 247], size 20x18px"
+    },
+    {
+      "box_2d": [
+        872,
+        19,
+        936,
+        51
+      ],
+      "label": "ClassicSkellyLeftArm",
+      "category": "Limb / Part",
+      "description": "Auto-detected cluster at [5, 271], size 12x22px"
+    },
+    {
+      "box_2d": [
+        929,
+        45,
+        994,
+        71
+      ],
+      "label": "ClassicSkellyLeftLeg",
+      "category": "Limb / Part",
+      "description": "Auto-detected cluster at [13, 289], size 10x22px"
+    },
+    {
+      "box_2d": [
+        865,
+        64,
+        936,
+        135
+      ],
+      "label": "ClassicSkellyFrontTorso",
+      "category": "Torso",
+      "description": "Auto-detected cluster at [19, 269], size 24x24px"
+    },
+    {
+      "box_2d": [
+        929,
+        128,
+        994,
+        154
+      ],
+      "label": "ClassicSkellyRightLeg",
+      "category": "Limb / Part",
+      "description": "Auto-detected cluster at [39, 289], size 10x22px"
+    },
+    {
+      "box_2d": [
+        872,
+        147,
+        936,
+        179
+      ],
+      "label": "ClassicSkellyRightArm",
+      "category": "Limb / Part",
+      "description": "Auto-detected cluster at [45, 271], size 12x22px"
+    },
+    {
+      "box_2d": [
+        872,
+        199,
+        936,
+        231
+      ],
+      "label": "WhiteSkellyLeftArm",
+      "category": "Limb / Part",
+      "description": "Auto-detected cluster at [61, 271], size 12x22px"
+    },
+    {
+      "box_2d": [
+        929,
+        224,
+        994,
+        250
+      ],
+      "label": "WhiteSkellyLeftLeg",
+      "category": "Auto Detected",
+      "description": "Auto-detected cluster at [69, 289], size 10x22px"
+    },
+    {
+      "box_2d": [
+        865,
+        244,
+        936,
+        314
+      ],
+      "label": "WhiteSkellyFrontTorso",
+      "category": "Torso",
+      "description": "Auto-detected cluster at [75, 269], size 24x24px"
+    },
+    {
+      "box_2d": [
+        929,
+        308,
+        994,
+        333
+      ],
+      "label": "WhiteSkellyRightLeg",
+      "category": "Auto Detected",
+      "description": "Auto-detected cluster at [95, 289], size 10x22px"
+    },
+    {
+      "box_2d": [
+        872,
+        327,
+        936,
+        359
+      ],
+      "label": "WhiteSkellyRightArm",
+      "category": "Limb / Part",
+      "description": "Auto-detected cluster at [101, 271], size 12x22px"
+    },
+    {
+      "box_2d": [
+        538,
+        343,
+        603,
+        378
+      ],
+      "label": "R6RightLeg",
+      "category": "Character"
+    },
+    {
+      "box_2d": [
+        705,
+        744,
+        744,
+        776
+      ],
+      "label": "PeterRightLeg",
+      "category": "Character"
+    }
+  ]
+}

@@ -384,6 +384,29 @@
   .text-muted-theme {
     color: var(--text-muted);
   }
+  .text-accent-theme {
+    color: var(--text-accent);
+  }
+  .bg-accent-theme {
+    background-color: var(--accent-color, var(--text-accent, #0284c7));
+  }
+  .border-ui-theme,
+  .border-divider-theme {
+    border-color: var(--border-ui);
+  }
+  .border-accent-theme {
+    border-color: var(--accent-color, var(--text-accent, #0284c7));
+  }
+
+  .retro-window {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-ui);
+    color: var(--text-primary);
+  }
+  .retro-titlebar {
+    background-color: var(--bg-surface-raised);
+    border-bottom: 1px solid var(--border-ui);
+  }
 
   /* Authentic 2008 Chrome Button */
   .retro-chrome-btn {

@@ -150,7 +150,7 @@ export const MiniPreview: React.FC<MiniPreviewProps> = ({
       {/* Preview Box - Dual Views: 1x (real size) and 3x/4x enlarged */}
       <div className={`p-4 flex items-center justify-around gap-4 min-h-[110px] ${getBgClass()} transition-colors border-inset shadow-inner`}>
         {/* 1x Real Size */}
-        <div className="flex flex-col items-center gap-1">
+        <div className="flex flex-col items-center gap-1.5">
           <div className="border border-white/20 shadow-md">
             <canvas
               ref={canvasRef}
@@ -158,11 +158,19 @@ export const MiniPreview: React.FC<MiniPreviewProps> = ({
               className="pixelated block"
             />
           </div>
-          <span className="text-[9px] font-mono text-neutral-300 uppercase tracking-wider font-semibold">1x (Original)</span>
+          <span 
+            className={`text-[9px] font-mono uppercase tracking-wider font-bold px-1.5 py-0.5 rounded select-none shadow-xs border transition-colors ${
+              currentBgStyle === 'light-checker'
+                ? 'bg-neutral-900/85 text-white border-neutral-700 shadow-sm'
+                : 'bg-black/60 text-neutral-200 border-white/15 shadow-sm'
+            }`}
+          >
+            1x (Original)
+          </span>
         </div>
 
         {/* 3x Enlarged */}
-        <div className="flex flex-col items-center gap-1">
+        <div className="flex flex-col items-center gap-1.5">
           <div className="border border-white/20 shadow-md">
             <canvas
               width={canvasWidth}
@@ -182,7 +190,15 @@ export const MiniPreview: React.FC<MiniPreviewProps> = ({
               className="pixelated block"
             />
           </div>
-          <span className="text-[9px] font-mono text-neutral-300 uppercase tracking-wider font-semibold">3x Scale</span>
+          <span 
+            className={`text-[9px] font-mono uppercase tracking-wider font-bold px-1.5 py-0.5 rounded select-none shadow-xs border transition-colors ${
+              currentBgStyle === 'light-checker'
+                ? 'bg-neutral-900/85 text-white border-neutral-700 shadow-sm'
+                : 'bg-black/60 text-neutral-200 border-white/15 shadow-sm'
+            }`}
+          >
+            3x Scale
+          </span>
         </div>
       </div>
     </CollapsibleSection>

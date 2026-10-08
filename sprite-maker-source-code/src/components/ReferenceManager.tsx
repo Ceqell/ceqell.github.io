@@ -5,6 +5,7 @@ import {
   Trash2, 
   Layers, 
   Maximize2, 
+  Minimize2,
   Eye, 
   EyeOff, 
   Sliders, 
@@ -15,10 +16,12 @@ import {
   ZoomOut,
   RefreshCw,
   Info,
-  AlertTriangle
+  AlertTriangle,
+  Sparkles
 } from 'lucide-react';
 import { ReferenceImage } from '../types/sprite';
 import { CollapsibleSection } from './CollapsibleSection';
+import { createDefaultReferenceImage } from '../constants/defaultReference';
 
 interface ReferenceManagerProps {
   references: ReferenceImage[];
@@ -106,6 +109,14 @@ export const ReferenceManager: React.FC<ReferenceManagerProps> = ({
       headerActions={
         <div className="flex items-center gap-1">
           <button
+            onClick={() => onAddReferences([createDefaultReferenceImage()])}
+            className="retro-chrome-btn flex items-center gap-1 px-1.5 py-0.5 rounded text-xs transition-colors cursor-pointer"
+            title="Load Default Character Packages Template (Robloxian 2.0, Skeleton, iBot, Peter)"
+          >
+            <Sparkles className="w-3 h-3" style={{ color: 'var(--text-accent)' }} />
+            <span className="hidden sm:inline text-[11px]">Template</span>
+          </button>
+          <button
             onClick={() => fileInputRef.current?.click()}
             className="retro-chrome-btn flex items-center gap-1 px-2 py-0.5 rounded text-xs transition-colors cursor-pointer"
             title="Upload one or multiple images"
@@ -126,21 +137,30 @@ export const ReferenceManager: React.FC<ReferenceManagerProps> = ({
     >
 
       {references.length === 0 ? (
-        <div className="p-4 text-center space-y-2">
+        <div className="p-4 text-center space-y-2.5">
           <div className="w-8 h-8 rounded-full retro-inset-well flex items-center justify-center mx-auto text-secondary-theme">
             <Upload className="w-4 h-4" />
           </div>
-          <p className="text-xs text-primary-theme">No reference images added yet.</p>
-          <p className="text-[11px] text-secondary-theme">
-            Upload character skins, packages (like iBot), or clothing designs to trace or inspect side-by-side.
+          <p className="text-xs text-primary-theme font-semibold">No reference images added yet.</p>
+          <p className="text-[11px] text-secondary-theme leading-relaxed">
+            Inspect character packages side-by-side or trace over guidelines pixel-by-pixel.
           </p>
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="text-xs hover:underline font-medium cursor-pointer"
-            style={{ color: 'var(--text-accent)' }}
-          >
-            Choose files from computer
-          </button>
+          <div className="flex flex-col gap-1.5 pt-1">
+            <button
+              onClick={() => onAddReferences([createDefaultReferenceImage()])}
+              className="retro-chrome-btn px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 mx-auto cursor-pointer shadow-xs"
+              style={{ color: 'var(--text-accent)' }}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Load Default Package Template</span>
+            </button>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="text-xs hover:underline font-medium cursor-pointer text-secondary-theme mt-1"
+            >
+              Or choose files from computer
+            </button>
+          </div>
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto p-2 space-y-2">
@@ -228,18 +248,39 @@ export const ReferenceManager: React.FC<ReferenceManagerProps> = ({
                 <span className="font-mono text-[10px]">{Math.round(activeRef.traceOpacity * 100)}%</span>
               </div>
 
-              {/* Opacity slider */}
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] text-secondary-theme w-12">Opacity</span>
-                <input
-                  type="range"
-                  min="0.1"
-                  max="0.9"
-                  step="0.05"
-                  value={activeRef.traceOpacity}
-                  onChange={(e) => onUpdateReference(activeRef.id, { traceOpacity: parseFloat(e.target.value) })}
-                  className="flex-1 cursor-pointer"
-                />
+              {/* Opacity slider: 0 to 100% */}
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-secondary-theme w-12">Opacity</span>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={activeRef.traceOpacity}
+                    onChange={(e) => onUpdateReference(activeRef.id, { traceOpacity: Math.max(0, Math.min(1, parseFloat(e.target.value) || 0)) })}
+                    className="flex-1 cursor-pointer"
+                  />
+                  <span className="text-[10px] font-mono text-secondary-theme w-8 text-right">
+                    {Math.round(activeRef.traceOpacity * 100)}%
+                  </span>
+                </div>
+                {/* Quick Opacity Presets */}
+                <div className="flex items-center gap-1 pl-14">
+                  {[0, 0.25, 0.5, 0.75, 1].map((pct) => (
+                    <button
+                      key={pct}
+                      type="button"
+                      onClick={() => onUpdateReference(activeRef.id, { traceOpacity: pct })}
+                      className={`px-1.5 py-0.5 text-[9px] font-mono rounded retro-chrome-btn cursor-pointer transition-colors ${
+                        Math.abs(activeRef.traceOpacity - pct) < 0.02 ? 'active font-bold' : 'text-secondary-theme'
+                      }`}
+                      style={Math.abs(activeRef.traceOpacity - pct) < 0.02 ? { color: 'var(--text-accent)' } : undefined}
+                    >
+                      {Math.round(pct * 100)}%
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Scale slider */}
@@ -308,11 +349,22 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
   onColorPick,
   onUpdateReference,
 }) => {
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(reference.windowZoom ?? 1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
-  const [position, setPosition] = useState({ x: 80, y: 120 });
+  const [position, setPosition] = useState(() => ({
+    x: reference.windowX ?? (typeof window !== 'undefined' && window.innerWidth < 768 ? 16 : 80),
+    y: reference.windowY ?? 110,
+  }));
+  const [size, setSize] = useState(() => ({
+    width: reference.windowWidth ?? (typeof window !== 'undefined' && window.innerWidth < 768 ? Math.min(320, window.innerWidth - 32) : 360),
+    height: reference.windowHeight ?? 430,
+  }));
   const [imgError, setImgError] = useState(false);
   const replaceFileInputRef = useRef<HTMLInputElement>(null);
+
+  // Maximize / Restore state
+  const [isMaximized, setIsMaximized] = useState(false);
+  const prevBoundsBeforeMaxRef = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
 
   useEffect(() => {
     setImgError(false);
@@ -328,16 +380,90 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
   const panOriginMouseRef = useRef({ x: 0, y: 0 });
   const panMovedDistRef = useRef(0);
 
+  // Window resize state
+  type ResizeDir = 'se' | 'e' | 's' | 'w' | 'n' | 'ne' | 'nw' | 'sw';
+  const [resizingDir, setResizingDir] = useState<ResizeDir | null>(null);
+  const resizeStartRef = useRef<{
+    mouseX: number;
+    mouseY: number;
+    startX: number;
+    startY: number;
+    startW: number;
+    startH: number;
+    dir: ResizeDir;
+  }>({ mouseX: 0, mouseY: 0, startX: 0, startY: 0, startW: 0, startH: 0, dir: 'se' });
+
+  // Keep a synchronous ref of current bounds to avoid any stale closures
+  const currentBoundsRef = useRef({
+    x: position.x,
+    y: position.y,
+    width: size.width,
+    height: size.height,
+  });
+
+  useEffect(() => {
+    currentBoundsRef.current = {
+      x: position.x,
+      y: position.y,
+      width: size.width,
+      height: size.height,
+    };
+  }, [position.x, position.y, size.width, size.height]);
+
   const imgRef = useRef<HTMLImageElement>(null);
 
-  // Global mouse handlers for window dragging and viewport panning
+  // Global mouse handlers for window dragging, resizing, and viewport panning
   useEffect(() => {
     const handleGlobalMouseMove = (e: MouseEvent) => {
       if (isWindowDragging) {
-        setPosition({
-          x: Math.max(10, Math.min(window.innerWidth - 100, e.clientX - windowDragStartRef.current.x)),
-          y: Math.max(10, Math.min(window.innerHeight - 80, e.clientY - windowDragStartRef.current.y)),
-        });
+        const newX = Math.max(10, Math.min(window.innerWidth - 100, e.clientX - windowDragStartRef.current.x));
+        const newY = Math.max(10, Math.min(window.innerHeight - 80, e.clientY - windowDragStartRef.current.y));
+        setPosition({ x: newX, y: newY });
+        currentBoundsRef.current.x = newX;
+        currentBoundsRef.current.y = newY;
+      }
+
+      if (resizingDir) {
+        const { mouseX, mouseY, startX, startY, startW, startH, dir } = resizeStartRef.current;
+        const dx = e.clientX - mouseX;
+        const dy = e.clientY - mouseY;
+
+        const MIN_W = 250;
+        const MIN_H = 200;
+        const maxW = Math.max(MIN_W, window.innerWidth - 20);
+        const maxH = Math.max(MIN_H, window.innerHeight - 20);
+
+        let newW = startW;
+        let newH = startH;
+        let newX = startX;
+        let newY = startY;
+
+        if (dir.includes('e')) {
+          newW = Math.min(maxW, Math.max(MIN_W, startW + dx));
+        }
+        if (dir.includes('s')) {
+          newH = Math.min(maxH, Math.max(MIN_H, startH + dy));
+        }
+        if (dir.includes('w')) {
+          const rawW = startW - dx;
+          newW = Math.min(maxW, Math.max(MIN_W, rawW));
+          newX = startX + (startW - newW);
+        }
+        if (dir.includes('n')) {
+          const rawH = startH - dy;
+          newH = Math.min(maxH, Math.max(MIN_H, rawH));
+          newY = startY + (startH - newH);
+        }
+
+        setSize({ width: newW, height: newH });
+        currentBoundsRef.current.width = newW;
+        currentBoundsRef.current.height = newH;
+
+        if (newX !== startX || newY !== startY) {
+          setPosition({ x: newX, y: newY });
+          currentBoundsRef.current.x = newX;
+          currentBoundsRef.current.y = newY;
+        }
       }
 
       if (isPanning) {
@@ -355,6 +481,19 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
     const handleGlobalMouseUp = (e: MouseEvent) => {
       if (isWindowDragging) {
         setIsWindowDragging(false);
+        onUpdateReference?.(reference.id, {
+          windowX: currentBoundsRef.current.x,
+          windowY: currentBoundsRef.current.y,
+        });
+      }
+      if (resizingDir) {
+        setResizingDir(null);
+        onUpdateReference?.(reference.id, {
+          windowWidth: currentBoundsRef.current.width,
+          windowHeight: currentBoundsRef.current.height,
+          windowX: currentBoundsRef.current.x,
+          windowY: currentBoundsRef.current.y,
+        });
       }
       if (isPanning) {
         setIsPanning(false);
@@ -365,7 +504,7 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
       }
     };
 
-    if (isWindowDragging || isPanning) {
+    if (isWindowDragging || resizingDir || isPanning) {
       window.addEventListener('mousemove', handleGlobalMouseMove);
       window.addEventListener('mouseup', handleGlobalMouseUp);
     }
@@ -374,13 +513,106 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
       window.removeEventListener('mousemove', handleGlobalMouseMove);
       window.removeEventListener('mouseup', handleGlobalMouseUp);
     };
-  }, [isWindowDragging, isPanning]);
+  }, [isWindowDragging, resizingDir, isPanning]);
 
   // Window header drag start
   const handleTitleMouseDown = (e: React.MouseEvent) => {
     if (e.button !== 0) return;
     setIsWindowDragging(true);
     windowDragStartRef.current = { x: e.clientX - position.x, y: e.clientY - position.y };
+  };
+
+  // Resize start for edge/corner handles
+  const handleResizeStart = (e: React.MouseEvent, dir: ResizeDir) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setResizingDir(dir);
+    resizeStartRef.current = {
+      mouseX: e.clientX,
+      mouseY: e.clientY,
+      startX: position.x,
+      startY: position.y,
+      startW: size.width,
+      startH: size.height,
+      dir,
+    };
+  };
+
+  // Touch resize handler for mobile corner handle
+  const touchResizeStartRef = useRef<{ touchX: number; touchY: number; startW: number; startH: number } | null>(null);
+
+  const handleTouchResizeStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      const t = e.touches[0];
+      touchResizeStartRef.current = {
+        touchX: t.clientX,
+        touchY: t.clientY,
+        startW: size.width,
+        startH: size.height,
+      };
+    }
+  };
+
+  const handleTouchResizeMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 1 && touchResizeStartRef.current) {
+      const t = e.touches[0];
+      const dx = t.clientX - touchResizeStartRef.current.touchX;
+      const dy = t.clientY - touchResizeStartRef.current.touchY;
+      const MIN_W = 250;
+      const MIN_H = 200;
+      const newW = Math.max(MIN_W, Math.min(window.innerWidth - 20, touchResizeStartRef.current.startW + dx));
+      const newH = Math.max(MIN_H, Math.min(window.innerHeight - 20, touchResizeStartRef.current.startH + dy));
+      setSize({ width: newW, height: newH });
+      currentBoundsRef.current.width = newW;
+      currentBoundsRef.current.height = newH;
+    }
+  };
+
+  const handleTouchResizeEnd = () => {
+    if (touchResizeStartRef.current) {
+      touchResizeStartRef.current = null;
+      onUpdateReference?.(reference.id, {
+        windowWidth: currentBoundsRef.current.width,
+        windowHeight: currentBoundsRef.current.height,
+      });
+    }
+  };
+
+  // Maximize / restore toggle
+  const handleToggleMaximize = () => {
+    if (isMaximized) {
+      if (prevBoundsBeforeMaxRef.current) {
+        setPosition({ x: prevBoundsBeforeMaxRef.current.x, y: prevBoundsBeforeMaxRef.current.y });
+        setSize({ width: prevBoundsBeforeMaxRef.current.width, height: prevBoundsBeforeMaxRef.current.height });
+        onUpdateReference?.(reference.id, {
+          windowX: prevBoundsBeforeMaxRef.current.x,
+          windowY: prevBoundsBeforeMaxRef.current.y,
+          windowWidth: prevBoundsBeforeMaxRef.current.width,
+          windowHeight: prevBoundsBeforeMaxRef.current.height,
+        });
+      }
+      setIsMaximized(false);
+    } else {
+      prevBoundsBeforeMaxRef.current = {
+        x: position.x,
+        y: position.y,
+        width: size.width,
+        height: size.height,
+      };
+      const maxW = Math.min(840, Math.max(250, window.innerWidth - 60));
+      const maxH = Math.min(680, Math.max(200, window.innerHeight - 100));
+      const centerX = Math.max(20, Math.round((window.innerWidth - maxW) / 2));
+      const centerY = Math.max(60, Math.round((window.innerHeight - maxH) / 2));
+      setPosition({ x: centerX, y: centerY });
+      setSize({ width: maxW, height: maxH });
+      setIsMaximized(true);
+      onUpdateReference?.(reference.id, {
+        windowX: centerX,
+        windowY: centerY,
+        windowWidth: maxW,
+        windowHeight: maxH,
+      });
+    }
   };
 
   // Viewport pan start
@@ -402,9 +634,26 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
     setZoom(z => Math.max(0.25, Math.min(8, Math.round((z + delta) * 100) / 100)));
   };
 
-  // Reset zoom & pan
+  // Reset zoom & pan to 100%
   const handleResetView = () => {
     setZoom(1);
+    setPan({ x: 0, y: 0 });
+  };
+
+  // Fit image to current window dimensions
+  const handleFitToWindow = () => {
+    const availW = Math.max(100, size.width - 32);
+    const availH = Math.max(100, size.height - 84);
+    const naturalW = reference.width || 312;
+    const naturalH = reference.height || 312;
+    const fitScale = Math.min(availW / naturalW, availH / naturalH);
+    const roundedFit = Math.max(0.25, Math.min(8, Math.round(fitScale * 100) / 100));
+
+    if (Math.abs(zoom - roundedFit) < 0.05 && zoom !== 1) {
+      setZoom(1);
+    } else {
+      setZoom(roundedFit);
+    }
     setPan({ x: 0, y: 0 });
   };
 
@@ -518,20 +767,29 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
 
   return (
     <div
-      style={{ left: `${position.x}px`, top: `${position.y}px` }}
-      className="fixed z-40 bg-surface-theme border border-ui-theme rounded-xl shadow-2xl overflow-hidden flex flex-col w-80 max-w-[90vw] text-primary-theme"
+      style={{
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+        width: `${size.width}px`,
+        height: `${size.height}px`,
+      }}
+      className={`fixed z-40 bg-surface-theme border border-ui-theme rounded-xl shadow-2xl overflow-hidden flex flex-col text-primary-theme ${
+        resizingDir ? 'select-none pointer-events-auto' : ''
+      }`}
     >
-      {/* Title bar (draggable) */}
+      {/* Title bar (draggable & double-click to toggle maximize) */}
       <div
         onMouseDown={handleTitleMouseDown}
-        className="flex items-center justify-between px-3 py-2 bg-surface-raised-theme border-b border-ui-theme cursor-move select-none"
+        onDoubleClick={handleToggleMaximize}
+        className="shrink-0 flex items-center justify-between px-3 py-2 bg-surface-raised-theme border-b border-ui-theme cursor-move select-none"
+        title="Double click to maximize/restore • Drag to move"
       >
-        <div className="flex items-center gap-1.5 text-xs font-medium text-primary-theme truncate">
-          <Move className="w-3 h-3" style={{ color: 'var(--text-accent)' }} />
+        <div className="flex items-center gap-1.5 text-xs font-medium text-primary-theme truncate mr-2">
+          <Move className="w-3 h-3 shrink-0" style={{ color: 'var(--text-accent)' }} />
           <span className="truncate">{reference.name}</span>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 shrink-0">
           <button
             onClick={() => setZoom(z => Math.max(0.25, Math.round((z - 0.25) * 100) / 100))}
             className="retro-chrome-btn p-1 rounded text-primary-theme cursor-pointer"
@@ -540,9 +798,9 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
             <ZoomOut className="w-3 h-3" />
           </button>
           <button
-            onClick={handleResetView}
+            onClick={handleFitToWindow}
             className="retro-chrome-btn px-1.5 py-0.5 rounded text-[10px] font-mono text-secondary-theme hover:text-primary-theme cursor-pointer"
-            title="Reset Zoom & Pan (100% centered)"
+            title="Fit image to window (click again for 100%)"
           >
             {Math.round(zoom * 100)}%
           </button>
@@ -556,13 +814,20 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
           <button
             onClick={handleResetView}
             className="retro-chrome-btn p-1 rounded text-secondary-theme hover:text-primary-theme cursor-pointer"
-            title="Recenter & Reset View"
+            title="Recenter & Reset View (100%)"
           >
             <RefreshCw className="w-3 h-3" />
           </button>
           <button
+            onClick={handleToggleMaximize}
+            className="retro-chrome-btn p-1 rounded text-secondary-theme hover:text-primary-theme cursor-pointer"
+            title={isMaximized ? "Restore window size" : "Maximize window"}
+          >
+            {isMaximized ? <Minimize2 className="w-3 h-3" /> : <Maximize2 className="w-3 h-3" />}
+          </button>
+          <button
             onClick={onClose}
-            className="retro-chrome-btn p-1 rounded text-red-500 hover:text-red-600 transition-colors ml-1 cursor-pointer"
+            className="retro-chrome-btn p-1 rounded text-red-500 hover:text-red-600 transition-colors ml-0.5 cursor-pointer"
             title="Close reference"
           >
             <X className="w-3.5 h-3.5" />
@@ -577,7 +842,7 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className={`relative p-0 bg-surface-raised-theme overflow-hidden h-72 max-h-72 w-full flex items-center justify-center canvas-checkerboard select-none ${
+        className={`relative p-0 bg-surface-raised-theme overflow-hidden flex-1 min-h-0 w-full flex items-center justify-center canvas-checkerboard select-none ${
           imgError ? 'cursor-default' : isPanning ? 'cursor-grabbing' : 'cursor-crosshair'
         }`}
         title={imgError ? undefined : "Click to sample color • Drag to pan • Scroll wheel to zoom"}
@@ -614,7 +879,7 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
             style={{ 
               transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, 
               transformOrigin: 'center center',
-              transition: isPanning ? 'none' : 'transform 75ms ease-out',
+              transition: isPanning || resizingDir ? 'none' : 'transform 75ms ease-out',
             }}
             className="relative shrink-0 flex items-center justify-center pointer-events-none"
           >
@@ -623,19 +888,91 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
               src={reference.url}
               alt={reference.name}
               onError={() => setImgError(true)}
-              className="max-w-[240px] max-h-[240px] w-auto h-auto object-contain pixelated pointer-events-auto"
+              style={{
+                maxWidth: `${Math.max(160, size.width - 24)}px`,
+                maxHeight: `${Math.max(120, size.height - 84)}px`,
+              }}
+              className="w-auto h-auto object-contain pixelated pointer-events-auto"
               draggable={false}
             />
           </div>
         )}
       </div>
 
-      <div className="px-3 py-1.5 bg-surface-raised-theme text-[10px] text-secondary-theme flex items-center justify-between border-t border-ui-theme">
-        <span className="flex items-center gap-1">
-          <Pipette className="w-3 h-3" style={{ color: 'var(--text-accent)' }} />
-          {imgError ? 'Image unavailable' : 'Click to sample • Drag to pan'}
+      {/* Bottom Status & Info Bar */}
+      <div className="shrink-0 px-3 py-1.5 bg-surface-raised-theme text-[10px] text-secondary-theme flex items-center justify-between border-t border-ui-theme relative select-none pr-7">
+        <span className="flex items-center gap-1 truncate mr-2">
+          <Pipette className="w-3 h-3 shrink-0" style={{ color: 'var(--text-accent)' }} />
+          <span className="truncate">{imgError ? 'Image unavailable' : 'Click to sample • Drag to pan'}</span>
         </span>
-        <span className="font-mono text-secondary-theme">{reference.width}×{reference.height}px</span>
+        <div className="flex items-center gap-2 shrink-0 font-mono text-[9px] text-secondary-theme">
+          <span>{reference.width}×{reference.height}px</span>
+          <span className="opacity-40">|</span>
+          <span title="Window size">{Math.round(size.width)}×{Math.round(size.height)}</span>
+        </div>
+      </div>
+
+      {/* Edge & Corner Resize Drag Zones */}
+      {/* Right Edge */}
+      <div
+        onMouseDown={(e) => handleResizeStart(e, 'e')}
+        className="absolute top-2 bottom-6 -right-1 w-2 cursor-e-resize z-50 hover:bg-accent-theme/20 transition-colors"
+        title="Drag to resize width"
+      />
+      {/* Bottom Edge */}
+      <div
+        onMouseDown={(e) => handleResizeStart(e, 's')}
+        className="absolute left-2 right-6 -bottom-1 h-2 cursor-s-resize z-50 hover:bg-accent-theme/20 transition-colors"
+        title="Drag to resize height"
+      />
+      {/* Left Edge */}
+      <div
+        onMouseDown={(e) => handleResizeStart(e, 'w')}
+        className="absolute top-2 bottom-6 -left-1 w-2 cursor-w-resize z-50 hover:bg-accent-theme/20 transition-colors"
+        title="Drag to resize width"
+      />
+      {/* Top Edge */}
+      <div
+        onMouseDown={(e) => handleResizeStart(e, 'n')}
+        className="absolute left-6 right-6 -top-1 h-2 cursor-n-resize z-50 hover:bg-accent-theme/20 transition-colors"
+        title="Drag to resize height"
+      />
+      {/* Top-Right Corner */}
+      <div
+        onMouseDown={(e) => handleResizeStart(e, 'ne')}
+        className="absolute -top-1 -right-1 w-3.5 h-3.5 cursor-ne-resize z-50"
+      />
+      {/* Top-Left Corner */}
+      <div
+        onMouseDown={(e) => handleResizeStart(e, 'nw')}
+        className="absolute -top-1 -left-1 w-3.5 h-3.5 cursor-nw-resize z-50"
+      />
+      {/* Bottom-Left Corner */}
+      <div
+        onMouseDown={(e) => handleResizeStart(e, 'sw')}
+        className="absolute -bottom-1 -left-1 w-3.5 h-3.5 cursor-sw-resize z-50"
+      />
+      {/* Bottom-Right Corner (Primary visual grip handle + touch handler) */}
+      <div
+        onMouseDown={(e) => handleResizeStart(e, 'se')}
+        onTouchStart={handleTouchResizeStart}
+        onTouchMove={handleTouchResizeMove}
+        onTouchEnd={handleTouchResizeEnd}
+        className="absolute bottom-0 right-0 w-6 h-6 cursor-se-resize z-50 flex items-end justify-end p-1 group select-none"
+        title="Drag to resize window"
+      >
+        <svg 
+          className="w-3.5 h-3.5 text-secondary-theme group-hover:text-primary-theme transition-colors drop-shadow-sm pointer-events-none"
+          viewBox="0 0 16 16" 
+          fill="currentColor"
+        >
+          <circle cx="13" cy="13" r="1.3" />
+          <circle cx="9" cy="13" r="1.3" />
+          <circle cx="13" cy="9" r="1.3" />
+          <circle cx="5" cy="13" r="1.3" />
+          <circle cx="9" cy="9" r="1.3" />
+          <circle cx="13" cy="5" r="1.3" />
+        </svg>
       </div>
     </div>
   );

@@ -72,6 +72,8 @@ export interface ReferenceImage {
   windowX?: number;
   windowY?: number;
   windowZoom?: number;
+  windowWidth?: number;
+  windowHeight?: number;
 }
 
 export interface CanvasDimensions {

@@ -176,7 +176,7 @@ export const LayersPanel: React.FC<LayersPanelProps> = ({
       }
     >
       {/* Layer List (stacked top layer first, so reversed array) */}
-      <div className="max-h-[260px] overflow-y-auto p-1.5 space-y-1 overscroll-contain">
+      <div className="max-h-[260px] overflow-y-auto p-1.5 space-y-1">
         {[...layers].reverse().map((layer, index) => {
           const actualIndex = layers.length - 1 - index;
           const isActive = layer.id === activeLayerId;

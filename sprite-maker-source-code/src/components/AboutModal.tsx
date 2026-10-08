@@ -3,7 +3,8 @@ import {
   X, 
   ExternalLink, 
   Heart, 
-  Github
+  Github,
+  Palette
 } from 'lucide-react';
 
 interface AboutModalProps {
@@ -223,13 +224,13 @@ limitations under the License.`;
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150 select-none"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150"
       onClick={onClose}
     >
       {/* macOS Style Window Dialog */}
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="w-[500px] max-w-[95vw] bg-surface-theme border border-ui-theme rounded-xl shadow-2xl overflow-hidden flex flex-col text-primary-theme transition-all duration-200"
+        className="w-[500px] max-w-[95vw] bg-surface-theme border border-ui-theme rounded-xl shadow-2xl overflow-hidden flex flex-col text-primary-theme transition-all duration-200 select-text"
         style={{
           boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--border-ui)'
         }}
@@ -261,7 +262,7 @@ limitations under the License.`;
           </div>
 
           {/* Centered Window Title */}
-          <span className="absolute inset-x-0 text-center text-xs font-semibold text-primary-theme pointer-events-none">
+          <span className="absolute inset-x-0 text-center text-xs font-semibold text-primary-theme select-text">
             About FigurayMaker
           </span>
 
@@ -269,7 +270,7 @@ limitations under the License.`;
         </div>
 
         {/* Window Content Body */}
-        <div className="p-5 flex flex-col items-center max-h-[85vh] overflow-y-auto no-scrollbar">
+        <div className="p-5 flex flex-col items-center max-h-[85vh] overflow-y-auto no-scrollbar select-text">
           {/* App Logo / Emblem */}
           <div className="relative mb-2 flex items-center justify-center">
             <img 
@@ -284,7 +285,7 @@ limitations under the License.`;
             FigurayMaker
           </h1>
           <p className="text-xs text-secondary-theme font-mono mt-0.5">
-            Version 2.1 (Build 2026.10.7)
+            Version 2.2 (Build 2026.10.8)
           </p>
 
           {/* Tab Selector & Retro-Inset Content Container */}
@@ -342,8 +343,11 @@ limitations under the License.`;
                     <span className="font-bold text-right text-primary-theme">Styling</span>
                     <span className="text-secondary-theme font-mono">Tailwind CSS (Skeuo & OLED)</span>
 
+                    <span className="font-bold text-right text-primary-theme">Sprite Atlas</span>
+                    <span className="text-secondary-theme font-mono">54 Parts • Art by @garlicnibbler2024</span>
+
                     <span className="font-bold text-right text-primary-theme">Resolution</span>
-                    <span className="text-secondary-theme font-mono">Up to 256×256px • Custom Anchors</span>
+                    <span className="text-secondary-theme font-mono">Up to 256×256px • 1x & 4x Scaling</span>
 
                     <span className="font-bold text-right text-primary-theme">Tooling</span>
                     <span className="text-secondary-theme font-mono">Vite • Lucide Icons</span>
@@ -353,6 +357,10 @@ limitations under the License.`;
                   <div className="text-[11px] text-secondary-theme space-y-1 pt-0.5">
                     <span className="font-bold text-primary-theme block text-[11px]">Core Capabilities:</span>
                     <ul className="list-disc list-inside space-y-0.5 pl-1 text-[10.5px] leading-relaxed">
+                      <li>Asset Manager (Toolbox) with 54 modular hand-drawn sprites</li>
+                      <li>Revamped Starter Templates with community packages (Robloxian 2.0, iBot, Skeleton, Peter, Noob)</li>
+                      <li>Multi-action insertion: New Layer, Active Stamp, PIP Window & Trace Ghost</li>
+                      <li>Canonical 1x Wiki scaling (9×8, 11×10, 5×10) & 4x template toggle</li>
                       <li>Multi-Layer Engine with visibility, opacity & locking</li>
                       <li>Real-time Vertical Symmetry drawing & axis alignment</li>
                       <li>Skeuomorphic Retro 2008, Beige, Dark & OLED Dark Themes</li>
@@ -366,8 +374,26 @@ limitations under the License.`;
               {/* Tab 2: Credits & Source */}
               {activeTab === 'credits' && (
                 <div className="space-y-2.5 text-[11px] text-secondary-theme animate-in fade-in duration-150">
+                  {/* Sprite Atlas Artwork Credit Card */}
+                  <div className="p-2.5 rounded-lg bg-surface-raised-theme border border-ui-theme space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <Palette className="w-3.5 h-3.5 text-pink-400 shrink-0" />
+                        <span className="font-bold text-primary-theme text-[11px]">Original Sprite Atlas (2021)</span>
+                      </div>
+                      <span className="font-mono text-[9px] px-1.5 py-0.5 rounded retro-inset-well font-bold" style={{ color: 'var(--text-accent)' }}>
+                        2021 Artwork
+                      </span>
+                    </div>
+                    <div className="text-[10.5px] leading-relaxed text-secondary-theme">
+                      Created by <strong className="text-primary-theme">@garlicnibbler2024</strong> (ROBLOX handle: <strong className="text-primary-theme font-mono">@DJQ2BLUE25</strong>). 
+                      The foundational <em>DavidBlxTemplate</em> turnaround sheet and hand-drawn character sprites power FigurayMaker's 54-part Toolbox and starter packages.
+                    </div>
+                  </div>
+
+                  {/* FigurayMaker Project */}
                   <div className="flex items-center gap-2 p-2 rounded bg-surface-raised-theme border border-ui-theme">
-                    <Heart className="w-4 h-4 text-red-500 shrink-0" />
+                    <Heart className="w-3.5 h-3.5 text-red-500 shrink-0" />
                     <div>
                       <div className="font-bold text-primary-theme">FigurayMaker Project</div>
                       <div className="text-[10px]">Crafted with love for retro avatar and pixel sprite designers.</div>

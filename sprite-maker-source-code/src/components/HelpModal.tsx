@@ -36,7 +36,9 @@ import {
   CheckCircle2,
   Maximize2,
   Search,
-  Eye
+  Eye,
+  Package,
+  Palette
 } from 'lucide-react';
 
 interface HelpModalProps {
@@ -45,7 +47,7 @@ interface HelpModalProps {
   initialTab?: HelpTabId;
 }
 
-export type HelpTabId = 'overview' | 'tools' | 'selection' | 'guides' | 'layers-refs' | 'shortcuts';
+export type HelpTabId = 'overview' | 'tools' | 'selection' | 'guides' | 'layers-refs' | 'assets' | 'shortcuts';
 
 interface TabDefinition {
   id: HelpTabId;
@@ -59,6 +61,7 @@ const TABS: TabDefinition[] = [
   { id: 'selection', label: 'Selection & Transform', icon: Scissors },
   { id: 'guides', label: 'Guides & Dimensions', icon: Hash },
   { id: 'layers-refs', label: 'Layers & References', icon: LayersIcon },
+  { id: 'assets', label: 'Toolbox & Starters', icon: Package },
   { id: 'shortcuts', label: 'Keyboard Shortcuts', icon: Keyboard },
 ];
 
@@ -592,14 +595,21 @@ export const HelpModal: React.FC<HelpModalProps> = ({
 
                 <div className="space-y-2 text-[11px]">
                   <div className="p-2.5 bg-surface-theme rounded-lg border border-ui-theme">
-                    <div className="font-bold text-xs" style={{ color: 'var(--text-accent)' }}>1. Floating Reference Window (Popout)</div>
-                    <p className="text-secondary-theme mt-0.5">
-                      Open a movable popout window displaying your image. You can zoom in and out, and click anywhere directly on the reference image to <strong className="text-primary-theme">eyedrop and sample its colors</strong> into your active palette!
+                    <div className="font-bold text-xs" style={{ color: 'var(--text-accent)' }}>1. Built-in Reference Template (DavidBlxTemplate)</div>
+                    <p className="text-secondary-theme mt-0.5 leading-relaxed">
+                      Every new project comes loaded with a comprehensive built-in reference template (<strong className="text-primary-theme">Robloxian 2.0, Skeleton, iBot, Peter, and classic skin/part color templates</strong>). You can toggle this on or off when creating a project in the Project Manager (<em className="text-primary-theme">"Show default reference image"</em>), or restore it anytime with the <strong className="text-primary-theme">Template</strong> button.
                     </p>
                   </div>
 
                   <div className="p-2.5 bg-surface-theme rounded-lg border border-ui-theme">
-                    <div className="font-bold text-xs" style={{ color: 'var(--text-accent)' }}>2. In-Canvas Tracing Overlay Mode</div>
+                    <div className="font-bold text-xs" style={{ color: 'var(--text-accent)' }}>2. Floating Reference Window (Resizable Popout)</div>
+                    <p className="text-secondary-theme mt-0.5 leading-relaxed">
+                      Open a movable, freely <strong className="text-primary-theme">resizable window</strong> displaying your image. Resize from any edge or corner with the diagonal retro grip handle, double-click the header or click the <strong className="text-primary-theme">Maximize/Restore</strong> icon, click the zoom percentage to <strong className="text-primary-theme">Fit to Window</strong>, and click directly anywhere on the reference image to <strong className="text-primary-theme">eyedrop and sample its colors</strong> into your active palette! Custom window positions and sizes are automatically saved.
+                    </p>
+                  </div>
+
+                  <div className="p-2.5 bg-surface-theme rounded-lg border border-ui-theme">
+                    <div className="font-bold text-xs" style={{ color: 'var(--text-accent)' }}>3. In-Canvas Tracing Overlay Mode</div>
                     <p className="text-secondary-theme mt-0.5">
                       Toggle <strong className="text-primary-theme">Trace Mode</strong> to project your reference image directly onto your pixel drawing canvas with custom opacity (e.g. 45%), scale, and X/Y offset sliders. Trace pixel-by-pixel over reference sketches with ease.
                     </p>
@@ -637,7 +647,198 @@ export const HelpModal: React.FC<HelpModalProps> = ({
             </div>
           )}
 
-          {/* TAB 6: KEYBOARD SHORTCUTS */}
+          {/* TAB 6: TOOLBOX ASSET MANAGER & STARTER TEMPLATES */}
+          {activeTab === 'assets' && (
+            <div className="space-y-5 animate-in fade-in duration-150">
+              {/* Intro Banner */}
+              <div className="p-4 rounded-xl border border-ui-theme bg-surface-raised-theme retro-inset-well space-y-2">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 font-bold text-sm" style={{ color: 'var(--text-accent)' }}>
+                    <Package className="w-4 h-4" />
+                    <span>Asset Manager (Toolbox) & Authentic Community Starters</span>
+                  </div>
+                  <span className="font-mono text-[10px] text-secondary-theme px-2 py-0.5 rounded retro-chrome-btn">
+                    Art by @garlicnibbler2024
+                  </span>
+                </div>
+                <p className="text-primary-theme text-xs leading-relaxed">
+                  FigurayMaker includes a built-in <strong>54-sprite library</strong> harvested from authentic community pixel art 
+                  (the renowned <em>DavidBlxTemplate</em> atlas). You can insert whole characters, modular body parts, armor plating, 
+                  and accessories into your project in seconds, or load full hand-drawn package templates with auto-sized canvases.
+                </p>
+              </div>
+
+              {/* Artwork Attribution & Provenance Card */}
+              <div className="p-3 bg-surface-theme rounded-xl border border-ui-theme flex items-start gap-2.5 text-[11px]">
+                <Palette className="w-4 h-4 text-pink-400 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <div className="font-bold text-primary-theme flex items-center gap-1.5 flex-wrap">
+                    <span>Original Sprite Atlas Artwork (2021)</span>
+                    <span className="px-1.5 py-0.2 rounded font-mono text-[9.5px] bg-surface-raised-theme border border-ui-theme font-bold" style={{ color: 'var(--text-accent)' }}>
+                      @garlicnibbler2024 (ROBLOX: @DJQ2BLUE25)
+                    </span>
+                  </div>
+                  <p className="text-secondary-theme leading-relaxed">
+                    The hand-drawn character turnaround sheet and sprite atlas (<code className="font-mono text-[10px]">DavidBlxTemplate.png</code>) was originally drawn in 2021 by <strong className="text-primary-theme font-semibold">@garlicnibbler2024</strong> (ROBLOX handle <strong className="text-primary-theme font-semibold">@DJQ2BLUE25</strong>). While the artist moved accounts and could not be reached for refreshed permission (last recorded message in the TDS Discord server in 2025), their original artwork and community contribution are respectfully credited and honored here.
+                  </p>
+                </div>
+              </div>
+
+              {/* Section 1: The 54-Sprite Atlas */}
+              <div className="p-3.5 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well space-y-3">
+                <div className="font-bold text-primary-theme text-xs flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <BookOpen className="w-4 h-4" style={{ color: 'var(--text-accent)' }} />
+                    <span>Categorized Sprite Atlas Overview</span>
+                  </span>
+                  <span className="font-mono text-[10px] text-secondary-theme px-2 py-0.5 rounded retro-chrome-btn">54 Total Assets</span>
+                </div>
+                <p className="text-secondary-theme text-[11px] leading-relaxed">
+                  Every asset is organized by anatomical category and package origin:
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-[11px]">
+                  <div className="p-2.5 bg-surface-theme border border-ui-theme rounded-lg space-y-1">
+                    <strong className="text-primary-theme block font-bold text-xs" style={{ color: 'var(--text-accent)' }}>Full Characters</strong>
+                    <p className="text-secondary-theme text-[10.5px]">
+                      Complete assembled outfits including Robloxian 2.0, Classic 1.0 Noob, Guest, iBot Cybernetic, Classic Skeleton, Peter, Witch, and Steampunk.
+                    </p>
+                  </div>
+                  <div className="p-2.5 bg-surface-theme border border-ui-theme rounded-lg space-y-1">
+                    <strong className="text-primary-theme block font-bold text-xs" style={{ color: 'var(--text-accent)' }}>Heads & Faces</strong>
+                    <p className="text-secondary-theme text-[10.5px]">
+                      Authentic 9×8 heads featuring standard smiley faces, robot visors, skeleton skulls, glasses, and expression variations.
+                    </p>
+                  </div>
+                  <div className="p-2.5 bg-surface-theme border border-ui-theme rounded-lg space-y-1">
+                    <strong className="text-primary-theme block font-bold text-xs" style={{ color: 'var(--text-accent)' }}>Torsos & Chestplates</strong>
+                    <p className="text-secondary-theme text-[10.5px]">
+                      11×10 torsos with authentic shading, ribcages, high-tech chestplates, jackets, and guest insignia stripes.
+                    </p>
+                  </div>
+                  <div className="p-2.5 bg-surface-theme border border-ui-theme rounded-lg space-y-1">
+                    <strong className="text-primary-theme block font-bold text-xs" style={{ color: 'var(--text-accent)' }}>Arms & Shoulders</strong>
+                    <p className="text-secondary-theme text-[10.5px]">
+                      5×10 limb blocks for Left and Right arms, robotic joints, bone limbs, sleeves, and gauntlets.
+                    </p>
+                  </div>
+                  <div className="p-2.5 bg-surface-theme border border-ui-theme rounded-lg space-y-1">
+                    <strong className="text-primary-theme block font-bold text-xs" style={{ color: 'var(--text-accent)' }}>Legs & Boots</strong>
+                    <p className="text-secondary-theme text-[11px]">
+                      11×10 lower body sprites with center seam dividers, robotic treads, pants, and boots.
+                    </p>
+                  </div>
+                  <div className="p-2.5 bg-surface-theme border border-ui-theme rounded-lg space-y-1">
+                    <strong className="text-primary-theme block font-bold text-xs" style={{ color: 'var(--text-accent)' }}>Accessories & Hats</strong>
+                    <p className="text-secondary-theme text-[10.5px]">
+                      Modular headgear, hair, visors, wings, swords, and equipment designed to layer over standard heads.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 2: Canonical 1x Scaling vs 4x High-Res Toggle */}
+              <div className="p-3.5 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well space-y-2.5">
+                <div className="font-bold text-primary-theme text-xs flex items-center gap-2">
+                  <Hash className="w-4 h-4" style={{ color: 'var(--text-accent)' }} />
+                  <span>Canonical 1x Scaling vs 4x High-Res Template Mode</span>
+                </div>
+                <p className="text-secondary-theme text-[11px] leading-relaxed">
+                  In community character lore, official character proportions specify: 
+                  <strong className="text-primary-theme"> Head 9×8, Torso 11×10, Arms 5×10, and Legs 11×10</strong> (body total 21×28). 
+                  However, the raw source sheet (<em>DavidBlxTemplate.png</em>) was drawn at a 4x magnified raster scale.
+                </p>
+                <div className="p-3 bg-surface-theme rounded-lg border border-ui-theme space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-primary-theme">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                    <span>The Dimensions Toggle (Located in Asset Manager Top Right)</span>
+                  </div>
+                  <p className="text-secondary-theme text-[11px] leading-relaxed">
+                    By default, <strong className="text-primary-theme">1x Canonical (Exact Wiki)</strong> is enabled, automatically downscaling all atlas assets to their pure community dimensions so they fit the wireframe guides like a glove. 
+                    If you prefer the raw, ultra-detailed magnified pixel art, toggle to <strong className="text-primary-theme">4x Template Scale</strong> to import full-resolution assets into larger canvases (e.g. 100×120+).
+                  </p>
+                </div>
+              </div>
+
+              {/* Section 3: 4 Integration Actions */}
+              <div className="p-3.5 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well space-y-3">
+                <div className="font-bold text-primary-theme text-xs flex items-center gap-2">
+                  <Sliders className="w-4 h-4" style={{ color: 'var(--text-accent)' }} />
+                  <span>4 Ways to Use Any Asset</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px]">
+                  <div className="p-2.5 bg-surface-theme rounded-lg border border-ui-theme space-y-1">
+                    <div className="font-bold text-primary-theme flex items-center gap-1.5">
+                      <LayersIcon className="w-3.5 h-3.5 text-blue-400" />
+                      <span>1. Add as New Layer</span>
+                    </div>
+                    <p className="text-secondary-theme text-[10.5px] leading-relaxed">
+                      Creates a dedicated, transparent layer named after the sprite. The asset is automatically centered on the canvas according to its anatomical origin.
+                    </p>
+                  </div>
+
+                  <div className="p-2.5 bg-surface-theme rounded-lg border border-ui-theme space-y-1">
+                    <div className="font-bold text-primary-theme flex items-center gap-1.5">
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>2. Stamp onto Active Layer</span>
+                    </div>
+                    <p className="text-secondary-theme text-[10.5px] leading-relaxed">
+                      Directly merges the sprite pixels into whatever layer you currently have selected, preserving existing artwork beneath transparent regions.
+                    </p>
+                  </div>
+
+                  <div className="p-2.5 bg-surface-theme rounded-lg border border-ui-theme space-y-1">
+                    <div className="font-bold text-primary-theme flex items-center gap-1.5">
+                      <Maximize2 className="w-3.5 h-3.5 text-purple-400" />
+                      <span>3. Open Floating Reference PIP</span>
+                    </div>
+                    <p className="text-secondary-theme text-[10.5px] leading-relaxed">
+                      Pops the sprite into a draggable, resizable floating reference window over your canvas. You can zoom, pan, and click directly on the sprite to sample authentic hex colors!
+                    </p>
+                  </div>
+
+                  <div className="p-2.5 bg-surface-theme rounded-lg border border-ui-theme space-y-1">
+                    <div className="font-bold text-primary-theme flex items-center gap-1.5">
+                      <Eye className="w-3.5 h-3.5 text-amber-400" />
+                      <span>4. Set as Canvas Trace Ghost</span>
+                    </div>
+                    <p className="text-secondary-theme text-[10.5px] leading-relaxed">
+                      Overlays the sprite with 45% transparency directly onto your main drawing canvas stage. Trace over the lines or recolor parts by hand with pixel precision.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 4: Revamped Load Starter Menu */}
+              <div className="p-3.5 bg-surface-raised-theme rounded-xl border border-ui-theme retro-inset-well space-y-2.5">
+                <div className="font-bold text-primary-theme text-xs flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-amber-400" />
+                  <span>Revamped "Load Starter" Modal</span>
+                </div>
+                <p className="text-secondary-theme text-[11px] leading-relaxed">
+                  Accessed by clicking <strong className="text-primary-theme">Load Starter</strong> in the top header. Instead of synthetic procedural blocks, starters load real human-drawn packages extracted from the David Blocks template:
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                  <div className="p-2 bg-surface-theme border border-ui-theme rounded-lg">
+                    <strong className="text-primary-theme">Authentic Community Packages:</strong> Classic Noob, Guest (with striped torso), Robloxian 2.0 Modern, iBot Cybernetic Package, Classic Skeleton, Peter, and BluuDude Hacker.
+                  </div>
+                  <div className="p-2 bg-surface-theme border border-ui-theme rounded-lg">
+                    <strong className="text-primary-theme">Smart Canvas Auto-Resize:</strong> Check the <em>"Auto-resize canvas"</em> box to automatically expand your canvas dimensions to accommodate hats, hair, or wide packages.
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 5: Access Shortcuts */}
+              <div className="p-3 bg-surface-theme rounded-xl border border-ui-theme text-[11px] flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Package className="w-4 h-4 text-primary-theme" />
+                  <span className="font-semibold text-primary-theme">Quick Access:</span>
+                  <span className="text-secondary-theme">Click <strong>Toolbox</strong> in the top header or <strong>Toolbox Assets</strong> in the left toolbar anytime.</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 7: KEYBOARD SHORTCUTS */}
           {activeTab === 'shortcuts' && (
             <div className="space-y-3 animate-in fade-in duration-150">
               {/* Search Bar */}

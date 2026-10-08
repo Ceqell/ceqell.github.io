@@ -80,7 +80,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
 
       {/* Accordion Content Body */}
       {isOpen && (
-        <div className={`overflow-y-auto overscroll-contain ${maxContentHeight || ''}`}>
+        <div className={maxContentHeight ? `overflow-y-auto ${maxContentHeight}` : undefined}>
           {children}
         </div>
       )}

@@ -19,6 +19,7 @@ import {
   Info, 
   Move, 
   Sliders, 
+  Package,
   PanelLeftClose, 
   PanelLeftOpen, 
   PanelRightClose, 
@@ -43,6 +44,8 @@ interface HeaderProps {
   onSelectCanvasPreset: (presetName: string) => void;
   onOpenCustomCanvasModal: () => void;
   onSelectStarterTemplate: (templateId: string) => void;
+  onOpenStarterModal?: () => void;
+  onOpenAssetManager?: () => void;
   canUndo: boolean;
   canRedo: boolean;
   onUndo: () => void;
@@ -95,6 +98,8 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectCanvasPreset,
   onOpenCustomCanvasModal,
   onSelectStarterTemplate,
+  onOpenStarterModal,
+  onOpenAssetManager,
   canUndo,
   canRedo,
   onUndo,
@@ -260,27 +265,29 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           </div>
 
-          {/* Starter Template quick load dropdown */}
-          <div className="flex items-center gap-1 retro-inset-well px-2 py-1 rounded-lg shrink-0">
-            <Sparkles className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--text-accent)' }} />
-            <select
-              onChange={(e) => {
-                if (e.target.value) {
-                  onSelectStarterTemplate(e.target.value);
-                  e.target.value = '';
-                }
-              }}
-              defaultValue=""
-              className="bg-transparent text-xs text-secondary-theme outline-none cursor-pointer"
+          {/* Revamped Load Starter Button */}
+          <button
+            type="button"
+            onClick={onOpenStarterModal ? onOpenStarterModal : () => onSelectStarterTemplate('starter-noob-1')}
+            title="Open Starter Character Templates (Human Hand-Drawn 1.0, 2.0, iBot, Peter, Skeletons)"
+            className="retro-chrome-btn flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-semibold shrink-0 cursor-pointer text-primary-theme transition-colors hover:border-accent-theme"
+          >
+            <Sparkles className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />
+            <span>Load Starter</span>
+          </button>
+
+          {/* New Asset Manager / Toolbox Button */}
+          {onOpenAssetManager && (
+            <button
+              type="button"
+              onClick={onOpenAssetManager}
+              title="Open Asset Manager & Toolbox (54 Human-Drawn Sprites, Packages, Limbs & Torsos)"
+              className="retro-chrome-btn flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-semibold shrink-0 cursor-pointer text-primary-theme transition-colors hover:border-accent-theme"
             >
-              <option value="" disabled className="bg-surface-theme text-secondary-theme">Load Starter...</option>
-              {STARTER_TEMPLATES.map(t => (
-                <option key={t.id} value={t.id} className="bg-surface-theme text-primary-theme">
-                  {t.name}
-                </option>
-              ))}
-            </select>
-          </div>
+              <Package className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />
+              <span>Toolbox</span>
+            </button>
+          )}
         </div>
 
         {/* Right of Tier 1: Theme Selector, Dimensions, Help, Save/Load, Export */}

@@ -20,7 +20,8 @@ import {
   ChevronLeft, 
   LassoSelect, 
   Trash2, 
-  Check 
+  Check,
+  Package
 } from 'lucide-react';
 import { ToolType } from '../types/sprite';
 
@@ -46,6 +47,7 @@ interface ToolbarProps {
   onCollapse?: () => void;
   autoSwitchPencil?: boolean;
   onToggleAutoSwitchPencil?: (val: boolean) => void;
+  onOpenAssetManager?: () => void;
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
@@ -70,6 +72,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onCollapse,
   autoSwitchPencil = false,
   onToggleAutoSwitchPencil,
+  onOpenAssetManager,
 }) => {
   const isWide = width >= 125;
   const isMedium = width >= 90 && width < 125;
@@ -204,6 +207,27 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           );
         })}
       </div>
+
+      {/* Asset Manager / Toolbox Quick Button */}
+      {onOpenAssetManager && (
+        <div className="w-full">
+          <button
+            type="button"
+            onClick={onOpenAssetManager}
+            title="Open Toolbox & Asset Manager (54 Human-Drawn Sprites)"
+            className={`retro-chrome-btn rounded-lg transition-all flex items-center cursor-pointer text-primary-theme ${
+              isWide ? 'px-2 py-1.5 gap-2 w-full justify-start' : 'p-2 justify-center w-full'
+            }`}
+          >
+            <Package className="w-4 h-4 shrink-0" style={{ color: 'var(--text-accent)' }} />
+            {isWide && (
+              <span className="text-xs truncate font-medium flex-1 text-left">
+                Toolbox Assets
+              </span>
+            )}
+          </button>
+        </div>
+      )}
 
       <div className="retro-recessed-divider-h my-0.5 shrink-0" />
 

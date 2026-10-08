@@ -58,9 +58,36 @@ Features exact anatomical dimensions (Head 9×8, Torso 11×10, Arms 5×10, Legs 
 - Undo / Redo history with multi-step stack.
 
 ### Reference images & Tracing overlays
-- Upload multiple reference images (character concepts, turnarounds, clothing templates).
+- **Built-in Character Packages Template (`DavidBlxTemplate`)**: Every new project includes a comprehensive built-in reference image featuring character package turnarounds (**Robloxian 2.0, Skeleton, iBot, Peter**) and color swatch templates.
+- **Configurable in New Project Creation**: Toggle *"Show default reference image (recommended for new users)"* right from the retro-inset in the Project Manager modal.
+- Upload multiple custom reference images (character concepts, turnarounds, clothing templates).
 - **Trace Mode**: Overlay translucent reference images directly onto the canvas with adjustable opacity, position offset, and scaling.
-- **Floating PIP Window**: Detachable, draggable, and zoomable picture-in-picture preview window.
+- **Floating PIP Window**: Detachable, draggable, and zoomable picture-in-picture preview window with direct color eyedropping.
+
+### Asset Manager / Toolbox (54-Sprite Atlas)
+- **Built-in Community Sprite Library**: Direct integration with the 54-sprite hand-drawn atlas originally illustrated in 2021 by **@garlicnibbler2024** (ROBLOX: **@DJQ2BLUE25**) from `DavidBlxTemplate.png`.
+- **Categorized Anatomical Catalog**:
+  - **Full Characters**: Robloxian 2.0, Classic 1.0 Noob, Guest, iBot Cybernetic, Classic Skeleton, Peter, Witch, Steampunk.
+  - **Heads & Faces**: Authentic 9×8 heads with retro faces, visors, sunglasses, skulls, and expressions.
+  - **Torsos**: 11×10 pixel torsos with authentic shading, ribcages, robotic plating, and jackets.
+  - **Arms & Shoulders**: 5×10 pixel limbs for Left and Right arms with gauntlets and robotic joints.
+  - **Legs & Boots**: 11×10 pixel legs with center seam split, armored boots, and robotic treads.
+  - **Accessories & Hats**: Hairpieces, visors, capes, wings, swords, and equipment.
+- **Wiki Canonical 1x Scaling vs 4x High-Res Toggle**:
+  - **1x Canonical (Default)**: Automatically downscales template sprites to official community wiki dimensions (Head 9×8, Torso 11×10, Arms 5×10, Legs 11×10, total body 21×28) using clean nearest-neighbor pixel sampling.
+  - **4x Template Scale**: Import full-magnification high-res raster art for larger HD sprite sheets.
+- **4 Powerful Insertion Actions**:
+  1. **Add as New Layer**: Inserts the asset onto a dedicated, transparent layer with centered canonical alignment.
+  2. **Stamp onto Active Layer**: Imprints pixel art directly into your working layer without altering existing pixels elsewhere.
+  3. **Open Floating Reference Window (PIP)**: Pops the asset into a movable, resizable PIP window with virtual pan, zoom, and live color eyedropping.
+  4. **Set as Canvas Trace Ghost**: Projects the part semi-transparently (45% opacity) directly on your main drawing canvas stage for pixel-by-pixel manual tracing.
+- **Quick Access**: Available via the top header **Toolbox** button and the left toolbar **Toolbox Assets** shortcut.
+
+### Revamped Starter Templates & Package Loaders
+- **Authentic Hand-Drawn Packages**: Replaced synthetic procedural blocks with genuine community-crafted package sprites (Classic Noob 1.0, Guest, Robloxian 2.0, iBot, Skeleton, Peter, BluuDude Hacker, Neutral Wireframe, Blank Canvas).
+- **Smart Canvas Auto-Resize**: Option to automatically expand or adapt your canvas dimensions (e.g. 21×28 Classic or 25×32 with Headroom) to match package proportions.
+- **Multi-Layer Separation**: Starters load as organized, non-destructive layer stacks (Head, Torso, Limbs, Clothing) for modular customization.
+- **Dedicated Modal**: Accessed via the **Load Starter** (`Sparkles` icon) button in the top navigation header.
 
 ### Real-time preview & Canvas backgrounds
 - **Synchronized Backgrounds**: Toggle between Dark Checkerboard (`Dark-Check`, default across all themes for optimal contrast with characters and noobs), Light Checkerboard (`Light-Check`), authentic Retro Grey (`#404044`), and solid Dark (`#121318`).
@@ -180,23 +207,42 @@ Features exact anatomical dimensions (Head 9×8, Torso 11×10, Arms 5×10, Legs 
     ├── main.tsx                 # React application mounting entry point
     ├── index.css                # Global styles, Tailwind imports, and pixelated canvas rules
     ├── components/
+    │   ├── AboutModal.tsx       # System specs, engine features, and Apache 2.0 license
+    │   ├── AssetManagerModal.tsx# 54-sprite toolbox catalog with multi-mode asset insertion
     │   ├── CanvasArea.tsx       # Main drawing canvas, zoom/pan stage, and selection overlay
     │   ├── ColorPalette.tsx     # Color picker, swatch palette presets, and custom colors
     │   ├── CustomCanvasModal.tsx# Custom dimension resize modal with anchor points
     │   ├── ExportModal.tsx      # High-res PNG export modal with scaling and backgrounds
     │   ├── GuideModal.tsx       # Anatomical wiki guide documentation modal
     │   ├── Header.tsx           # Horizontally scrollable top bar with toggles and menus
+    │   ├── HelpModal.tsx        # Comprehensive user manual, tool guides, and shortcuts
     │   ├── LayersPanel.tsx      # Layer stack list, visibility, locking, and opacity
     │   ├── MiniPreview.tsx      # Real-time 1:1 sprite preview thumbnail
+    │   ├── ProjectManagerModal.tsx # Pixlr-style local saves, project management, and templates
     │   ├── ReferenceManager.tsx # Multiple reference image manager with trace options
+    │   ├── StarterModal.tsx     # Authentic hand-drawn community packages & template loader
+    │   ├── Toast.tsx            # Non-blocking HUD toast notification system
     │   └── Toolbar.tsx          # Resizable tool palette, brush sizes, and selection actions
     ├── constants/
-    │   └── retroDev.ts          # Body dimension constants, presets, and starter templates
+    │   ├── defaultReference.ts  # Default reference image asset initialization
+    │   ├── retroDev.ts          # Body dimension constants, presets, and starter templates
+    │   └── spriteAtlas.json     # Compiled metadata for all 54 David Blocks sprite assets
     ├── types/
     │   └── sprite.ts            # TypeScript interfaces for layers, selections, palettes, and projects
     └── utils/
-        └── pixelMath.ts         # Bresenham lines, flood fill, polygon math, and color adjusters
+        ├── pixelMath.ts         # Bresenham lines, flood fill, polygon math, and color adjusters
+        └── spriteAtlas.ts       # Sprite atlas pixel decoding, 1x scaling, and starter builders
 ```
+
+---
+
+## Credits & Acknowledgements
+
+- **Sprite Atlas & Original Character Artwork (2021)**:
+  - **@garlicnibbler2024** (ROBLOX handle: **@DJQ2BLUE25**) — Illustrated the foundational 2021 David Blocks character turnaround sheet and sprite atlas (`DavidBlxTemplate.png`). This handcrafted sprite sheet provides the original pixel art powering FigurayMaker's 54 modular Toolbox parts and revamped starter packages.
+  - *Provenance Note*: The original creator subsequently migrated accounts, with their last active public message noted in the Tower Defense Simulator (TDS) Discord server back in 2025. Although refreshed direct permission could not be obtained at this time, full credit and sincere appreciation for their foundational pixel art are respectfully recorded and preserved here.
+- **Retro Dev Wiki Community**: For formalizing the community consensus on David Blocks canonical sprite dimensions (9×8 head, 11×10 torso and legs, 5×10 arms per [Retro Dev Wiki](https://retro-dev.fandom.com/wiki/Untitled_Character_Sprites)).
+- **FigurayMaker Project**: Dedicated to retro Roblox and David Blocks sprite and avatar creators.
 
 ---
 
