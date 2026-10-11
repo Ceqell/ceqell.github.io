@@ -31,7 +31,8 @@ import {
   FlipHorizontal,
   FlipVertical,
   AlignCenter,
-  Trash2
+  Trash2,
+  Keyboard
 } from 'lucide-react';
 import { CANVAS_PRESETS, STARTER_TEMPLATES } from '../constants/retroDev';
 import { AVAILABLE_THEMES } from '../constants/themes';
@@ -66,6 +67,7 @@ interface HeaderProps {
   onOpenExportModal: () => void;
   onOpenGuideModal: () => void;
   onOpenHelpModal?: () => void;
+  onOpenKeybindingsModal?: () => void;
   onOpenAboutModal?: () => void;
   onOpenProjectManager?: () => void;
   onSaveProject: () => void;
@@ -120,6 +122,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenExportModal,
   onOpenGuideModal,
   onOpenHelpModal,
+  onOpenKeybindingsModal,
   onOpenAboutModal,
   onOpenProjectManager,
   onSaveProject,
@@ -189,11 +192,15 @@ export const Header: React.FC<HeaderProps> = ({
     <header 
       ref={headerRef}
       onWheel={handleHeaderWheel}
+      onDoubleClick={(e) => e.stopPropagation()}
       style={{ minHeight: headerHeight ? `${headerHeight}px` : undefined }}
-      className="bg-surface-theme border-b border-ui-theme px-3 py-1.5 flex flex-col gap-y-1.5 text-primary-theme select-none z-30 shrink-0 w-full shadow-sm transition-colors overflow-x-auto no-scrollbar"
+      className="bg-surface-theme border-b border-ui-theme px-3 py-1.5 flex flex-col gap-y-1.5 text-primary-theme select-none z-30 shrink-0 w-full shadow-sm transition-colors overflow-x-auto no-scrollbar app-region-drag"
     >
       {/* Tier 1 / Main Bar: Brand, Canvas Dimensions, Starter & Application/File Actions */}
-      <div className="flex items-center justify-between gap-x-2 w-full min-w-0 flex-nowrap overflow-x-auto no-scrollbar">
+      <div 
+        onDoubleClick={(e) => e.stopPropagation()}
+        className="flex items-center justify-between gap-x-2 w-full min-w-0 flex-nowrap overflow-x-auto no-scrollbar app-region-no-drag"
+      >
         {/* Left: Brand & Canvas Dimensions Preset & Starter */}
         <div className="flex items-center gap-1.5 shrink-0 flex-nowrap">
           {onToggleLeftSidebar && (
@@ -315,6 +322,7 @@ export const Header: React.FC<HeaderProps> = ({
           {onOpenHelpModal && (
             <button
               onClick={onOpenHelpModal}
+              onDoubleClick={(e) => e.stopPropagation()}
               className="retro-chrome-btn flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 cursor-pointer text-primary-theme"
               title="Open Help & Documentation Manual (?)"
             >
@@ -323,9 +331,23 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
+          {/* Keyboard Shortcuts Remapper Modal */}
+          {onOpenKeybindingsModal && (
+            <button
+              onClick={onOpenKeybindingsModal}
+              onDoubleClick={(e) => e.stopPropagation()}
+              className="retro-chrome-btn flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 cursor-pointer text-primary-theme"
+              title="Keyboard Shortcuts & Key Remapping (K)"
+            >
+              <Keyboard className="w-3.5 h-3.5" style={{ color: 'var(--text-accent)' }} />
+              <span className="hidden xl:inline">Shortcuts</span>
+            </button>
+          )}
+
           {/* Dimensions Wiki Guide Modal */}
           <button
             onClick={onOpenGuideModal}
+            onDoubleClick={(e) => e.stopPropagation()}
             className="retro-chrome-btn flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 cursor-pointer text-primary-theme"
             title="Open Sprite Dimensions Wiki Guide"
           >
@@ -406,7 +428,10 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Tier 2 / Sub-Bar: Canvas Tools & Viewport on Left, Project Name & Anatomy Ribbon on Right */}
-      <div className="flex items-center justify-between gap-x-2 w-full min-w-0 flex-nowrap overflow-x-auto no-scrollbar">
+      <div 
+        onDoubleClick={(e) => e.stopPropagation()}
+        className="flex items-center justify-between gap-x-2 w-full min-w-0 flex-nowrap overflow-x-auto no-scrollbar app-region-no-drag"
+      >
         {/* Left: Undo/Redo, Toggles & Zoom */}
         <div className="flex items-center gap-1.5 shrink-0 flex-nowrap">
           {/* Undo / Redo */}

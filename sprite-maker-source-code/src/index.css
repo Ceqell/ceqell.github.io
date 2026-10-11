@@ -621,6 +621,23 @@
 }
 
 /* -------------------------------------------------------------------------- */
+/* WINDOW HEADER & DESKTOP DRAG ISOLATION                                      */
+/* -------------------------------------------------------------------------- */
+.app-region-drag {
+  -webkit-app-region: drag;
+}
+.app-region-no-drag,
+button,
+input,
+select,
+textarea,
+.retro-chrome-btn,
+.retro-gold-btn,
+.retro-blue-btn {
+  -webkit-app-region: no-drag;
+}
+
+/* -------------------------------------------------------------------------- */
 /* SNAPPY MODE                                                                */
 /* -------------------------------------------------------------------------- */
 

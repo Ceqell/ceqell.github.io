@@ -5,7 +5,6 @@ import {
   Trash2, 
   Layers, 
   Maximize2, 
-  Minimize2,
   Eye, 
   EyeOff, 
   Sliders, 
@@ -362,9 +361,6 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
   const [imgError, setImgError] = useState(false);
   const replaceFileInputRef = useRef<HTMLInputElement>(null);
 
-  // Maximize / Restore state
-  const [isMaximized, setIsMaximized] = useState(false);
-  const prevBoundsBeforeMaxRef = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
 
   useEffect(() => {
     setImgError(false);
@@ -578,42 +574,6 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
     }
   };
 
-  // Maximize / restore toggle
-  const handleToggleMaximize = () => {
-    if (isMaximized) {
-      if (prevBoundsBeforeMaxRef.current) {
-        setPosition({ x: prevBoundsBeforeMaxRef.current.x, y: prevBoundsBeforeMaxRef.current.y });
-        setSize({ width: prevBoundsBeforeMaxRef.current.width, height: prevBoundsBeforeMaxRef.current.height });
-        onUpdateReference?.(reference.id, {
-          windowX: prevBoundsBeforeMaxRef.current.x,
-          windowY: prevBoundsBeforeMaxRef.current.y,
-          windowWidth: prevBoundsBeforeMaxRef.current.width,
-          windowHeight: prevBoundsBeforeMaxRef.current.height,
-        });
-      }
-      setIsMaximized(false);
-    } else {
-      prevBoundsBeforeMaxRef.current = {
-        x: position.x,
-        y: position.y,
-        width: size.width,
-        height: size.height,
-      };
-      const maxW = Math.min(840, Math.max(250, window.innerWidth - 60));
-      const maxH = Math.min(680, Math.max(200, window.innerHeight - 100));
-      const centerX = Math.max(20, Math.round((window.innerWidth - maxW) / 2));
-      const centerY = Math.max(60, Math.round((window.innerHeight - maxH) / 2));
-      setPosition({ x: centerX, y: centerY });
-      setSize({ width: maxW, height: maxH });
-      setIsMaximized(true);
-      onUpdateReference?.(reference.id, {
-        windowX: centerX,
-        windowY: centerY,
-        windowWidth: maxW,
-        windowHeight: maxH,
-      });
-    }
-  };
 
   // Viewport pan start
   const handleViewportMouseDown = (e: React.MouseEvent) => {
@@ -773,25 +733,30 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
         width: `${size.width}px`,
         height: `${size.height}px`,
       }}
+      onDoubleClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
       className={`fixed z-40 bg-surface-theme border border-ui-theme rounded-xl shadow-2xl overflow-hidden flex flex-col text-primary-theme ${
         resizingDir ? 'select-none pointer-events-auto' : ''
       }`}
     >
-      {/* Title bar (draggable & double-click to toggle maximize) */}
+      {/* Title bar (draggable) */}
       <div
         onMouseDown={handleTitleMouseDown}
-        onDoubleClick={handleToggleMaximize}
+        onDoubleClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
         className="shrink-0 flex items-center justify-between px-3 py-2 bg-surface-raised-theme border-b border-ui-theme cursor-move select-none"
-        title="Double click to maximize/restore • Drag to move"
+        title="Drag to move"
       >
         <div className="flex items-center gap-1.5 text-xs font-medium text-primary-theme truncate mr-2">
           <Move className="w-3 h-3 shrink-0" style={{ color: 'var(--text-accent)' }} />
           <span className="truncate">{reference.name}</span>
         </div>
 
-        <div className="flex items-center gap-1 shrink-0">
+        <div 
+          onDoubleClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
+          className="flex items-center gap-1 shrink-0"
+        >
           <button
             onClick={() => setZoom(z => Math.max(0.25, Math.round((z - 0.25) * 100) / 100))}
+            onDoubleClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
             className="retro-chrome-btn p-1 rounded text-primary-theme cursor-pointer"
             title="Zoom out"
           >
@@ -799,6 +764,7 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
           </button>
           <button
             onClick={handleFitToWindow}
+            onDoubleClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
             className="retro-chrome-btn px-1.5 py-0.5 rounded text-[10px] font-mono text-secondary-theme hover:text-primary-theme cursor-pointer"
             title="Fit image to window (click again for 100%)"
           >
@@ -806,6 +772,7 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
           </button>
           <button
             onClick={() => setZoom(z => Math.min(8, Math.round((z + 0.25) * 100) / 100))}
+            onDoubleClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
             className="retro-chrome-btn p-1 rounded text-primary-theme cursor-pointer"
             title="Zoom in"
           >
@@ -813,20 +780,15 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
           </button>
           <button
             onClick={handleResetView}
+            onDoubleClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
             className="retro-chrome-btn p-1 rounded text-secondary-theme hover:text-primary-theme cursor-pointer"
             title="Recenter & Reset View (100%)"
           >
             <RefreshCw className="w-3 h-3" />
           </button>
           <button
-            onClick={handleToggleMaximize}
-            className="retro-chrome-btn p-1 rounded text-secondary-theme hover:text-primary-theme cursor-pointer"
-            title={isMaximized ? "Restore window size" : "Maximize window"}
-          >
-            {isMaximized ? <Minimize2 className="w-3 h-3" /> : <Maximize2 className="w-3 h-3" />}
-          </button>
-          <button
             onClick={onClose}
+            onDoubleClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
             className="retro-chrome-btn p-1 rounded text-red-500 hover:text-red-600 transition-colors ml-0.5 cursor-pointer"
             title="Close reference"
           >
@@ -838,6 +800,7 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
       {/* Image Preview & Eyedropper area with virtual panning & zoom */}
       <div 
         onMouseDown={handleViewportMouseDown}
+        onDoubleClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
         onWheel={handleWheel}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}

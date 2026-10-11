@@ -11,7 +11,7 @@ import {
   SunMedium, 
   Moon, 
   Sparkles, 
-  Scissors, 
+  BoxSelect, 
   SplitSquareVertical, 
   FlipHorizontal, 
   FlipVertical, 
@@ -21,9 +21,11 @@ import {
   LassoSelect, 
   Trash2, 
   Check,
-  Package
+  Package,
+  Keyboard
 } from 'lucide-react';
 import { ToolType } from '../types/sprite';
+import { KeybindingsMap } from '../types/keybindings';
 
 interface ToolbarProps {
   currentTool: ToolType;
@@ -48,6 +50,8 @@ interface ToolbarProps {
   autoSwitchPencil?: boolean;
   onToggleAutoSwitchPencil?: (val: boolean) => void;
   onOpenAssetManager?: () => void;
+  onOpenKeybindingsModal?: () => void;
+  keybindings?: KeybindingsMap;
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
@@ -73,6 +77,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   autoSwitchPencil = false,
   onToggleAutoSwitchPencil,
   onOpenAssetManager,
+  onOpenKeybindingsModal,
+  keybindings,
 }) => {
   const isWide = width >= 125;
   const isMedium = width >= 90 && width < 125;
@@ -104,18 +110,28 @@ export const Toolbar: React.FC<ToolbarProps> = ({
     }
   };
 
+  const kPencil = keybindings?.tool_pencil ? ` (${keybindings.tool_pencil})` : ' (B / P)';
+  const kEraser = keybindings?.tool_eraser ? ` (${keybindings.tool_eraser})` : ' (E)';
+  const kBucket = keybindings?.tool_bucket ? ` (${keybindings.tool_bucket})` : ' (G)';
+  const kEyedropper = keybindings?.tool_eyedropper ? ` (${keybindings.tool_eyedropper})` : ' (I)';
+  const kLine = keybindings?.tool_line ? ` (${keybindings.tool_line})` : ' (L)';
+  const kRect = keybindings?.tool_rectangle ? ` (${keybindings.tool_rectangle})` : ' (U)';
+  const kCircle = keybindings?.tool_circle ? ` (${keybindings.tool_circle})` : ' (C)';
+  const kSelect = keybindings?.tool_select ? ` (${keybindings.tool_select})` : ' (M)';
+  const kLasso = keybindings?.tool_lasso ? ` (${keybindings.tool_lasso})` : ' (Q)';
+
   const tools = [
-    { id: 'pencil' as ToolType, label: 'Pencil (P)', icon: Pencil },
-    { id: 'eraser' as ToolType, label: 'Eraser (E)', icon: Eraser },
-    { id: 'bucket' as ToolType, label: 'Bucket Fill (B)', icon: PaintBucket },
-    { id: 'eyedropper' as ToolType, label: 'Eyedropper (I)', icon: Pipette },
-    { id: 'line' as ToolType, label: 'Line (L)', icon: Minus },
-    { id: 'rectangle' as ToolType, label: 'Rectangle (U)', icon: Square },
+    { id: 'pencil' as ToolType, label: `Pencil${kPencil}`, icon: Pencil },
+    { id: 'eraser' as ToolType, label: `Eraser${kEraser}`, icon: Eraser },
+    { id: 'bucket' as ToolType, label: `Bucket Fill${kBucket}`, icon: PaintBucket },
+    { id: 'eyedropper' as ToolType, label: `Eyedropper${kEyedropper}`, icon: Pipette },
+    { id: 'line' as ToolType, label: `Line${kLine}`, icon: Minus },
+    { id: 'rectangle' as ToolType, label: `Rectangle${kRect}`, icon: Square },
     { id: 'rectangle_fill' as ToolType, label: 'Filled Box', icon: Square, fill: true },
-    { id: 'circle' as ToolType, label: 'Circle (C)', icon: Circle },
+    { id: 'circle' as ToolType, label: `Circle${kCircle}`, icon: Circle },
     { id: 'circle_fill' as ToolType, label: 'Filled Circle', icon: Circle, fill: true },
-    { id: 'select' as ToolType, label: 'Box Select (M)', icon: Scissors },
-    { id: 'lasso' as ToolType, label: 'Lasso Select (Q)', icon: LassoSelect },
+    { id: 'select' as ToolType, label: `Box Select${kSelect}`, icon: BoxSelect },
+    { id: 'lasso' as ToolType, label: `Lasso Select${kLasso}`, icon: LassoSelect },
     { id: 'lighten' as ToolType, label: 'Lighten (Dodge)', icon: SunMedium },
     { id: 'darken' as ToolType, label: 'Darken (Burn)', icon: Moon },
     { id: 'replace' as ToolType, label: 'Color Replace', icon: Sparkles },
@@ -310,19 +326,50 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
       <div className="retro-recessed-divider-h my-0.5 shrink-0" />
 
-      {/* Vertical Symmetry Toggle */}
-      <button
-        onClick={onToggleSymmetry}
-        title="Mirror / Vertical Symmetry Mode (Draws on both left & right) (S)"
-        className={`retro-chrome-btn p-2 w-full rounded-lg transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
-          symmetryActive ? 'active font-bold' : 'text-secondary-theme'
-        }`}
-      >
-        <SplitSquareVertical className="w-4 h-4 shrink-0" style={symmetryActive ? { color: 'var(--text-accent)' } : undefined} />
-        {width >= 64 && (
-          <span className="text-[9px] font-mono font-medium truncate" style={symmetryActive ? { color: 'var(--text-accent)' } : undefined}>Mirror</span>
+      {/* Symmetry / Mirror & Keyboard Shortcuts Remapper */}
+      <div className="w-full flex flex-col gap-1">
+        <button
+          onClick={onToggleSymmetry}
+          title={`Mirror / Vertical Symmetry Mode (${keybindings?.toggle_symmetry || 'S'})`}
+          className={`retro-chrome-btn rounded-lg transition-all flex items-center justify-center cursor-pointer ${
+            isWide 
+              ? 'px-2 py-1.5 gap-2 w-full justify-start' 
+              : 'p-1.5 w-full flex-col gap-0.5'
+          } ${
+            symmetryActive ? 'active font-bold' : 'text-secondary-theme'
+          }`}
+        >
+          <SplitSquareVertical className="w-4 h-4 shrink-0" style={symmetryActive ? { color: 'var(--text-accent)' } : undefined} />
+          {isWide ? (
+            <span className="text-xs truncate font-medium flex-1 text-left" style={symmetryActive ? { color: 'var(--text-accent)' } : undefined}>
+              Mirror Mode
+            </span>
+          ) : width >= 54 ? (
+            <span className="text-[9px] font-mono font-medium truncate" style={symmetryActive ? { color: 'var(--text-accent)' } : undefined}>
+              Mirror
+            </span>
+          ) : null}
+        </button>
+
+        {onOpenKeybindingsModal && (
+          <button
+            onClick={onOpenKeybindingsModal}
+            title={`Keyboard Shortcuts & Key Remapping (${keybindings?.open_shortcuts || 'K'})`}
+            className={`retro-chrome-btn rounded-lg transition-all flex items-center justify-center cursor-pointer text-secondary-theme hover:text-primary-theme ${
+              isWide 
+                ? 'px-2 py-1.5 gap-2 w-full justify-start' 
+                : 'p-1.5 w-full flex-col gap-0.5'
+            }`}
+          >
+            <Keyboard className="w-4 h-4 shrink-0" style={{ color: 'var(--text-accent)' }} />
+            {isWide ? (
+              <span className="text-xs truncate font-medium flex-1 text-left">Shortcuts</span>
+            ) : width >= 54 ? (
+              <span className="text-[9px] font-mono font-medium truncate">Shortcuts</span>
+            ) : null}
+          </button>
         )}
-      </button>
+      </div>
 
       {/* Selection operations if active */}
       {hasSelection && (

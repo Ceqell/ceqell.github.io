@@ -4,7 +4,8 @@ import {
   ExternalLink, 
   Heart, 
   Github,
-  Palette
+  Palette,
+  Info
 } from 'lucide-react';
 import { getAssetUrl } from '../utils/assetUrl';
 
@@ -228,46 +229,33 @@ limitations under the License.`;
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150"
       onClick={onClose}
     >
-      {/* macOS Style Window Dialog */}
+      {/* Retro Window Dialog */}
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="w-[500px] max-w-[95vw] bg-surface-theme border border-ui-theme rounded-xl shadow-2xl overflow-hidden flex flex-col text-primary-theme transition-all duration-200 select-text"
+        className="w-[520px] max-w-[95vw] bg-surface-theme border border-ui-theme rounded-2xl shadow-2xl overflow-hidden flex flex-col text-primary-theme transition-all duration-200 select-text"
         style={{
           boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--border-ui)'
         }}
       >
-        {/* Title Bar with Glossy macOS Close Button */}
-        <div className="relative flex items-center justify-between px-3 py-2 bg-surface-raised-theme border-b border-ui-theme">
-          {/* Glossy Aqua Close Button (pure lighter gradient) */}
-          <div className="flex items-center z-10">
-            <button
-              onClick={onClose}
-              className="relative w-3.5 h-3.5 rounded-full flex items-center justify-center group cursor-pointer transition-all active:scale-95 overflow-hidden"
-              style={{
-                background: 'linear-gradient(180deg, #ff8579 0%, #ff5e50 50%, #f63c2e 100%)',
-                border: '1px solid #b81e16',
-                boxShadow: 'inset 0 1px 1px rgba(255, 255, 255, 0.9), inset 0 -1px 2px rgba(200, 30, 20, 0.35), 0 1px 2px rgba(0, 0, 0, 0.35)'
-              }}
-              title="Close window"
-              aria-label="Close"
-            >
-              {/* Upper Aqua gel highlight */}
-              <span 
-                className="pointer-events-none absolute top-[1px] inset-x-[2px] h-[38%] rounded-full opacity-95"
-                style={{
-                  background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.2) 100%)'
-                }}
-              />
-              <X className="relative z-10 w-2 h-2 text-[#350200] opacity-0 group-hover:opacity-100 transition-opacity stroke-[3]" />
-            </button>
+        {/* Title Bar with Retro Chrome styling */}
+        <div className="flex items-center justify-between px-4 py-3 bg-surface-raised-theme border-b border-ui-theme shrink-0">
+          <div className="flex items-center gap-2.5">
+            <div className="p-1.5 retro-inset-well rounded-lg text-primary-theme">
+              <Info className="w-4 h-4" style={{ color: 'var(--text-accent)' }} />
+            </div>
+            <div>
+              <h2 className="text-xs font-bold text-primary-theme flex items-center gap-2">
+                About FigurayMaker
+              </h2>
+            </div>
           </div>
-
-          {/* Centered Window Title */}
-          <span className="absolute inset-x-0 text-center text-xs font-semibold text-primary-theme select-text">
-            About FigurayMaker
-          </span>
-
-          <div className="w-4" />
+          <button
+            onClick={onClose}
+            className="retro-chrome-btn p-1.5 rounded-lg text-primary-theme cursor-pointer"
+            title="Close (Esc)"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
 
         {/* Window Content Body */}
@@ -286,7 +274,7 @@ limitations under the License.`;
             FigurayMaker
           </h1>
           <p className="text-xs text-secondary-theme font-mono mt-0.5">
-            Version 2.2 (Build 2026.10.8)
+            Version 2.3 (Build 2026.10.11)
           </p>
 
           {/* Tab Selector & Retro-Inset Content Container */}

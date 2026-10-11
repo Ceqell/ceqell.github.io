@@ -76,9 +76,9 @@ export const HelpModal: React.FC<HelpModalProps> = ({
   if (!isOpen) return null;
 
   const shortcutsList = [
-    { key: 'P', action: 'Pencil Tool', category: 'Tools' },
+    { key: 'B / P', action: 'Pencil / Brush Tool', category: 'Tools' },
     { key: 'E', action: 'Eraser Tool', category: 'Tools' },
-    { key: 'B', action: 'Bucket Fill Tool', category: 'Tools' },
+    { key: 'G', action: 'Bucket Fill Tool', category: 'Tools' },
     { key: 'I', action: 'Eyedropper Tool', category: 'Tools' },
     { key: 'L', action: 'Line Tool', category: 'Tools' },
     { key: 'U', action: 'Rectangle Tool', category: 'Tools' },
@@ -87,7 +87,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({
     { key: 'Q', action: 'Freehand Lasso Select Tool', category: 'Selection' },
     { key: '[', action: 'Decrease Brush Size', category: 'Brushes' },
     { key: ']', action: 'Increase Brush Size', category: 'Brushes' },
-    { key: 'G', action: 'Toggle Pixel Grid', category: 'Canvas' },
+    { key: 'Shift + G', action: 'Toggle Pixel Grid', category: 'Canvas' },
     { key: 'H', action: 'Toggle Retro Dev Body Guides', category: 'Canvas' },
     { key: 'N', action: 'Toggle Row & Column Number Headers', category: 'Canvas' },
     { key: 'S', action: 'Toggle Vertical Mirror / Symmetry Mode', category: 'Canvas' },
@@ -604,7 +604,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({
                   <div className="p-2.5 bg-surface-theme rounded-lg border border-ui-theme">
                     <div className="font-bold text-xs" style={{ color: 'var(--text-accent)' }}>2. Floating Reference Window (Resizable Popout)</div>
                     <p className="text-secondary-theme mt-0.5 leading-relaxed">
-                      Open a movable, freely <strong className="text-primary-theme">resizable window</strong> displaying your image. Resize from any edge or corner with the diagonal retro grip handle, double-click the header or click the <strong className="text-primary-theme">Maximize/Restore</strong> icon, click the zoom percentage to <strong className="text-primary-theme">Fit to Window</strong>, and click directly anywhere on the reference image to <strong className="text-primary-theme">eyedrop and sample its colors</strong> into your active palette! Custom window positions and sizes are automatically saved.
+                      Open a movable, freely <strong className="text-primary-theme">resizable window</strong> displaying your image. Resize from any edge or corner with the diagonal retro grip handle, click the zoom percentage to <strong className="text-primary-theme">Fit to Window</strong>, zoom with scroll wheel or +/- buttons, and click directly anywhere on the reference image to <strong className="text-primary-theme">eyedrop and sample its colors</strong> into your active palette! Custom window positions and sizes are automatically saved.
                     </p>
                   </div>
 

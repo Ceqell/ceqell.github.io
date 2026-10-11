@@ -44,8 +44,11 @@ import { CustomCanvasModal } from './components/CustomCanvasModal';
 import { ProjectManagerModal } from './components/ProjectManagerModal';
 import { StarterModal } from './components/StarterModal';
 import { AssetManagerModal } from './components/AssetManagerModal';
+import { KeybindingsModal } from './components/KeybindingsModal';
 import { ToastContainer, ToastItem } from './components/Toast';
 import { createDefaultReferenceImage } from './constants/defaultReference';
+import { loadSavedKeybindings, matchesKeybinding } from './utils/keybindings';
+import { KeybindingsMap } from './types/keybindings';
 import { 
   SPRITE_ATLAS, 
   SpriteAtlasEntry, 
@@ -211,7 +214,11 @@ export default function App() {
   const [isProjectManagerOpen, setIsProjectManagerOpen] = useState<boolean>(true);
   const [isStarterModalOpen, setIsStarterModalOpen] = useState<boolean>(false);
   const [isAssetManagerOpen, setIsAssetManagerOpen] = useState<boolean>(false);
+  const [isKeybindingsOpen, setIsKeybindingsOpen] = useState<boolean>(false);
   const [helpInitialTab, setHelpInitialTab] = useState<HelpTabId>('overview');
+
+  // Configurable Keybindings Engine
+  const [keybindings, setKeybindings] = useState<KeybindingsMap>(() => loadSavedKeybindings());
 
   // Active Project ID for local IndexedDB tracking
   const [currentProjectId, setCurrentProjectId] = useState<string>(() => generateProjectId());
@@ -1711,79 +1718,187 @@ export default function App() {
     };
   }, [layers, canvasWidth, canvasHeight, projectName, activePreset, references, currentColor, guideOffset, currentProjectId, activeLayerId]);
 
-  // Keyboard Shortcuts
+  // Keyboard Shortcuts Engine (Bound to Customizable Keybindings)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (isKeybindingsOpen) return;
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
 
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+      // History
+      if (matchesKeybinding(e, keybindings.undo)) {
         e.preventDefault();
-        if (e.shiftKey) handleRedo();
-        else handleUndo();
-      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+        handleUndo();
+      } else if (matchesKeybinding(e, keybindings.redo, 'Ctrl+Shift+Z')) {
         e.preventDefault();
         handleRedo();
-      } else if (e.key.toLowerCase() === 'p') {
+      }
+      // Tools
+      else if (matchesKeybinding(e, keybindings.tool_pencil, 'P')) {
         setCurrentTool('pencil');
-      } else if (e.key.toLowerCase() === 'e') {
+      } else if (matchesKeybinding(e, keybindings.tool_eraser)) {
         setCurrentTool('eraser');
-      } else if (e.key.toLowerCase() === 'b') {
+      } else if (matchesKeybinding(e, keybindings.tool_bucket, 'K')) {
         setCurrentTool('bucket');
-      } else if (e.key.toLowerCase() === 'i') {
+      } else if (matchesKeybinding(e, keybindings.tool_eyedropper)) {
         setCurrentTool('eyedropper');
-      } else if (e.key.toLowerCase() === 'l') {
+      } else if (matchesKeybinding(e, keybindings.tool_line)) {
         setCurrentTool('line');
-      } else if (e.key.toLowerCase() === 'u') {
+      } else if (matchesKeybinding(e, keybindings.tool_rectangle)) {
         setCurrentTool('rectangle');
-      } else if (e.key.toLowerCase() === 'c') {
+      } else if (matchesKeybinding(e, keybindings.tool_rectangle_fill)) {
+        setCurrentTool('rectangle_fill');
+      } else if (matchesKeybinding(e, keybindings.tool_circle)) {
         setCurrentTool('circle');
-      } else if (e.key.toLowerCase() === 'm') {
+      } else if (matchesKeybinding(e, keybindings.tool_circle_fill)) {
+        setCurrentTool('circle_fill');
+      } else if (matchesKeybinding(e, keybindings.tool_select)) {
         setCurrentTool('select');
-      } else if (e.key.toLowerCase() === 'q') {
+      } else if (matchesKeybinding(e, keybindings.tool_lasso)) {
         setCurrentTool('lasso');
-      } else if (e.key === 'Delete' || e.key === 'Backspace') {
+      } else if (matchesKeybinding(e, keybindings.tool_lighten)) {
+        setCurrentTool('lighten');
+      } else if (matchesKeybinding(e, keybindings.tool_darken)) {
+        setCurrentTool('darken');
+      } else if (matchesKeybinding(e, keybindings.tool_replace)) {
+        setCurrentTool('replace');
+      }
+      // Selection Operations
+      else if (matchesKeybinding(e, keybindings.delete_selection, 'Backspace')) {
         if (selection.active) {
           e.preventDefault();
           handleDeleteSelection();
         }
-      } else if (e.key === 'Enter') {
+      } else if (matchesKeybinding(e, keybindings.stamp_selection)) {
         if (selection.active && selection.floating) {
           e.preventDefault();
           handleCommitFloatingSelection();
         }
-      } else if (e.key === 'Escape') {
+      } else if (matchesKeybinding(e, keybindings.clear_selection)) {
         handleClearSelection();
-      } else if (selection.active && selection.floating && (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+      } else if (matchesKeybinding(e, keybindings.flip_selection_h)) {
+        if (selection.active && selection.floating) {
+          e.preventDefault();
+          handleFlipHorizontalSelection();
+        }
+      } else if (matchesKeybinding(e, keybindings.flip_selection_v)) {
+        if (selection.active && selection.floating) {
+          e.preventDefault();
+          handleFlipVerticalSelection();
+        }
+      } else if (matchesKeybinding(e, keybindings.select_all)) {
         e.preventDefault();
-        const dx = e.key === 'ArrowLeft' ? -1 : e.key === 'ArrowRight' ? 1 : 0;
-        const dy = e.key === 'ArrowUp' ? -1 : e.key === 'ArrowDown' ? 1 : 0;
+        setSelection({
+          active: true,
+          startX: 0,
+          startY: 0,
+          endX: canvasWidth - 1,
+          endY: canvasHeight - 1,
+          floating: false,
+          floatingX: 0,
+          floatingY: 0,
+          floatingWidth: 0,
+          floatingHeight: 0,
+          floatingPixels: [],
+        });
+      } else if (selection.active && selection.floating && (
+        matchesKeybinding(e, keybindings.nudge_left, 'ArrowLeft') ||
+        matchesKeybinding(e, keybindings.nudge_right, 'ArrowRight') ||
+        matchesKeybinding(e, keybindings.nudge_up, 'ArrowUp') ||
+        matchesKeybinding(e, keybindings.nudge_down, 'ArrowDown')
+      )) {
+        e.preventDefault();
+        const isLeft = matchesKeybinding(e, keybindings.nudge_left, 'ArrowLeft');
+        const isRight = matchesKeybinding(e, keybindings.nudge_right, 'ArrowRight');
+        const isUp = matchesKeybinding(e, keybindings.nudge_up, 'ArrowUp');
+        const dx = isLeft ? -1 : isRight ? 1 : 0;
+        const dy = isUp ? -1 : 1;
         setSelection(prev => ({
           ...prev,
           floatingX: prev.floatingX + dx,
           floatingY: prev.floatingY + dy,
         }));
-      } else if (e.key.toLowerCase() === 'g') {
+      }
+      // Layer Operations
+      else if (matchesKeybinding(e, keybindings.layer_new)) {
+        e.preventDefault();
+        handleAddLayer();
+      } else if (matchesKeybinding(e, keybindings.layer_delete)) {
+        e.preventDefault();
+        handleDeleteLayer(activeLayerId);
+      } else if (matchesKeybinding(e, keybindings.layer_duplicate)) {
+        e.preventDefault();
+        handleDuplicateLayer(activeLayerId);
+      } else if (matchesKeybinding(e, keybindings.layer_merge_down)) {
+        e.preventDefault();
+        handleMergeDown(activeLayerId);
+      } else if (matchesKeybinding(e, keybindings.layer_flip_h)) {
+        e.preventDefault();
+        handleFlipActiveLayerH();
+      } else if (matchesKeybinding(e, keybindings.layer_flip_v)) {
+        e.preventDefault();
+        handleFlipActiveLayerV();
+      } else if (matchesKeybinding(e, keybindings.layer_center)) {
+        e.preventDefault();
+        handleCenterActiveLayer();
+      } else if (matchesKeybinding(e, keybindings.layer_clear)) {
+        e.preventDefault();
+        handleClearActiveLayer();
+      }
+      // Canvas Overlays & Zoom
+      else if (matchesKeybinding(e, keybindings.toggle_grid)) {
         setShowGrid(g => !g);
-      } else if (e.key.toLowerCase() === 'h') {
+      } else if (matchesKeybinding(e, keybindings.toggle_guides)) {
         setShowGuides(g => !g);
-      } else if (e.key.toLowerCase() === 'n') {
+      } else if (matchesKeybinding(e, keybindings.toggle_numbers)) {
         setShowNumbers(n => !n);
-      } else if (e.key.toLowerCase() === 's' && !e.ctrlKey && !e.metaKey) {
+      } else if (matchesKeybinding(e, keybindings.toggle_symmetry)) {
         setSymmetryActive(s => !s);
-      } else if (e.key === '[') {
+      } else if (matchesKeybinding(e, keybindings.brush_decrease)) {
         setBrushSize(b => Math.max(1, b - 1));
-      } else if (e.key === ']') {
+      } else if (matchesKeybinding(e, keybindings.brush_increase)) {
         setBrushSize(b => Math.min(32, b + 1));
-      } else if (e.key === '?' || (e.key === '/' && e.shiftKey) || e.key === 'F1') {
+      } else if (matchesKeybinding(e, keybindings.zoom_in)) {
+        setZoom(z => Math.min(64, z + 2));
+      } else if (matchesKeybinding(e, keybindings.zoom_out)) {
+        setZoom(z => Math.max(4, z - 2));
+      } else if (matchesKeybinding(e, keybindings.zoom_reset)) {
+        setZoom(16);
+      }
+      // Modals & Windows
+      else if (matchesKeybinding(e, keybindings.open_help, 'F1')) {
         e.preventDefault();
         setHelpInitialTab('overview');
         setIsHelpOpen(true);
+      } else if (matchesKeybinding(e, keybindings.open_shortcuts)) {
+        e.preventDefault();
+        setIsKeybindingsOpen(true);
+      } else if (matchesKeybinding(e, keybindings.open_assets)) {
+        e.preventDefault();
+        setIsAssetManagerOpen(true);
+      } else if (matchesKeybinding(e, keybindings.open_dimensions)) {
+        e.preventDefault();
+        setIsGuideOpen(true);
+      } else if (matchesKeybinding(e, keybindings.open_projects)) {
+        e.preventDefault();
+        setIsProjectManagerOpen(true);
+      } else if (matchesKeybinding(e, keybindings.open_export)) {
+        e.preventDefault();
+        setIsExportOpen(true);
+      } else if (matchesKeybinding(e, keybindings.open_starters)) {
+        e.preventDefault();
+        setIsStarterModalOpen(true);
+      } else if (matchesKeybinding(e, keybindings.open_custom_canvas)) {
+        e.preventDefault();
+        setIsCustomCanvasOpen(true);
+      } else if (matchesKeybinding(e, keybindings.open_about)) {
+        e.preventDefault();
+        setIsAboutOpen(true);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleUndo, handleRedo, selection.active, selection.floating, handleDeleteSelection, handleCommitFloatingSelection, handleClearSelection]);
+  }, [keybindings, isKeybindingsOpen, handleUndo, handleRedo, selection.active, selection.floating, handleDeleteSelection, handleCommitFloatingSelection, handleClearSelection, handleFlipHorizontalSelection, handleFlipVerticalSelection, handleAddLayer, handleDeleteLayer, handleDuplicateLayer, handleMergeDown, handleFlipActiveLayerH, handleFlipActiveLayerV, handleCenterActiveLayer, handleClearActiveLayer, activeLayerId, canvasWidth, canvasHeight]);
 
   return (
     <div className={`flex flex-col h-screen w-screen overflow-hidden bg-app-theme text-primary-theme font-sans select-none ${animationsEnabled ? '' : 'snappy-mode'}`}>
@@ -1819,6 +1934,7 @@ export default function App() {
           setHelpInitialTab('overview');
           setIsHelpOpen(true);
         }}
+        onOpenKeybindingsModal={() => setIsKeybindingsOpen(true)}
         onOpenAboutModal={() => setIsAboutOpen(true)}
         onOpenProjectManager={() => setIsProjectManagerOpen(true)}
         onSaveProject={handleSaveProject}
@@ -1843,17 +1959,6 @@ export default function App() {
         onCenterActiveLayer={handleCenterActiveLayer}
         onClearActiveLayer={handleClearActiveLayer}
       />
-
-      {/* Draggable Splitter on bottom edge of Top Bar */}
-      <div
-        onMouseDown={handleHeaderResizeMouseDown}
-        onTouchStart={handleHeaderResizeTouchStart}
-        onDoubleClick={() => setHeaderHeight(undefined)}
-        title="Drag to resize Top Bar height (Double-click to reset auto-height)"
-        className="h-1 hover:h-1.5 cursor-row-resize hover:bg-[var(--text-accent)] active:bg-[var(--text-accent)] transition-all z-40 shrink-0 w-full flex items-center justify-center bg-surface-raised-theme border-b border-ui-theme"
-      >
-        <div className="h-0.5 w-12 bg-ui-theme hover:bg-[var(--text-accent)] rounded-full" />
-      </div>
 
       {/* Main Workspace */}
       <div className="flex-1 flex overflow-hidden relative">
@@ -1883,6 +1988,8 @@ export default function App() {
               autoSwitchPencil={autoSwitchPencil}
               onToggleAutoSwitchPencil={handleToggleAutoSwitchPencil}
               onOpenAssetManager={() => setIsAssetManagerOpen(true)}
+              onOpenKeybindingsModal={() => setIsKeybindingsOpen(true)}
+              keybindings={keybindings}
             />
             {/* Draggable Splitter on right edge of Left Toolbar */}
             <div
@@ -2153,6 +2260,14 @@ export default function App() {
         onStampOntoActiveLayer={handleStampSpriteOntoActiveLayer}
         onAddAsFloatingReference={handleAddSpriteAsFloatingReference}
         onSetTraceOverlay={handleSetSpriteAsTraceOverlay}
+      />
+
+      {/* Keyboard Shortcuts Remapper Modal */}
+      <KeybindingsModal
+        isOpen={isKeybindingsOpen}
+        onClose={() => setIsKeybindingsOpen(false)}
+        keybindings={keybindings}
+        onUpdateKeybindings={setKeybindings}
       />
 
       {/* Toast Notifications */}
