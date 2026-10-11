@@ -2160,6 +2160,7 @@ export default function App() {
             onClose={() => handleUpdateReference(ref.id, { windowOpen: false })}
             onColorPick={handleEyedropPick}
             onUpdateReference={handleUpdateReference}
+            canvasBg={canvasBg}
           />
         );
       })}

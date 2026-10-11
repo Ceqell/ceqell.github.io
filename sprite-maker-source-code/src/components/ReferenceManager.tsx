@@ -18,7 +18,7 @@ import {
   AlertTriangle,
   Sparkles
 } from 'lucide-react';
-import { ReferenceImage } from '../types/sprite';
+import { ReferenceImage, CanvasBgStyle } from '../types/sprite';
 import { CollapsibleSection } from './CollapsibleSection';
 import { createDefaultReferenceImage } from '../constants/defaultReference';
 
@@ -340,6 +340,7 @@ interface FloatingReferenceProps {
   onClose: () => void;
   onColorPick: (color: string) => void;
   onUpdateReference?: (id: string, updates: Partial<ReferenceImage>) => void;
+  canvasBg?: CanvasBgStyle;
 }
 
 export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
@@ -347,9 +348,37 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
   onClose,
   onColorPick,
   onUpdateReference,
+  canvasBg = 'light-checker',
 }) => {
   const [zoom, setZoom] = useState(reference.windowZoom ?? 1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const isWheelZoomingRef = useRef<boolean>(false);
+  const wheelZoomTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (wheelZoomTimeoutRef.current) {
+        clearTimeout(wheelZoomTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const getCanvasBgClass = (bg?: CanvasBgStyle) => {
+    switch (bg) {
+      case 'dark-checker':
+        return 'canvas-checkerboard-dark';
+      case 'light-checker':
+        return 'canvas-checkerboard-light';
+      case 'dark':
+        return 'canvas-bg-dark';
+      case 'retro':
+        return 'canvas-bg-retro';
+      default:
+        return 'canvas-checkerboard-light';
+    }
+  };
+
   const [position, setPosition] = useState(() => ({
     x: reference.windowX ?? (typeof window !== 'undefined' && window.innerWidth < 768 ? 16 : 80),
     y: reference.windowY ?? 110,
@@ -586,12 +615,33 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
     panStartRef.current = { x: e.clientX - pan.x, y: e.clientY - pan.y };
   };
 
-  // Wheel zoom in viewport
+  // Wheel zoom in viewport anchored to cursor position
   const handleWheel = (e: React.WheelEvent) => {
     if (imgError) return;
     e.preventDefault();
     const delta = e.deltaY < 0 ? 0.25 : -0.25;
-    setZoom(z => Math.max(0.25, Math.min(8, Math.round((z + delta) * 100) / 100)));
+    const newZoom = Math.max(0.25, Math.min(8, Math.round((zoom + delta) * 100) / 100));
+    if (newZoom === zoom) return;
+
+    // Suppress CSS transform transitions during wheel zoom for immediate tracking
+    isWheelZoomingRef.current = true;
+    if (wheelZoomTimeoutRef.current) clearTimeout(wheelZoomTimeoutRef.current);
+    wheelZoomTimeoutRef.current = setTimeout(() => {
+      isWheelZoomingRef.current = false;
+    }, 120);
+
+    if (viewportRef.current) {
+      const rect = viewportRef.current.getBoundingClientRect();
+      // Mouse position relative to viewport center (origin of CSS translate)
+      const mouseRelX = e.clientX - (rect.left + rect.width / 2);
+      const mouseRelY = e.clientY - (rect.top + rect.height / 2);
+      const ratio = newZoom / zoom;
+      const newPanX = mouseRelX - (mouseRelX - pan.x) * ratio;
+      const newPanY = mouseRelY - (mouseRelY - pan.y) * ratio;
+      setPan({ x: Math.round(newPanX), y: Math.round(newPanY) });
+    }
+
+    setZoom(newZoom);
   };
 
   // Reset zoom & pan to 100%
@@ -799,13 +849,14 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
 
       {/* Image Preview & Eyedropper area with virtual panning & zoom */}
       <div 
+        ref={viewportRef}
         onMouseDown={handleViewportMouseDown}
         onDoubleClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
         onWheel={handleWheel}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className={`relative p-0 bg-surface-raised-theme overflow-hidden flex-1 min-h-0 w-full flex items-center justify-center canvas-checkerboard select-none ${
+        className={`relative p-0 bg-surface-raised-theme overflow-hidden flex-1 min-h-0 w-full flex items-center justify-center ${getCanvasBgClass(canvasBg)} select-none ${
           imgError ? 'cursor-default' : isPanning ? 'cursor-grabbing' : 'cursor-crosshair'
         }`}
         title={imgError ? undefined : "Click to sample color • Drag to pan • Scroll wheel to zoom"}
@@ -842,7 +893,7 @@ export const FloatingReferenceWindow: React.FC<FloatingReferenceProps> = ({
             style={{ 
               transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, 
               transformOrigin: 'center center',
-              transition: isPanning || resizingDir ? 'none' : 'transform 75ms ease-out',
+              transition: isPanning || resizingDir || isWheelZoomingRef.current ? 'none' : 'transform 75ms ease-out',
             }}
             className="relative shrink-0 flex items-center justify-center pointer-events-none"
           >
