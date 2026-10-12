@@ -111,6 +111,8 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
   const strokeModifiedRef = useRef<boolean>(false);
   const [dragStartPos, setDragStartPos] = useState<{ x: number; y: number } | null>(null);
   const [hoverPixel, setHoverPixel] = useState<{ x: number; y: number } | null>(null);
+  const isWheelZoomingRef = useRef<boolean>(false);
+  const wheelZoomTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Guide dragging state
   const [isDraggingGuide, setIsDraggingGuide] = useState<boolean>(false);
@@ -317,7 +319,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
           img.src = ref.url;
           if (img.complete && img.naturalWidth > 0 && img.naturalHeight > 0) {
             ctx.save();
-            ctx.globalAlpha = ref.traceOpacity;
+            ctx.globalAlpha = Math.min(1, Math.max(0, ref.traceOpacity));
             const targetW = canvasWidth * ref.traceScale;
             const targetH = (ref.height / ref.width) * targetW;
             ctx.drawImage(img, ref.traceX, ref.traceY, targetW, targetH);
@@ -724,6 +726,65 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       ctx.strokeRect(startX, startY, boxSize, boxSize);
       ctx.restore();
     }
+
+    // 7. Live Shape Drag Preview Overlay (Line, Rectangle, Filled Rectangle, Circle, Filled Circle)
+    if (isDrawing && dragStartPos && hoverPixel && ['line', 'rectangle', 'rectangle_fill', 'circle', 'circle_fill'].includes(currentTool)) {
+      let rawShapePoints: { x: number; y: number }[] = [];
+      if (currentTool === 'line') {
+        rawShapePoints = getLinePoints(dragStartPos.x, dragStartPos.y, hoverPixel.x, hoverPixel.y);
+      } else if (currentTool === 'rectangle') {
+        rawShapePoints = getRectanglePoints(dragStartPos.x, dragStartPos.y, hoverPixel.x, hoverPixel.y, false);
+      } else if (currentTool === 'rectangle_fill') {
+        rawShapePoints = getRectanglePoints(dragStartPos.x, dragStartPos.y, hoverPixel.x, hoverPixel.y, true);
+      } else if (currentTool === 'circle') {
+        rawShapePoints = getCirclePoints(dragStartPos.x, dragStartPos.y, hoverPixel.x, hoverPixel.y, false);
+      } else if (currentTool === 'circle_fill') {
+        rawShapePoints = getCirclePoints(dragStartPos.x, dragStartPos.y, hoverPixel.x, hoverPixel.y, true);
+      }
+
+      // Expand points by brush size kernel and symmetry mirroring
+      const previewPoints: { x: number; y: number }[] = [];
+      const minOffset = -Math.floor((brushSize - 1) / 2);
+      const maxOffset = Math.floor(brushSize / 2);
+
+      rawShapePoints.forEach(p => {
+        for (let dy = minOffset; dy <= maxOffset; dy++) {
+          for (let dx = minOffset; dx <= maxOffset; dx++) {
+            previewPoints.push({ x: p.x + dx, y: p.y + dy });
+            if (symmetryActive) {
+              const distFromAxis = (p.x + dx) - symmetryAxisX;
+              const mirroredX = symmetryAxisX - distFromAxis;
+              previewPoints.push({ x: mirroredX, y: p.y + dy });
+            }
+          }
+        }
+      });
+
+      ctx.save();
+      ctx.fillStyle = currentColor;
+      ctx.globalAlpha = 0.65;
+      const drawnPixels = new Set<string>();
+      previewPoints.forEach(p => {
+        if (p.x >= 0 && p.x < canvasWidth && p.y >= 0 && p.y < canvasHeight) {
+          const key = `${p.x},${p.y}`;
+          if (!drawnPixels.has(key)) {
+            drawnPixels.add(key);
+            ctx.fillRect(p.x * zoom, p.y * zoom, zoom, zoom);
+          }
+        }
+      });
+
+      // Subtle cyan dashed bounding guide box around shape extent
+      const minX = Math.min(dragStartPos.x, hoverPixel.x);
+      const maxX = Math.max(dragStartPos.x, hoverPixel.x);
+      const minY = Math.min(dragStartPos.y, hoverPixel.y);
+      const maxY = Math.max(dragStartPos.y, hoverPixel.y);
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 3]);
+      ctx.strokeRect(minX * zoom, minY * zoom, (maxX - minX + 1) * zoom, (maxY - minY + 1) * zoom);
+      ctx.restore();
+    }
   }, [
     zoom, 
     canvasWidth, 
@@ -739,7 +800,11 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     layout,
     isLassoing,
     lassoPoints,
-    currentThemeId
+    currentThemeId,
+    isDrawing,
+    dragStartPos,
+    currentTool,
+    currentColor
   ]);
 
   // Apply pixel changes to active layer with symmetry support
@@ -1139,11 +1204,31 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     setDragStartPos(null);
   };
 
-  // Zoom with mouse wheel
+  // Zoom with mouse wheel anchored to cursor position
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
     const delta = e.deltaY < 0 ? 1 : -1;
     const newZoom = Math.max(4, Math.min(64, zoom + delta * 2));
+    if (newZoom === zoom) return;
+
+    // Suppress CSS transform transitions during wheel zoom for immediate tracking
+    isWheelZoomingRef.current = true;
+    if (wheelZoomTimeoutRef.current) clearTimeout(wheelZoomTimeoutRef.current);
+    wheelZoomTimeoutRef.current = setTimeout(() => {
+      isWheelZoomingRef.current = false;
+    }, 120);
+
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      // Mouse position relative to viewport center (origin of CSS translate)
+      const mouseRelX = e.clientX - (rect.left + rect.width / 2);
+      const mouseRelY = e.clientY - (rect.top + rect.height / 2);
+      const ratio = newZoom / zoom;
+      const newPanX = mouseRelX - (mouseRelX - pan.x) * ratio;
+      const newPanY = mouseRelY - (mouseRelY - pan.y) * ratio;
+      setPan({ x: Math.round(newPanX), y: Math.round(newPanY) });
+    }
+
     onZoomChange(newZoom);
   };
 
@@ -1621,7 +1706,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
           transform: `translate(${pan.x}px, ${pan.y}px)`,
           width: `${canvasWidth * zoom}px`,
           height: `${canvasHeight * zoom}px`,
-          transition: (animationsEnabled && !isPanning && touchState.current.mode !== 'pinch') ? 'transform 75ms ease-out' : 'none',
+          transition: (animationsEnabled && !isPanning && !isWheelZoomingRef.current && touchState.current.mode !== 'pinch') ? 'transform 75ms ease-out' : 'none',
         }}
         className={`relative shadow-2xl shrink-0 border border-ui-theme ${getCanvasBgClass()}`}
       >

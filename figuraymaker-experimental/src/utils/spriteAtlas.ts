@@ -1,5 +1,6 @@
 import { Layer } from '../types/sprite';
 import atlasData from '../constants/spriteAtlas.json';
+import { getAssetUrl } from './assetUrl';
 
 export type ScaleMode = '1x' | '2x';
 
@@ -82,6 +83,7 @@ export function getEnhancedSpriteList(): SpriteAtlasEntry[] {
 
     return {
       ...item,
+      file: getAssetUrl(item.file),
       category,
       package: pkg,
       wikiDimensions: {
@@ -102,10 +104,9 @@ export function loadTemplateImage(): Promise<HTMLImageElement> {
   if (!cachedImagePromise) {
     cachedImagePromise = new Promise((resolve, reject) => {
       const img = new Image();
-      img.crossOrigin = 'anonymous';
       img.onload = () => resolve(img);
       img.onerror = (e) => reject(new Error('Failed to load DavidBlxTemplate.png: ' + e));
-      img.src = '/DavidBlxTemplate.png';
+      img.src = getAssetUrl('DavidBlxTemplate.png');
     });
   }
   return cachedImagePromise;
@@ -315,7 +316,7 @@ export const REVAMPED_STARTER_TEMPLATES: RevampedStarter[] = [
     id: 'starter-peter',
     name: 'Peter Character',
     package: 'Peter',
-    desc: 'Famous animated character sprite featuring round torso, green pants & glasses (18x28 in 1x)',
+    desc: 'Famous animated character sprite featuring round torso, green pants & (a lack of) glasses (to avoid trademark infringement o_O)',
     spriteIndex: 13, // peter (36x56 in 2x -> 18x28 in 1x)
     badge: 'Stylized',
     recommendedWidth1x: 25,
